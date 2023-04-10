@@ -1,0 +1,118 @@
+﻿@model WebApp.Models.Error.ErrorSearchViewModel
+@using Common.Constants
+@using Common.DataTransferObjects.CollectionPaging
+@{
+    ViewData["Title"] = "Error Log Search";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Filter</h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <em class="fas fa-minus"></em>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @{
+                                string dateRange = "";
+                                if (Model.CommonSearchFilter != null && Model.CommonSearchFilter.StartDate != null && Model.CommonSearchFilter.EndDate != null)
+                                {
+                                    dateRange = Model.CommonSearchFilter.StartDate?.ToString(FormatConstant.DateFormat) + " - " + Model.CommonSearchFilter.EndDate?.ToString(FormatConstant.DateFormat);
+                                }
+                            }
+                            <label class="control-label font-weight-bold">Date Range</label>
+                            <input id="txtDateRange" type="text" name="startDate" class="form-control" value="@dateRange" />
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">Search Keyword</label>
+                            <input id="txtSearchKeyword" type="text" class="form-control" value="@Model.CommonSearchFilter?.SearchKeyword" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-primary float-right" id="btnSearch">Search</button>
+                <button class="btn btn-default float-right mr-2" id="btnClearInput">Clear Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Search Result</h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <em class="fas fa-minus"></em>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 table-responsive">
+                <table class="table table-hover text-nowrap">
+                    <caption class="d-none">Error Log Search Result</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Stack Trace ID</th>
+                            <th scope="col">Message</th>
+                            <th scope="col">Date Created</th>
+                            <th scope="col">User Identity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ErrorLogDetails == null || !Model.ErrorLogDetails.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center">No record found</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.ErrorLogDetails)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-action="Detail"
+                                           asp-controller="Error"
+                                           asp-route-id="@item.ErrorId"
+                                           target="_blank">
+                                            @item.StackTraceId
+                                        </a>
+                                    </td>
+                                    <td>@item.Message</td>
+                                    <td>@item.DateCreated</td>
+                                    <td>@item.UserIdentity</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model.ErrorLogDetails != null)
+            {
+                <div class="col-12">
+                    @{
+                        await Html.RenderPartialAsync("_Paging", new PagingMetadata(Model.ErrorLogDetails.CurrentPage, Model.ErrorLogDetails.TotalPages, Model.ErrorLogDetails.PageSize, Model.ErrorLogDetails.TotalCount, Model.ErrorLogDetails.PageClickEvent));
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/application/ErrorLogSearch.js"></script>
+}

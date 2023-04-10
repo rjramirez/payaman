@@ -1,0 +1,54 @@
+﻿@using Common.Constants;
+@using WebApp.Extensions;
+
+@{
+    List<string> applicationRoleNames = User.ApplicationRoleName();
+}
+
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        @if (applicationRoleNames.Any(rn => rn == RoleConstant.Support))
+        {
+            <li class="nav-item menu-open">
+                <a href="#" class="nav-link">
+                    <em class="nav-icon fas fa-tachometer-alt"></em>
+                    <p>
+                        Monitoring
+                        <em class="fas fa-angle-left right"></em>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="@Url.Action("Search", "Error")" class="nav-link">
+                            <em class="far fa-circle nav-icon"></em>
+                            <p>Error Log</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        <li class="nav-item menu-open">
+            <a href="#" class="nav-link">
+                <em class="nav-icon fa fa-book"></em>
+                <p>
+                    Report (Beta)
+                    <em class="fas fa-angle-left right"></em>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="pages/examples/invoice.html" class="nav-link">
+                        <em class="far fa-circle nav-icon"></em>
+                        <p>Report 1</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="pages/examples/invoice.html" class="nav-link">
+                        <em class="far fa-circle nav-icon"></em>
+                        <p>Report 2</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>

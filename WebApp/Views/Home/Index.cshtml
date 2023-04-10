@@ -1,0 +1,53 @@
+﻿@{
+
+}
+
+<div>
+    <h4 class="display-4">GETTING STARTED</h4>
+    <h3>TODO:</h3>
+    <b>Smoke testing</b>
+    <ul>
+        <li>Run the solution for the 1st time.</li>
+        <li>Rename the solution based on your project.</li>
+    </ul>
+    <b>Configuring SSO</b>
+    <ul>
+        <li>Register Azure App and configure SAML Token in <a href="https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank" rel="noopener">Azure App Registration</a></li>
+        <li>Setup application role using security group if neccesarry based on project requirments.</li>
+    </ul>
+    <b>Setting API OAuth2 security</b>
+    <ul>
+        <li>Rename your API</li>
+        <li>Register and secure new API using Identity Server in <a href="https://phmn13devweb002.apac.sykes.com:2001/" target="_blank" rel="noopener">IS APAC Identity Server</a></li>
+        <li>Register new client and grant access to new API in <a href="https://phmn13devweb002.apac.sykes.com:2001/" target="_blank" rel="noopener">IS APAC Identity Server</a></li>
+    </ul>
+    <b>Creating New Database and EF DB first Scafold</b>
+    <ul>
+        <li>Create new project DB</li>
+        <li>Renaming or removing default template database</li>
+        <li>Scafold your 1st database table</li>
+        <li>Create your 1st repository in UnitOfWork</li>
+    </ul>
+    <b>Creating New API endpoint</b>
+    <ul>
+        <li>Create new API endpoint</li>
+        <li>Securing API endpoint using policy and scope in <a href="https://phmn13devweb002.apac.sykes.com:2001/" target="_blank" rel="noopener">IS APAC Identity Server</a></li>
+        <li>Consuming UnitOfWork in API</li>
+    </ul>
+    <b>Consuming new API endpoint from Client</b>
+    <ul>
+        <li>Create new Controller in Client to consume the new API endpoint</li>
+        <li>Grant client access to new API</li>
+    </ul>
+    <b>Audit Trail</b>
+    <ul>
+        <li>Built-in for new table as long as we will use the UnitOfWork</li>
+        <li>Exclude tables and columns from audittrail</li>
+    </ul>
+    <b>Error Logging</b>
+    <i>“Mistakes are a fact of life. It is the response to error that counts.” - Nikki Giovanni</i>
+    <ul>
+        <li>Do: Always log error and show the error traceid.</li>
+        <li>Don't: Hide or suppress the errors and do nothing.</li>
+    </ul>
+</div>

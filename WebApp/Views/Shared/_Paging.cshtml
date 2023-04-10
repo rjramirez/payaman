@@ -1,0 +1,73 @@
+﻿
+@model Common.DataTransferObjects.CollectionPaging.Interfaces.IPagingMetadata
+<div class="col-12">
+    @if (Model.TotalPages > 0)
+    {
+        var showingStart = Model.CurrentPage == 1 ? 1 : ((Model.CurrentPage - 1) * Model.PageSize) + 1;
+        var showingEnd = (showingStart + (Model.PageSize - 1)) > Model.TotalCount ? Model.TotalCount : showingStart + (Model.PageSize - 1);
+
+        <div class="row mt-3">
+            <div class="col-sm-12 col-md-5">
+                <ul class="pagination pagination-sm justify-content-center justify-content-sm-start">
+                    @if (Model.TotalPages > 1)
+                    {
+                        if (Model.HasPrevious)
+                        {
+                            <li class="page-item">
+                                <button class="page-link" onclick='@string.Format(Model.PageClickEvent, Model.CurrentPage - 1)'>
+                                    <em class="fa fa-caret-left"></em>
+                                </button>
+                            </li>
+                        }
+
+                        if (Model.TotalPages <= 6)
+                        {
+                            for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @((Model.CurrentPage == i) ? "active" : null)">
+                                    <input type="button" onclick='@string.Format(Model.PageClickEvent, i)' class="page-link" value="@i.ToString()" @((Model.CurrentPage == i) ? "disabled" : null) />
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            int pageLeft = 3;
+                            int pagesRight = 3;
+                            int fromPage = Math.Max(1, Model.CurrentPage - pageLeft);
+                            int toPage = (Model.CurrentPage < 4) ? 7 : Math.Min(Model.TotalPages, Model.CurrentPage + pagesRight);
+
+                            if ((Model.CurrentPage + 3) > Model.TotalPages)
+                            {
+                                fromPage = Model.TotalPages - 6;
+                            }
+
+                            for (int i = fromPage; i <= toPage; i++)
+                            {
+                                <li class="page-item @((Model.CurrentPage == i) ? "active" : null)">
+                                    <input type="button" onclick='@string.Format(Model.PageClickEvent, i)' class="page-link" value="@i.ToString()" @((Model.CurrentPage == i) ? "disabled" : null)>
+                                </li>
+                            }
+                        }
+
+                        if (Model.HasNext)
+                        {
+                            <li class="page-item">
+                                <button class="page-link" onclick='@string.Format(Model.PageClickEvent, Model.CurrentPage + 1)'>
+                                    <em class="fa fa-caret-right"></em>
+                                </button>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="col-sm-12 col-md-7 text-center">
+                <span class="fo float-lg-right float-md-right float-sm-none">
+                    <em>
+                        Showing @showingStart to @showingEnd of @Model.TotalCount entries
+                    </em>
+                </span>
+            </div>
+        </div>
+    }
+</div>
+       

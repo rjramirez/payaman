@@ -1,0 +1,220 @@
+﻿$(document).ready(function () {
+    App.initialize();
+    if (window.localStorage.getItem("toastrMsg") !== null) {
+        let toastrMsg = JSON.parse(window.localStorage.getItem("toastrMsg"));
+        App.alert(toastrMsg.type, toastrMsg.message, toastrMsg.title);
+        window.localStorage.clear();
+    }
+});
+
+const AppConstant = {
+    dateFormat: "MM/DD/YYYY",
+    queryStringDateTimeFormat: "D MMMM YYYY hh:mm:ss A"
+};
+
+var App = function () {
+    return {
+        initialize: function () {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "500",
+                "hideDuration": "1000",
+                "timeOut": "10000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+        },
+        ajaxPost: function (_url, _data, _dataType, _successFn, _errorFn) {
+            App.ajaxCall('POST', _url, _data, _dataType, _successFn, _errorFn);
+        },
+        ajaxPut: function (_url, _data, _dataType, _successFn, _errorFn) {
+            App.ajaxCall('PUT', _url, _data, _dataType, _successFn, _errorFn);
+        },
+        ajaxGet: function (_url, _dataType, _successFn, _errorFn) {
+            $.ajax({
+                url: _url,
+                type: 'GET',
+                dataType: _dataType,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    App.ajaxSuccess(_successFn, data);
+                },
+                error: function (jqXHR, textStatus) {
+                    App.ajaxError(jqXHR, textStatus, _errorFn);
+                }
+            });
+        },
+        ajaxCall: function (_methodType, _url, _data, _dataType, _successFn, _errorFn) {
+            $.ajax({
+                url: _url,
+                type: _methodType,
+                data: _data,
+                dataType: _dataType,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    App.ajaxSuccess(_successFn, data);
+                },
+                error: function (jqXHR, textStatus) {
+                    App.ajaxError(jqXHR, textStatus, _errorFn);
+                }
+            });
+        },
+        ajaxSuccess: function (_successFn, _data,) {
+            if (_successFn != undefined) {
+                _successFn(_data);
+            }
+        },
+        ajaxError: function (_jqXHR, _textStatus, _errorFn) {
+            App.hidePreloader();
+            if (_errorFn != undefined) {
+                _errorFn(_jqXHR);
+            }
+            else if (_textStatus != 'parsererror' && _jqXHR.status != 500) {
+                App.alert("error", 'Error', _jqXHR.responseText);
+            }
+            else {
+                App.alert("error", 'Unexpected error occur', 'Ooops!');
+            }
+        },
+        alert: function (_type, _message, _title, _urlRedirect) {
+            /*_type: value should be any of the following: success, warning, info, error
+             _title: optional if you dont want to show title for the alert box
+             _urlRedirect: used to delay the message after redirect to URL*/
+            if (_urlRedirect != undefined) {
+                localStorage.setItem("toastrMsg",
+                    JSON.stringify({
+                        type: _type,
+                        title: _title,
+                        message: _message
+                    }));
+
+                window.location.replace(_urlRedirect);
+            }
+            else {
+                if (_title != undefined) {
+                    window.toastr[_type](_message, _title);
+                }
+                else {
+                    window.toastr[_type](_message);
+                }
+            }
+        },
+        showValidationMessage: function (validationMessage) {
+            if (validationMessage.length > 0) {
+                let message = "";
+
+                for (let value of validationMessage) {
+                    message += value + "<br/>";
+                }
+
+                App.alert("error", message, "Validation Summary");
+            }
+        },
+        showPreloader: function () {
+            let preloader = $("#divPreloader");
+            preloader.removeAttr("style");
+            preloader.children().removeAttr("style");
+        },
+        hidePreloader: function () {
+            setTimeout(function () {
+                let preloader = $("#divPreloader");
+
+                if (preloader) {
+                    preloader.css('height', 0);
+                    setTimeout(function () {
+                        preloader.children().hide();
+                    }, 200);
+                }
+            }, 200);
+        },
+
+        dateSinglePicker: function (controlSelector) {
+            $(controlSelector).daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                minYear: 1901
+            });
+        },
+
+        checkboxvalue : function (controlSelector) {
+            $(controlSelector).on('change', function () {
+                if ($(this).is(':checked')) {
+                    $(this).val('true');
+                } else {
+                    $(this).val('false');
+                }
+            });
+        },
+
+        dateRangePicker: function (controlSelector) {
+            $(controlSelector).daterangepicker({
+                timePicker: false,
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: AppConstant.dateFormat
+                },
+                ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'This Year': [moment().startOf('year'), moment().endOf('year')]
+                }
+            });
+            $(controlSelector).on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format(AppConstant.dateFormat) + ' - ' + picker.endDate.format(AppConstant.dateFormat));
+            });
+        },
+        multiSelect2: function (controlSelector) {
+            $(controlSelector).select2({
+                theme: 'bootstrap4',
+                width: '100%',
+            });
+
+            $(controlSelector).on("select2:unselect", function (evt) {
+                if (!evt.params.originalEvent) {
+                    return;
+                }
+
+                evt.params.originalEvent.stopPropagation();
+            });
+        },
+        singleSelect2: function (controlSelector, hideSearchBox) {
+            if (hideSearchBox) {
+                $(controlSelector).select2({
+                    theme: 'bootstrap4',
+                    width: '100%',
+                    minimumResultsForSearch: 'Infinity'
+                });
+            }
+            else {
+                $(controlSelector).select2({
+                    theme: 'bootstrap4',
+                    width: '100%'
+                });
+            }
+        },
+        requiredTextValidator: function (value, message, control, validationMessages) {
+            if (value == "") {
+                validationMessages.push(message);
+                control.addClass("is-invalid");
+            }
+            return validationMessages;
+        },
+        requiredSingleSelectValidator: function (value, message, control, validationMessages) {
+            if (value == "" || value == 0) {
+                validationMessages.push(message);
+                control.addClass("is-invalid");
+            }
+            return validationMessages;
+        }
+    }
+}();

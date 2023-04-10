@@ -1,0 +1,37 @@
+﻿@using WebApp.Extensions;
+<ul class="navbar-nav ml-auto">
+    @{
+        List<string> applicationRoleNames = User.ApplicationRoleName();
+    }
+
+    @if (applicationRoleNames.Count() > 1)
+    {
+        <li class="nav-item d-none d-lg-block">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <em class="fa fa-user"></em> @User.FindFirst("name").Value (@applicationRoleNames.Count() Roles)
+            </a>
+            <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                @foreach (string roleName in applicationRoleNames)
+                {
+                    <span class="dropdown-item">@roleName</span>
+                }
+            </div>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item d-none d-lg-block">
+            <span class="nav-link">
+                @if (applicationRoleNames.Any())
+                {
+                    <em class="fa fa-user"></em><span> @User.FindFirst("name")?.Value (@applicationRoleNames.FirstOrDefault())</span>
+                }
+                else
+                {
+                    <em class="fa fa-user"></em><span> @User.FindFirst("name")?.Value</span>
+                }
+            </span>
+        </li>
+    }
+
+</ul>

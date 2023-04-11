@@ -1,13 +1,13 @@
 ﻿@using Common.Constants;
 @using WebApp.Extensions;
 
-@{
+@*@{
     List<string> applicationRoleNames = User.ApplicationRoleName();
-}
+}*@
 
 <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        @if (applicationRoleNames.Any(rn => rn == RoleConstant.Support))
+        @*@if (applicationRoleNames.Any(rn => rn == RoleConstant.Support))
         {
             <li class="nav-item menu-open">
                 <a href="#" class="nav-link">
@@ -26,7 +26,7 @@
                     </li>
                 </ul>
             </li>
-        }
+        }*@
         <li class="nav-item menu-open">
             <a href="#" class="nav-link">
                 <em class="nav-icon fa fa-book"></em>

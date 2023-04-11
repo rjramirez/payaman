@@ -1,6 +1,7 @@
-namespace WebAPI.Authorization;
+namespace DataAccess.Authorization;
 
 using DataAccess.DBContexts.PayamanDB.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

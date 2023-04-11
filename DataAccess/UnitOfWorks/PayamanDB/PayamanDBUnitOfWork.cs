@@ -1,26 +1,27 @@
 ﻿using Common.DataTransferObjects.AuditTrail;
-using DataAccess.DBContexts.ProjectTemplateDB;
-using DataAccess.Repositories.ProjectTemplateDB;
-using DataAccess.Repositories.ProjectTemplateDB.Interfaces;
+using DataAccess.DBContexts.PayamanDB;
+using DataAccess.Repositories.PayamanDB;
+using DataAccess.Repositories.PayamanDB.Interfaces;
 using DataAccess.Services.Interfaces;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace DataAccess.UnitOfWorks.ProjectTemplateDB
+namespace DataAccess.UnitOfWorks.PayamanDB
 {
-    public sealed class ProjectTemplateDBUnitOfWork : IProjectTemplateDBUnitOfWork
+    public sealed class PayamanDBUnitOfWork : IPayamanDBUnitOfWork
     {
-        private readonly ProjectTemplateDBContext _context;
+        private readonly PayamanDBContext _context;
         private readonly IDbContextChangeTrackingService _dbContextChangeTrackingService;
-        public ProjectTemplateDBUnitOfWork(ProjectTemplateDBContext context, IDbContextChangeTrackingService dbContextChangeTrackingService)
+        public PayamanDBUnitOfWork(PayamanDBContext context, IDbContextChangeTrackingService dbContextChangeTrackingService)
         {
             _context = context;
             _dbContextChangeTrackingService = dbContextChangeTrackingService;
+            AppUserRepository = new AppUserRepository(_context);
             ErrorLogRepository = new ErrorLogRepository(_context);
             AuditTrailRepository = new AuditTrailRepository(_context);
         }
 
+        public IAppUserRepository AppUserRepository { get; private set; }
         public IErrorLogRepository ErrorLogRepository { get; private set; }
-
         public IAuditTrailRepository AuditTrailRepository { get; private set; }
 
         public void Dispose()

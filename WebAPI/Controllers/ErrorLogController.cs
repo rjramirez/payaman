@@ -2,8 +2,8 @@
 using Common.DataTransferObjects.CollectionPaging;
 using Common.DataTransferObjects.CommonSearch;
 using Common.DataTransferObjects.ErrorLog;
-using DataAccess.DBContexts.ProjectTemplateDB.Models;
-using DataAccess.UnitOfWorks.ProjectTemplateDB;
+using DataAccess.DBContexts.PayamanDB.Models;
+using DataAccess.UnitOfWorks.PayamanDB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -15,10 +15,10 @@ namespace WebAPI.Controllers
     [Authorize(Policy = "SystemLog")]
     public class ErrorLogController : ControllerBase
     {
-        private readonly IProjectTemplateDBUnitOfWork _projectTemplateDBUnitOfWork;
-        public ErrorLogController(IProjectTemplateDBUnitOfWork projectTemplateDBUnitOfWork)
+        private readonly IPayamanDBUnitOfWork _PayamanDBUnitOfWork;
+        public ErrorLogController(IPayamanDBUnitOfWork PayamanDBUnitOfWork)
         {
-            _projectTemplateDBUnitOfWork = projectTemplateDBUnitOfWork;
+            _PayamanDBUnitOfWork = PayamanDBUnitOfWork;
         }
 
         [HttpPost]
@@ -37,8 +37,8 @@ namespace WebAPI.Controllers
                 UserIdentity = saveErrorLog.UserIdentity
             };
 
-            await _projectTemplateDBUnitOfWork.ErrorLogRepository.AddAsync(errorLog);
-            await _projectTemplateDBUnitOfWork.SaveChangesAsync(saveErrorLog.UserIdentity);
+            await _PayamanDBUnitOfWork.ErrorLogRepository.AddAsync(errorLog);
+            await _PayamanDBUnitOfWork.SaveChangesAsync(saveErrorLog.UserIdentity);
 
             return Ok();
         }
@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Get Error details by ID")]
         public async Task<ActionResult<ErrorLogDetail>> Get(int id)
         {
-            ErrorLogDetail errorLogDetail = await _projectTemplateDBUnitOfWork.ErrorLogRepository.
+            ErrorLogDetail errorLogDetail = await _PayamanDBUnitOfWork.ErrorLogRepository.
                 FirstOrDefaultAsync(selector: e => new ErrorLogDetail()
                 {
                     BuildVersion = e.BuildVersion,
@@ -77,7 +77,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Search Error Log with Paging")]
         public async Task<ActionResult<PagedList<ErrorLogDetail>>> Search([FromQuery] CommonSearchFilter commonSearchFilter)
         {
-            PagedList<ErrorLogDetail> errorLogDetails = await _projectTemplateDBUnitOfWork.ErrorLogRepository.GetPagedListAsync(
+            PagedList<ErrorLogDetail> errorLogDetails = await _PayamanDBUnitOfWork.ErrorLogRepository.GetPagedListAsync(
                 selector: e => new ErrorLogDetail()
                 {
                     ErrorId = e.ErrorId,

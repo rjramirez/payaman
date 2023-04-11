@@ -3,7 +3,7 @@ using Common.DataTransferObjects.AuditTrail;
 using Common.DataTransferObjects.CollectionPaging;
 using Common.DataTransferObjects.CommonSearch;
 using Common.DataTransferObjects.ErrorLog;
-using DataAccess.UnitOfWorks.ProjectTemplateDB;
+using DataAccess.UnitOfWorks.PayamanDB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -16,10 +16,10 @@ namespace WebAPI.Controllers
     [ApiVersion("1.0")]
     public class AuditTrailController : ControllerBase
     {
-        private readonly IProjectTemplateDBUnitOfWork _projectTemplateDBUnitOfWork;
-        public AuditTrailController(IProjectTemplateDBUnitOfWork projectTemplateDBUnitOfWork)
+        private readonly IPayamanDBUnitOfWork _PayamanDBUnitOfWork;
+        public AuditTrailController(IPayamanDBUnitOfWork PayamanDBUnitOfWork)
         {
-            _projectTemplateDBUnitOfWork = projectTemplateDBUnitOfWork;
+            _PayamanDBUnitOfWork = PayamanDBUnitOfWork;
         }
 
         [HttpGet]
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Search Audit Trail with Paging")]
         public async Task<ActionResult<PagedList<AuditTrailLog>>> Search([FromQuery] CommonSearchFilter commonSearchFilter)
         {
-            PagedList<AuditTrailLog> auditTrailLogs = await _projectTemplateDBUnitOfWork.AuditTrailRepository.GetPagedListAsync(
+            PagedList<AuditTrailLog> auditTrailLogs = await _PayamanDBUnitOfWork.AuditTrailRepository.GetPagedListAsync(
                 selector: a => new AuditTrailLog()
                 {
                     AuditTrailId = a.AuditTrailId,
@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
         public async Task<ActionResult<AuditTrailLogDetail>> Get(long id)
         {
 
-            AuditTrailLogDetail auditTrailLogDetail = await _projectTemplateDBUnitOfWork.AuditTrailRepository.SingleOrDefaultAsync(
+            AuditTrailLogDetail auditTrailLogDetail = await _PayamanDBUnitOfWork.AuditTrailRepository.SingleOrDefaultAsync(
                 selector: a => new AuditTrailLogDetail()
                 {
                     AuditTrailId = a.AuditTrailId,

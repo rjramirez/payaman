@@ -1,47 +1,36 @@
-﻿namespace WebApi.Services;
+﻿namespace DataAccess.Services;
 
 using AutoMapper;
 using BCrypt.Net;
+using DataAccess.Authorization;
+using DataAccess.DBContexts.PayamanDB;
 using DataAccess.DBContexts.PayamanDB.Models;
-using WebApi.Authorization;
-using WebApi.Entities;
-using WebApi.Helpers;
-using WebApi.Models.Users;
-using WebAPI.Authorization;
-
-public interface IUserService
-{
-    AuthenticateResponse Authenticate(AuthenticateRequest model);
-    IEnumerable<AppUser> GetAll();
-    User GetById(int id);
-    void Register(RegisterRequest model);
-    void Update(int id, UpdateRequest model);
-    void Delete(int id);
-}
+using DataAccess.Services.Interfaces;
+using Common.DataTransferObjects.AppUser;
 
 public class UserService : IUserService
 {
-    private DataContext _context;
     private IJwtUtils _jwtUtils;
     private readonly IMapper _mapper;
+    private readonly PayamanDBContext _context;
 
     public UserService(
-        DataContext context,
         IJwtUtils jwtUtils,
-        IMapper mapper)
+        IMapper mapper,
+        PayamanDBContext context)
     {
-        _context = context;
         _jwtUtils = jwtUtils;
         _mapper = mapper;
+        _context = context;
     }
 
     public AuthenticateResponse Authenticate(AuthenticateRequest model)
     {
-        var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
+        var user = _context.AppUsers.SingleOrDefault(x => x.UserName == model.Username);
 
         // validate
         if (user == null || !BCrypt.Verify(model.Password, user.PasswordHash))
-            throw new AppException("Username or password is incorrect");
+            throw new Exception("Username or password is incorrect");
 
         // authentication successful
         var response = _mapper.Map<AuthenticateResponse>(user);
@@ -49,12 +38,12 @@ public class UserService : IUserService
         return response;
     }
 
-    public IEnumerable<User> GetAll()
+    public IEnumerable<AppUser> GetAll()
     {
-        return _context.Users;
+        return _context.AppUsers;
     }
 
-    public User GetById(int id)
+    public AppUser GetById(int id)
     {
         return getUser(id);
     }
@@ -62,17 +51,17 @@ public class UserService : IUserService
     public void Register(RegisterRequest model)
     {
         // validate
-        if (_context.Users.Any(x => x.Username == model.Username))
-            throw new AppException("Username '" + model.Username + "' is already taken");
+        if (_context.AppUsers.Any(x => x.UserName == model.Username))
+            throw new Exception("Username '" + model.Username + "' is already taken");
 
         // map model to new user object
-        var user = _mapper.Map<User>(model);
+        var user = _mapper.Map<AppUser>(model);
 
         // hash password
         user.PasswordHash = BCrypt.HashPassword(model.Password);
 
         // save user
-        _context.Users.Add(user);
+        _context.AppUsers.Add(user);
         _context.SaveChanges();
     }
 
@@ -81,8 +70,8 @@ public class UserService : IUserService
         var user = getUser(id);
 
         // validate
-        if (model.Username != user.Username && _context.Users.Any(x => x.Username == model.Username))
-            throw new AppException("Username '" + model.Username + "' is already taken");
+        if (model.Username != user.UserName && _context.AppUsers.Any(x => x.UserName == model.Username))
+            throw new Exception("Username '" + model.Username + "' is already taken");
 
         // hash password if it was entered
         if (!string.IsNullOrEmpty(model.Password))
@@ -90,14 +79,14 @@ public class UserService : IUserService
 
         // copy model to user and save
         _mapper.Map(model, user);
-        _context.Users.Update(user);
+        _context.AppUsers.Update(user);
         _context.SaveChanges();
     }
 
     public void Delete(int id)
     {
         var user = getUser(id);
-        _context.Users.Remove(user);
+        _context.AppUsers.Remove(user);
         _context.SaveChanges();
     }
 
@@ -105,7 +94,7 @@ public class UserService : IUserService
 
     private AppUser getUser(int id)
     {
-        var user = _context.Users.Find(id);
+        var user = _context.AppUsers.Find(id);
         if (user == null) throw new KeyNotFoundException("User not found");
         return user;
     }

@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.DBContexts.ProjectTemplateDB.Models
+namespace DataAccess.DBContexts.PayamanDB.Models
 {
     [Table("AuditTrail")]
     public partial class AuditTrail

@@ -1,1 +1,0 @@
-﻿ Scaffold-DbContext "Server=PHMN13DEVSQL002;Database=ProjectTemplateDB;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -DataAnnotations -OutputDir DBContexts/ProjectTemplateDB/Models -ContextDir DBContexts/ProjectTemplateDB -Context ProjectTemplateDBContext -Tables AuditTrail, AuditTrailDetail, ErrorLog -Force

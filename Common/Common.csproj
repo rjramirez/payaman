@@ -9,12 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\AutoMapperProfile.cs" />
+    <Compile Remove="Helpers\DataContext.cs" />
+    <Compile Remove="Helpers\SqliteDataContext.cs" />
+  </ItemGroup>
+	
+  <ItemGroup>
     <Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>

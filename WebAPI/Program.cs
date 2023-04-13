@@ -1,5 +1,4 @@
 using ApiConfiguration;
-using Microsoft.AspNetCore.Authorization;
 using WebAPI.Authorization;
 using WebAPI.Helpers;
 using Common.DataTransferObjects.AppSettings;

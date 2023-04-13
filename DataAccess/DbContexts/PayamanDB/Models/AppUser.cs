@@ -1,5 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DBContexts.PayamanDB.Models
 {
@@ -7,20 +10,16 @@ namespace DataAccess.DBContexts.PayamanDB.Models
     public partial class AppUser
     {
         [Key]
-        [Column("AppUserID")]
-        public short AppUserId { get; set; }
+        public int Id { get; set; }
         [Required]
-        [StringLength(30)]
-        public string UserName { get; set; }
+        [StringLength(50)]
+        public string FirstName { get; set; }
+        [StringLength(50)]
+        public string LastName { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string Username { get; set; }
         [Required]
         public string PasswordHash { get; set; }
-        [StringLength(100)]
-        public string ImageFileName { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        [StringLength(128)]
-        public string CreatedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
-        [StringLength(128)]
-        public string ModifiedBy { get; set; }
     }
 }

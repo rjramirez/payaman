@@ -8,6 +8,7 @@ namespace DataAccess.DBContexts.PayamanDB
 {
     public partial class PayamanDBContext : DbContext
     {
+
         public PayamanDBContext(DbContextOptions<PayamanDBContext> options)
             : base(options)
         {

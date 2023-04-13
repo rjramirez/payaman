@@ -15,18 +15,19 @@ namespace ApiConfiguration
     {
         public static void ConfigureServices(IServiceCollection services, IdentityServerApiDefinition identityServerApiDefinition)
         {
+            services.AddCors();
             services.AddControllers();
 
             //Identity Server Authorization
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", config =>
-                {
-                    config.Authority = identityServerApiDefinition.Authority;
-                    config.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidAudience = identityServerApiDefinition.ApiName,
-                    };
-                });
+            //services.AddAuthentication("Bearer")
+            //    .AddJwtBearer("Bearer", config =>
+            //    {
+            //        config.Authority = identityServerApiDefinition.Authority;
+            //        config.TokenValidationParameters = new TokenValidationParameters
+            //        {
+            //            ValidAudience = identityServerApiDefinition.ApiName,
+            //        };
+            //    });
 
             //Api Versioning
             services.AddApiVersioning(cfg =>

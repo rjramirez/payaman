@@ -32,7 +32,7 @@ namespace DataAccess.DBContexts.PayamanDB.Models
         [StringLength(128)]
         public string ModifiedBy { get; set; }
 
-        [InverseProperty(nameof(Order.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

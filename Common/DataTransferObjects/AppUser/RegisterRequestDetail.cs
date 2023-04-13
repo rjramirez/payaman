@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Common.DataTransferObjects.AppUser
 {
-    public class RegisterRequest
+    public class RegisterRequestDetail
     {
         [Required]
         public string FirstName { get; set; }
@@ -11,7 +11,7 @@ namespace Common.DataTransferObjects.AppUser
         public string LastName { get; set; }
 
         [Required]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         public string Password { get; set; }

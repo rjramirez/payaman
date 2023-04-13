@@ -1,6 +1,6 @@
 using ApiConfiguration;
 using Microsoft.AspNetCore.Authorization;
-using WebAPI.Authorization;
+//using WebAPI.Authorization;
 using WebAPI.Helpers;
 using Common.DataTransferObjects.AppSettings;
 
@@ -18,11 +18,23 @@ using WebAPI.Services.Interfaces;
 using DataAccess.Authorization;
 using WebApi.Helpers;
 using DataAccess.UnitOfWorks.PayamanDB;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System;
+using DataAccess.DBContexts.PayamanDB.Models;
+using Common.DataTransferObjects.AppUser;
 
 
 /*SERVICES CONTAINER*/
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
+
+// configure strongly typed settings object
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
 
 /* Identity Server */
 IdentityServerApiDefinition identityServerApiDefinition = new();
@@ -40,6 +52,8 @@ ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 //    });
 //});
 
+
+
 //DBContext Registration
 builder.Services.AddDbContextPool<PayamanDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("PayamanDB")));
 
@@ -54,34 +68,57 @@ builder.Services.AddScoped<IDbContextChangeTrackingService, DbContextChangeTrack
 // configure automapper with all automapper profiles from this assembly
 builder.Services.AddAutoMapper(typeof(Program));
 
-// configure DI for application services
-builder.Services.AddScoped<IJwtUtils, JwtUtils>();
-builder.Services.AddScoped<IUserService, UserService>();
 
-// configure strongly typed settings object
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+// 2. Identity
+builder.Services.AddIdentity<UserDetail, IdentityRole>()
+    .AddEntityFrameworkStores<PayamanDBContext>()
+    .AddDefaultTokenProviders();
+
+// 3. Adding Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+
+// 4. Adding Jwt Bearer
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = configuration["JWT:ValidAudience"],
+            ValidIssuer = configuration["JWT:ValidIssuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+        };
+    });
+
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// 5. Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowPayamanClient",
+        b =>
+        {
+            b
+                .WithOrigins("http://localhost:7020")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
 
 
 /*HTTP REQUEST PIPELINE*/
 var app = builder.Build();
 
-
-// configure HTTP request pipeline
-{
-    // global cors policy
-    app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
-
-    // global error handler
-    app.UseMiddleware<ErrorHandlerMiddleware>();
-
-    // custom jwt auth middleware
-    app.UseMiddleware<JwtMiddleware>();
-
-    app.MapControllers();
-}
 
 app.UseExceptionHandler(errorLogger =>
 {
@@ -107,10 +144,16 @@ app.UseSwaggerUI(options =>
     }
 });
 
+//7. Use CORS
+app.UseCors("AllowPayamanClient");
+
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// 8. Authentication
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
@@ -126,6 +169,7 @@ app.UseEndpoints(endpoints =>
             VersionDetail.DisplayVersion()));
     });
 });
+
 
 app.Run();
 

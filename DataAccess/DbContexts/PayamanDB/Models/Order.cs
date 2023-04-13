@@ -29,7 +29,7 @@ namespace DataAccess.DBContexts.PayamanDB.Models
         [StringLength(128)]
         public string ModifiedBy { get; set; }
 
-        [ForeignKey(nameof(ProductId))]
+        [ForeignKey("ProductId")]
         [InverseProperty("Orders")]
         public virtual Product Product { get; set; }
     }

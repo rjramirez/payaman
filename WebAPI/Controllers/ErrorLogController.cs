@@ -12,7 +12,8 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "SystemLog")]
+    [Authorize]
+    //[Authorize(Policy = "SystemLog")]
     public class ErrorLogController : ControllerBase
     {
         private readonly IPayamanDBUnitOfWork _PayamanDBUnitOfWork;

@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Common.DataTransferObjects.AppUser
 {
-    public class AuthenticateRequest
+    public class AuthenticateRequestDetail
     {
         [Required]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         public string Password { get; set; }

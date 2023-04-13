@@ -21,7 +21,7 @@ namespace DataAccess.DBContexts.PayamanDB.Models
         public string TransactionBy { get; set; }
         public DateTime TransactionDate { get; set; }
 
-        [InverseProperty(nameof(AuditTrailDetail.AuditTrail))]
+        [InverseProperty("AuditTrail")]
         public virtual ICollection<AuditTrailDetail> AuditTrailDetails { get; set; }
     }
 }

@@ -9,9 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Authorization\JwtMiddleware.cs" />
+    <Compile Remove="Helpers\AutoMapperProfile.cs" />
     <Compile Remove="Helpers\DataContext.cs" />
     <Compile Remove="Helpers\ErrorHandlerMiddleware.cs" />
     <Compile Remove="Helpers\SqliteDataContext.cs" />
+    <Compile Remove="Services\Interfaces\IUserService.cs" />
+    <Compile Remove="Services\UserService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +38,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

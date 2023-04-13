@@ -25,7 +25,7 @@ namespace DataAccess.DBContexts.PayamanDB.Models
         [StringLength(20)]
         public string Action { get; set; }
 
-        [ForeignKey(nameof(AuditTrailId))]
+        [ForeignKey("AuditTrailId")]
         [InverseProperty("AuditTrailDetails")]
         public virtual AuditTrail AuditTrail { get; set; }
     }

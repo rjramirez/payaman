@@ -1,7 +1,7 @@
-﻿using DataAccess.DBContexts.PayamanDB.Models;
+﻿using DataAccess.DBContexts.RITSDB.Models;
 using DataAccess.Repositories.Base;
 
-namespace DataAccess.Repositories.PayamanDB.Interfaces
+namespace DataAccess.Repositories.RITSDB.Interfaces
 {
     public interface IAuditTrailRepository : IBaseRepository<AuditTrail>
     {

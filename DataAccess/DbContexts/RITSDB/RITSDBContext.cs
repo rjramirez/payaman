@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using DataAccess.DBContexts.PayamanDB.Models;
+using DataAccess.DBContexts.RITSDB.Models;
 
-namespace DataAccess.DBContexts.PayamanDB
+namespace DataAccess.DBContexts.RITSDB
 {
-    public partial class PayamanDBContext : DbContext
+    public partial class RITSDBContext : DbContext
     {
 
-        public PayamanDBContext(DbContextOptions<PayamanDBContext> options)
+        public RITSDBContext(DbContextOptions<RITSDBContext> options)
             : base(options)
         {
         }
@@ -25,7 +25,7 @@ namespace DataAccess.DBContexts.PayamanDB
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-44OTDTM\\SQLEXPRESS;Database=payaman;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-44OTDTM\\SQLEXPRESS;Database=rits;Trusted_Connection=True;");
             }
         }
 

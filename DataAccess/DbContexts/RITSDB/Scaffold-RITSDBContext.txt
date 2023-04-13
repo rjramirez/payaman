@@ -1,0 +1,1 @@
+﻿ Scaffold-DbContext "Server=DESKTOP-44OTDTM\SQLEXPRESS;Database=rits;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -DataAnnotations -OutputDir DBContexts/RITSDB/Models -ContextDir DBContexts/RITSDB -Context RITSDBContext -Tables AppUser, Order, Product, AuditTrail, AuditTrailDetail, ErrorLog -Force

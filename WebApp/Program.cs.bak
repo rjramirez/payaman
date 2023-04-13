@@ -19,11 +19,11 @@ builder.Services.AddSingleton(apiResourceUrl);
 builder.Services.AddSingleton<IdentityServerTokenDetail>();
 builder.Services.AddTransient<IdentityServerTokenHandler>();
 
-builder.Services.AddHttpClient("PayamanApiClient", opt =>
+builder.Services.AddHttpClient("RITSApiClient", opt =>
 {
     opt.Timeout = TimeSpan.FromMinutes(5);
     //TODO: Rename base URL
-    opt.BaseAddress = new Uri(apiResourceUrl.PayamanApiBaseUrl);
+    opt.BaseAddress = new Uri(apiResourceUrl.RITSApiBaseUrl);
 }).AddHttpMessageHandler<IdentityServerTokenHandler>();
 
 AzureAdClientDefinition azureAdClientDefinition = new();

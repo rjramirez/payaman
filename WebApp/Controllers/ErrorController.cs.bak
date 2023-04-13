@@ -35,7 +35,7 @@ namespace WebApp.Controllers
                      $"PageNumber={commonSearchFilter.PageNumber}&PageSize={commonSearchFilter.PageSize}&" +
                      $"SearchKeyword={commonSearchFilter.SearchKeyword}";
 
-            HttpClient httpClient = _httpClientFactory.CreateClient("PayamanApiClient");
+            HttpClient httpClient = _httpClientFactory.CreateClient("RITSApiClient");
             HttpResponseMessage response = await httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
@@ -61,7 +61,7 @@ namespace WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
-            HttpClient client = _httpClientFactory.CreateClient("PayamanApiClient");
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             var response = await client.GetAsync($"api/ErrorLog/{id}");
 
             if (response.IsSuccessStatusCode)
@@ -96,7 +96,7 @@ namespace WebApp.Controllers
         {
             string user = User.Identity.Name;
 
-            HttpClient client = _httpClientFactory.CreateClient("PayamanApiClient");
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             IExceptionHandlerPathFeature context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
             SaveErrorLog saveErrorLog = new()

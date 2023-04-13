@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.DBContexts.PayamanDB.Models
+namespace DataAccess.DBContexts.RITSDB.Models
 {
     [Table("AppUser")]
     public partial class AppUser
@@ -20,6 +20,6 @@ namespace DataAccess.DBContexts.PayamanDB.Models
         [StringLength(20)]
         public string Username { get; set; }
         [Required]
-        public string PasswordHash { get; set; }
+        public string Password { get; set; }
     }
 }

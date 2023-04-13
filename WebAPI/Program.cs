@@ -6,7 +6,7 @@ using Common.DataTransferObjects.AppSettings;
 using Common.Constants;
 using Common.DataTransferObjects.ErrorLog;
 using Common.DataTransferObjects.Version;
-using DataAccess.DBContexts.PayamanDB;
+using DataAccess.DBContexts.RITSDB;
 using DataAccess.Services;
 using DataAccess.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -16,7 +16,7 @@ using WebAPI.Services;
 using WebAPI.Services.Interfaces;
 using DataAccess.Authorization;
 using WebApi.Helpers;
-using DataAccess.UnitOfWorks.PayamanDB;
+using DataAccess.UnitOfWorks.RITSDB;
 
 
 /*SERVICES CONTAINER*/
@@ -35,15 +35,15 @@ ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 //{
 //    options.AddPolicy("SystemLog", builder =>
 //    {
-//        builder.RequireScope("PayamanApi.SystemLog");
+//        builder.RequireScope("RITSApi.SystemLog");
 //    });
 //});
 
 //DBContext Registration
-builder.Services.AddDbContextPool<PayamanDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("PayamanDB")));
+builder.Services.AddDbContextPool<RITSDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB")));
 
 //UoW Registration
-builder.Services.AddScoped<IPayamanDBUnitOfWork, PayamanDBUnitOfWork>();
+builder.Services.AddScoped<IRITSDBUnitOfWork, RITSDBUnitOfWork>();
 
 //Internal Service Registration
 builder.Services.AddScoped<IErrorLogService, ErrorLogService>();

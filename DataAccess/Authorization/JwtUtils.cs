@@ -1,6 +1,6 @@
 namespace DataAccess.Authorization;
-
-using DataAccess.DBContexts.PayamanDB.Models;
+using Common.Entities;
+using DataAccess.DBContexts.RITSDB.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

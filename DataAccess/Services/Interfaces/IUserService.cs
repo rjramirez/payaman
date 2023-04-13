@@ -1,5 +1,6 @@
 ﻿using Common.DataTransferObjects.AppUser;
-using DataAccess.DBContexts.PayamanDB.Models;
+using Common.Entities;
+using DataAccess.DBContexts.RITSDB.Models;
 
 namespace DataAccess.Services.Interfaces
 {

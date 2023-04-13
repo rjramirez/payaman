@@ -1,7 +1,7 @@
 ﻿using Common.Constants;
 using Common.DataTransferObjects.ErrorLog;
-using DataAccess.DBContexts.PayamanDB.Models;
-using DataAccess.UnitOfWorks.PayamanDB;
+using DataAccess.DBContexts.RITSDB.Models;
+using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Data.SqlClient;
 using WebAPI.Services.Interfaces;
@@ -10,11 +10,11 @@ namespace WebAPI.Services
 {
     public class ErrorLogService : IErrorLogService
     {
-        private readonly IPayamanDBUnitOfWork _PayamanDBUnitOfWork;
+        private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;
 
-        public ErrorLogService(IPayamanDBUnitOfWork oatsDBUnitOfWork)
+        public ErrorLogService(IRITSDBUnitOfWork oatsDBUnitOfWork)
         {
-            _PayamanDBUnitOfWork = oatsDBUnitOfWork;
+            _RITSDBUnitOfWork = oatsDBUnitOfWork;
         }
 
         public async Task<ErrorMessage> LogApiError(HttpContext context)
@@ -43,8 +43,8 @@ namespace WebAPI.Services
                 DateCreated = DateTime.Now
             };
 
-            await _PayamanDBUnitOfWork.ErrorLogRepository.AddAsync(errorLog);
-            await _PayamanDBUnitOfWork.SaveChangesAsync(ClaimService.GetClientId(context.User)); if (errorHandler.Error.GetType() == typeof(ArgumentException))
+            await _RITSDBUnitOfWork.ErrorLogRepository.AddAsync(errorLog);
+            await _RITSDBUnitOfWork.SaveChangesAsync(ClaimService.GetClientId(context.User)); if (errorHandler.Error.GetType() == typeof(ArgumentException))
             {
                 return new(context.TraceIdentifier, ErrorMessageTypeConstant.ArgumentException, message);
             }

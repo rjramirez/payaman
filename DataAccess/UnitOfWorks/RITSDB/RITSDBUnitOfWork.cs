@@ -1,17 +1,17 @@
 ﻿using Common.DataTransferObjects.AuditTrail;
-using DataAccess.DBContexts.PayamanDB;
-using DataAccess.Repositories.PayamanDB;
-using DataAccess.Repositories.PayamanDB.Interfaces;
+using DataAccess.DBContexts.RITSDB;
+using DataAccess.Repositories.RITSDB;
+using DataAccess.Repositories.RITSDB.Interfaces;
 using DataAccess.Services.Interfaces;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace DataAccess.UnitOfWorks.PayamanDB
+namespace DataAccess.UnitOfWorks.RITSDB
 {
-    public sealed class PayamanDBUnitOfWork : IPayamanDBUnitOfWork
+    public sealed class RITSDBUnitOfWork : IRITSDBUnitOfWork
     {
-        private readonly PayamanDBContext _context;
+        private readonly RITSDBContext _context;
         private readonly IDbContextChangeTrackingService _dbContextChangeTrackingService;
-        public PayamanDBUnitOfWork(PayamanDBContext context, IDbContextChangeTrackingService dbContextChangeTrackingService)
+        public RITSDBUnitOfWork(RITSDBContext context, IDbContextChangeTrackingService dbContextChangeTrackingService)
         {
             _context = context;
             _dbContextChangeTrackingService = dbContextChangeTrackingService;

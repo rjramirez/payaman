@@ -1,7 +1,7 @@
 ﻿using Common.Constants;
 using Common.DataTransferObjects.AuditTrail;
-using DataAccess.DBContexts.PayamanDB;
-using DataAccess.DBContexts.PayamanDB.Models;
+using DataAccess.DBContexts.RITSDB;
+using DataAccess.DBContexts.RITSDB.Models;
 using DataAccess.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -10,8 +10,8 @@ namespace DataAccess.Services
 {
     public class DbContextChangeTrackingService : IDbContextChangeTrackingService
     {
-        private readonly PayamanDBContext _context;
-        public DbContextChangeTrackingService(PayamanDBContext context)
+        private readonly RITSDBContext _context;
+        public DbContextChangeTrackingService(RITSDBContext context)
         {
             _context = context;
         }

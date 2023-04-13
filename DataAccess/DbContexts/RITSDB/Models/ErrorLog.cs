@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.DBContexts.PayamanDB.Models
+namespace DataAccess.DBContexts.RITSDB.Models
 {
     [Table("ErrorLog")]
     public partial class ErrorLog

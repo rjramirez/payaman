@@ -1,6 +1,7 @@
 namespace DataAccess.Authorization;
 
-using DataAccess.DBContexts.PayamanDB.Models;
+using Common.Entities;
+using DataAccess.DBContexts.RITSDB.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

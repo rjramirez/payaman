@@ -3,21 +3,21 @@
 using AutoMapper;
 using BCrypt.Net;
 using DataAccess.Authorization;
-using DataAccess.DBContexts.PayamanDB;
-using DataAccess.DBContexts.PayamanDB.Models;
 using DataAccess.Services.Interfaces;
 using Common.DataTransferObjects.AppUser;
+using DataAccess.DBContexts.RITSDB;
+using DataAccess.DBContexts.RITSDB.Models;
 
 public class UserService : IUserService
 {
     private IJwtUtils _jwtUtils;
     private readonly IMapper _mapper;
-    private readonly PayamanDBContext _context;
+    private readonly RITSDBContext _context;
 
     public UserService(
         IJwtUtils jwtUtils,
         IMapper mapper,
-        PayamanDBContext context)
+        RITSDBContext context)
     {
         _jwtUtils = jwtUtils;
         _mapper = mapper;
@@ -29,7 +29,7 @@ public class UserService : IUserService
         var user = _context.AppUsers.SingleOrDefault(x => x.Username == model.Username);
 
         // validate
-        if (user == null || !BCrypt.Verify(model.Password, user.PasswordHash))
+        if (user == null || !BCrypt.Verify(model.Password, user.Password))
             throw new Exception("Username or password is incorrect");
 
         // authentication successful
@@ -58,7 +58,7 @@ public class UserService : IUserService
         var user = _mapper.Map<AppUser>(model);
 
         // hash password
-        user.PasswordHash = BCrypt.HashPassword(model.Password);
+        user.Password = BCrypt.HashPassword(model.Password);
 
         // save user
         _context.AppUsers.Add(user);
@@ -75,7 +75,7 @@ public class UserService : IUserService
 
         // hash password if it was entered
         if (!string.IsNullOrEmpty(model.Password))
-            user.PasswordHash = BCrypt.HashPassword(model.Password);
+            user.Password = BCrypt.HashPassword(model.Password);
 
         // copy model to user and save
         _mapper.Map(model, user);

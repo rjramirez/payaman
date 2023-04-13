@@ -1,5 +1,4 @@
-
-namespace Common.DataTransferObjects.AppUser
+namespace Common.DataTransferObjects.AppUserDetails
 {
     public class UpdateRequest
     {

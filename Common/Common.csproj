@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Helpers\AutoMapperProfile.cs" />
     <Compile Remove="Helpers\DataContext.cs" />
     <Compile Remove="Helpers\SqliteDataContext.cs" />
   </ItemGroup>

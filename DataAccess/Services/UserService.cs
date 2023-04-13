@@ -3,7 +3,7 @@
 using AutoMapper;
 using BCrypt.Net;
 using DataAccess.Services.Interfaces;
-using Common.DataTransferObjects.AppUser;
+using Common.DataTransferObjects.AppUserDetails;
 using DataAccess.DBContexts.RITSDB;
 using DataAccess.DBContexts.RITSDB.Models;
 using DataAccess.Authorization;

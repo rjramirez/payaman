@@ -1,21 +1,20 @@
 namespace DataAccess.Helpers;
 
 using AutoMapper;
-using Common.DataTransferObjects.AppUser;
-using Common.Entities;
+using Common.DataTransferObjects.AppUserDetails;
 using DataAccess.DBContexts.RITSDB.Models;
 
-public class AutoMapperProfile : Profile
+public class AutoMapperProfileApi : Profile
 {
-    public AutoMapperProfile()
+    public AutoMapperProfileApi()
     {
-        // User -> AuthenticateResponse
+        // AppUser -> AuthenticateResponse
         CreateMap<AppUser, AuthenticateResponse>();
 
-        // RegisterRequest -> User
+        // RegisterRequest -> AppUser
         CreateMap<RegisterRequest, AppUser>();
 
-        // UpdateRequest -> User
+        // UpdateRequest -> AppUser
         CreateMap<UpdateRequest, AppUser>()
             .ForAllMembers(x => x.Condition(
                 (src, dest, prop) =>

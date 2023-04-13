@@ -1,12 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Common.DataTransferObjects.AppUserDetails;
+using Common.DataTransferObjects.ErrorLog;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using WebApp.Extensions;
 
 namespace WebApp.Controllers
 {
     public class HomeController : Controller
     {
-        public HomeController()
+        private readonly IHttpClientFactory _httpClientFactory;
+        private IMapper _mapper;
+        public HomeController(IHttpClientFactory httpClientFactory, IMapper mapper)
         {
+            _httpClientFactory = httpClientFactory;
+            _mapper = mapper;
         }
 
         public IActionResult Index()
@@ -14,9 +22,24 @@ namespace WebApp.Controllers
             return View();
         }
 
-        public IActionResult AuthenticationCallback()
+        [HttpPost]
+        public async Task<IActionResult> AuthenticationCallback([FromBody] AppUserDetail appUserDetail)
         {
-            return RedirectToAction("Index", "Home");
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var authRequest = _mapper.Map<AuthenticateRequest>(appUserDetail);
+            var response = await client.PostAsync($"api/User/authenticate", authRequest.GetStringContent());
+
+            if (response.IsSuccessStatusCode)
+            {
+                ErrorLogDetail errorLogDetail = JsonConvert.DeserializeObject<ErrorLogDetail>(await response.Content.ReadAsStringAsync());
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
+            }
+            
         }
         public IActionResult Login()
         {

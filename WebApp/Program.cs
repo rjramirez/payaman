@@ -1,7 +1,6 @@
 using ClientConfiguration.IdentityServerHandler;
 using Common.DataTransferObjects.AppSettings;
 using Common.DataTransferObjects.Token;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,6 +71,10 @@ builder.Services.AddHsts(options =>
 {
     options.MaxAge = TimeSpan.FromDays(365);
 });
+
+// configure automapper with all automapper profiles from this assembly
+builder.Services.AddAutoMapper(typeof(Program));
+
 
 /*CONFIGURE HTTP REQUEST PIPELINE*/
 var app = builder.Build();

@@ -1,4 +1,4 @@
-﻿using Common.DataTransferObjects.AppUser;
+﻿using Common.DataTransferObjects.AppUserDetails;
 using Common.Entities;
 using DataAccess.DBContexts.RITSDB.Models;
 

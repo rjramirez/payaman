@@ -1,8 +1,9 @@
+using Common.DataTransferObjects._Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace Common.DataTransferObjects.AppUser
+namespace Common.DataTransferObjects.AppUserDetails
 {
-    public class AuthenticateRequest
+    public class AuthenticateRequest : SaveDTOExtension
     {
         [Required]
         public string Username { get; set; }

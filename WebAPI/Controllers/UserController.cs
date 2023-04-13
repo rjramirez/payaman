@@ -1,23 +1,24 @@
 ﻿namespace WebAPI.Controllers;
 
 using AutoMapper;
-using Common.DataTransferObjects.AppUser;
+using Common.DataTransferObjects.AppUserDetails;
 using DataAccess.Authorization;
 using DataAccess.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Annotations;
 using WebApi.Helpers;
 
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class UsersController : ControllerBase
+public class UserController : ControllerBase
 {
     private IUserService _userService;
     private IMapper _mapper;
     private readonly AppSettings _appSettings;
 
-    public UsersController(
+    public UserController(
         IUserService userService,
         IMapper mapper,
         IOptions<AppSettings> appSettings)
@@ -29,6 +30,7 @@ public class UsersController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("authenticate")]
+    [SwaggerOperation(Summary = "Authenticate User")]
     public IActionResult Authenticate(AuthenticateRequest model)
     {
         var response = _userService.Authenticate(model);

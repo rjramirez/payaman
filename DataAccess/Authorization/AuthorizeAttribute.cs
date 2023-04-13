@@ -1,6 +1,5 @@
 namespace DataAccess.Authorization;
 
-using Common.Entities;
 using DataAccess.DBContexts.RITSDB.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

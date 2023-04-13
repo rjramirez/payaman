@@ -2,11 +2,11 @@
 
 using AutoMapper;
 using BCrypt.Net;
-using DataAccess.Authorization;
 using DataAccess.Services.Interfaces;
 using Common.DataTransferObjects.AppUser;
 using DataAccess.DBContexts.RITSDB;
 using DataAccess.DBContexts.RITSDB.Models;
+using DataAccess.Authorization;
 
 public class UserService : IUserService
 {

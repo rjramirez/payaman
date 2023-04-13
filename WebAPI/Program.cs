@@ -1,7 +1,4 @@
 using ApiConfiguration;
-using Microsoft.AspNetCore.Authorization;
-//using WebAPI.Authorization;
-using WebAPI.Helpers;
 using Common.DataTransferObjects.AppSettings;
 
 using Common.Constants;
@@ -15,16 +12,13 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebAPI.Services;
 using WebAPI.Services.Interfaces;
-using DataAccess.Authorization;
 using WebApi.Helpers;
 using DataAccess.UnitOfWorks.PayamanDB;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System;
-using DataAccess.DBContexts.PayamanDB.Models;
-using Common.DataTransferObjects.AppUser;
+using Common.Entities;
 
 
 /*SERVICES CONTAINER*/
@@ -71,7 +65,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 
 // 2. Identity
-builder.Services.AddIdentity<UserDetail, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<PayamanDBContext>()
     .AddDefaultTokenProviders();
 

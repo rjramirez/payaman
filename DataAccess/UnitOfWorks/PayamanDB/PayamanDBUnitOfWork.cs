@@ -15,12 +15,10 @@ namespace DataAccess.UnitOfWorks.PayamanDB
         {
             _context = context;
             _dbContextChangeTrackingService = dbContextChangeTrackingService;
-            AppUserRepository = new AppUserRepository(_context);
             ErrorLogRepository = new ErrorLogRepository(_context);
             AuditTrailRepository = new AuditTrailRepository(_context);
         }
 
-        public IAppUserRepository AppUserRepository { get; private set; }
         public IErrorLogRepository ErrorLogRepository { get; private set; }
         public IAuditTrailRepository AuditTrailRepository { get; private set; }
 

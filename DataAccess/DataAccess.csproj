@@ -9,7 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Authorization\JwtMiddleware.cs" />
+    <Compile Remove="Authorization\**" />
+    <Compile Remove="Repositories\PayamanDB\**" />
+    <EmbeddedResource Remove="Authorization\**" />
+    <EmbeddedResource Remove="Repositories\PayamanDB\**" />
+    <None Remove="Authorization\**" />
+    <None Remove="Repositories\PayamanDB\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Helpers\AutoMapperProfile.cs" />
     <Compile Remove="Helpers\DataContext.cs" />
     <Compile Remove="Helpers\ErrorHandlerMiddleware.cs" />
@@ -20,6 +28,10 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+    <Compile Include="Repositories\PayamanDB\AuditTrailRepository.cs" />
+    <Compile Include="Repositories\PayamanDB\ErrorLogRepository.cs" />
+    <Compile Include="Repositories\PayamanDB\Interfaces\IAuditTrailRepository.cs" />
+    <Compile Include="Repositories\PayamanDB\Interfaces\IErrorLogRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DbContexts\PayamanDB\Models\" />
     <Folder Include="Helpers\" />
   </ItemGroup>
 

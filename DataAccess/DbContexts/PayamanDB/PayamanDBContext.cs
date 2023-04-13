@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using DataAccess.DBContexts.PayamanDB.Models;
+using Common.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DataAccess.DBContexts.PayamanDB
 {
-    public partial class PayamanDBContext : DbContext
+    public partial class PayamanDBContext : IdentityDbContext<User>
     {
         public PayamanDBContext(DbContextOptions<PayamanDBContext> options)
             : base(options)
@@ -35,6 +37,8 @@ namespace DataAccess.DBContexts.PayamanDB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<AspNetUser>(entity =>
             {
                 entity.HasMany(d => d.Roles)

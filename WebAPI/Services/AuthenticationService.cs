@@ -2,9 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using Common.DataTransferObjects.AppUser;
+using Common.Entities;
+using DataAccess.DBContexts.PayamanDB.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using WebAPI.Services.Interfaces;
 
@@ -12,10 +12,10 @@ namespace WebAPI.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly UserManager<UserDetail> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
 
-    public AuthenticationService(UserManager<UserDetail> userManager, IConfiguration configuration)
+    public AuthenticationService(UserManager<User> userManager, IConfiguration configuration)
     {
         _userManager = userManager;
         _configuration = configuration;
@@ -29,7 +29,7 @@ public class AuthenticationService : IAuthenticationService
             throw new ArgumentException($"User with UserName {request.UserName} already exists.");
         }
 
-        UserDetail UserDetail = new()
+        User UserDetail = new()
         {
             UserName = request.UserName,
             SecurityStamp = Guid.NewGuid().ToString()

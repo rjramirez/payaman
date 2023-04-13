@@ -32,13 +32,13 @@ builder.Services.AddSingleton(identityServerApiDefinition);
 ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 
 //Api Policy Authorization
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("SystemLog", builder =>
-    {
-        builder.RequireScope("PayamanApi.SystemLog");
-    });
-});
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("SystemLog", builder =>
+//    {
+//        builder.RequireScope("PayamanApi.SystemLog");
+//    });
+//});
 
 //DBContext Registration
 builder.Services.AddDbContextPool<PayamanDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("PayamanDB")));

@@ -6,18 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DBContexts.RITSDB.Models
 {
-    [Table("Order")]
-    public partial class Order
+    [Table("Store")]
+    public partial class Store
     {
         [Key]
         public short Id { get; set; }
-        public short ProductId { get; set; }
-        public int Quantity { get; set; }
         [Required]
-        [StringLength(128)]
-        public string CashierId { get; set; }
-        [Column(TypeName = "decimal(10, 2)")]
-        public decimal TotalAmount { get; set; }
+        [StringLength(30)]
+        public string Name { get; set; }
+        [StringLength(20)]
+        public string Description { get; set; }
+        [StringLength(10)]
+        public string ImageName { get; set; }
         public DateTime? CreatedDate { get; set; }
         [StringLength(128)]
         public string CreatedBy { get; set; }
@@ -25,9 +25,5 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [Required]
         [StringLength(128)]
         public string ModifiedBy { get; set; }
-
-        [ForeignKey("ProductId")]
-        [InverseProperty("Orders")]
-        public virtual Product Product { get; set; }
     }
 }

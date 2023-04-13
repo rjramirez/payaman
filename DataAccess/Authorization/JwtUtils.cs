@@ -1,5 +1,5 @@
 namespace DataAccess.Authorization;
-using Common.Entities;
+
 using DataAccess.DBContexts.RITSDB.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

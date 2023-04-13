@@ -8,7 +8,6 @@ namespace DataAccess.DBContexts.RITSDB
 {
     public partial class RITSDBContext : DbContext
     {
-
         public RITSDBContext(DbContextOptions<RITSDBContext> options)
             : base(options)
         {
@@ -20,6 +19,7 @@ namespace DataAccess.DBContexts.RITSDB
         public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<Store> Stores { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -50,6 +50,11 @@ namespace DataAccess.DBContexts.RITSDB
             });
 
             modelBuilder.Entity<Product>(entity =>
+            {
+                entity.Property(e => e.ImageName).IsFixedLength();
+            });
+
+            modelBuilder.Entity<Store>(entity =>
             {
                 entity.Property(e => e.ImageName).IsFixedLength();
             });

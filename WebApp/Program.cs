@@ -23,7 +23,8 @@ builder.Services.AddHttpClient("RITSApiClient", opt =>
     opt.Timeout = TimeSpan.FromMinutes(5);
     //TODO: Rename base URL
     opt.BaseAddress = new Uri(apiResourceUrl.RITSApiBaseUrl);
-}).AddHttpMessageHandler<IdentityServerTokenHandler>();
+});
+    //.AddHttpMessageHandler<IdentityServerTokenHandler>();
 
 AzureAdClientDefinition azureAdClientDefinition = new();
 builder.Configuration.Bind("AzureAdClientDefinition", azureAdClientDefinition);

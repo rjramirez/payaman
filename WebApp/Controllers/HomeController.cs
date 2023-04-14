@@ -28,16 +28,20 @@ namespace WebApp.Controllers
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
             var authRequest = _mapper.Map<AuthenticateRequest>(appUserDetail);
-            var response = await client.PostAsync($"api/User/authenticate", authRequest.GetStringContent());
+            var response = await client.PostAsync($"api/User/Authenticate", authRequest.GetStringContent());
 
             if (response.IsSuccessStatusCode)
             {
-                ErrorLogDetail errorLogDetail = JsonConvert.DeserializeObject<ErrorLogDetail>(await response.Content.ReadAsStringAsync());
                 return RedirectToAction("Index", "Home");
             }
             else
             {
-                return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
+                var responseFail = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                if (responseFail == null)
+                {
+                    responseFail = "Username or password is incorrect";
+                }
+                return PartialView("~/Views/Home/Login.cshtml", responseFail);
             }
             
         }

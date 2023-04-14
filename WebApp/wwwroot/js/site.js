@@ -108,6 +108,22 @@ var App = function () {
                 }
             }
         },
+        addButtonSpinner: function (buttonId) {
+            $(buttonId).attr("data-original-text", $(buttonId).html());
+            $(buttonId).prop("disabled", true);
+            $(buttonId).html('<i class="spinner-border spinner-border-sm"></i> Loading...');
+        },
+        removeButtonSpinner: function (buttonId) {
+            $(buttonId).prop("disabled", false);
+            $(buttonId).html($(buttonId).attr("data-original-text"));
+        },
+        addBoxSpinner: function (boxId) {
+            let boxSpinnerElement = '<div class="overlay"><span class="fa fa-sync-alt fa-spin"></span></div>';
+            $(boxId).prepend(boxSpinnerElement);
+        },
+        removeBoxSpinner: function (boxid) {
+            $(boxid).find('.overlay:first-child').remove();
+        },
         showValidationMessage: function (validationMessage) {
             if (validationMessage.length > 0) {
                 let message = "";

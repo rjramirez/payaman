@@ -1,44 +1,36 @@
 ﻿namespace WebAPI.Controllers;
 
-using AutoMapper;
 using Common.DataTransferObjects.AppUserDetails;
 using DataAccess.Authorization;
 using DataAccess.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
-using WebApi.Helpers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class UserController : ControllerBase
 {
     private IUserService _userService;
-    private IMapper _mapper;
-    private readonly AppSettings _appSettings;
 
     public UserController(
-        IUserService userService,
-        IMapper mapper,
-        IOptions<AppSettings> appSettings)
+        IUserService userService)
     {
         _userService = userService;
-        _mapper = mapper;
-        _appSettings = appSettings.Value;
     }
 
     [AllowAnonymous]
-    [HttpPost("authenticate")]
+    [HttpPost("Authenticate")]
     [SwaggerOperation(Summary = "Authenticate User")]
-    public IActionResult Authenticate(AuthenticateRequest model)
+    public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
     {
-        var response = _userService.Authenticate(model);
+        var response = await _userService.Authenticate(model);
         return Ok(response);
     }
 
     [AllowAnonymous]
-    [HttpPost("register")]
+    [HttpPost("Register")]
+    [SwaggerOperation(Summary = "Register User")]
     public IActionResult Register(RegisterRequest model)
     {
         _userService.Register(model);
@@ -53,9 +45,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var user = _userService.GetById(id);
+        var user = await _userService.GetById(id);
         return Ok(user);
     }
 

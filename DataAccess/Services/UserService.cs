@@ -7,6 +7,7 @@ using Common.DataTransferObjects.AppUserDetails;
 using DataAccess.DBContexts.RITSDB;
 using DataAccess.DBContexts.RITSDB.Models;
 using DataAccess.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 public class UserService : IUserService
 {
@@ -24,13 +25,13 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public AuthenticateResponse Authenticate(AuthenticateRequest model)
+    public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
     {
-        var user = _context.AppUsers.SingleOrDefault(x => x.Username == model.Username);
+        var user = await _context.AppUsers.SingleOrDefaultAsync(x => x.Username == model.Username);
 
         // validate
         if (user == null || !BCrypt.Verify(model.Password, user.Password))
-            throw new Exception("Username or password is incorrect");
+            throw new ArgumentException("Username or password is incorrect");
 
         // authentication successful
         var response = _mapper.Map<AuthenticateResponse>(user);
@@ -43,15 +44,15 @@ public class UserService : IUserService
         return _context.AppUsers;
     }
 
-    public AppUser GetById(int id)
+    public async Task<AppUser> GetById(int id)
     {
-        return getUser(id);
+        return await getUser(id);
     }
 
-    public void Register(RegisterRequest model)
+    public async void Register(RegisterRequest model)
     {
         // validate
-        if (_context.AppUsers.Any(x => x.Username == model.Username))
+        if (await _context.AppUsers.AnyAsync(x => x.Username == model.Username))
             throw new Exception("Username '" + model.Username + "' is already taken");
 
         // map model to new user object
@@ -61,13 +62,13 @@ public class UserService : IUserService
         user.Password = BCrypt.HashPassword(model.Password);
 
         // save user
-        _context.AppUsers.Add(user);
-        _context.SaveChanges();
+        await _context.AppUsers.AddAsync(user);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(int id, UpdateRequest model)
+    public async void Update(int id, UpdateRequest model)
     {
-        var user = getUser(id);
+        var user = await getUser(id);
 
         // validate
         if (model.Username != user.Username && _context.AppUsers.Any(x => x.Username == model.Username))
@@ -79,22 +80,22 @@ public class UserService : IUserService
 
         // copy model to user and save
         _mapper.Map(model, user);
-        _context.AppUsers.Update(user);
-        _context.SaveChanges();
+       _context.AppUsers.Update(user);
+       await _context.SaveChangesAsync();
     }
 
-    public void Delete(int id)
+    public async void Delete(int id)
     {
-        var user = getUser(id);
+        var user = await getUser(id);
         _context.AppUsers.Remove(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     // helper methods
 
-    private AppUser getUser(int id)
+    private async Task<AppUser> getUser(int id)
     {
-        var user = _context.AppUsers.Find(id);
+        var user = await _context.AppUsers.FindAsync(id);
         if (user == null) throw new KeyNotFoundException("User not found");
         return user;
     }

@@ -1,6 +1,4 @@
 using ApiConfiguration;
-using WebAPI.Authorization;
-using WebAPI.Helpers;
 using Common.DataTransferObjects.AppSettings;
 
 using Common.Constants;
@@ -14,14 +12,20 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebAPI.Services;
 using WebAPI.Services.Interfaces;
-using DataAccess.Authorization;
 using WebApi.Helpers;
 using DataAccess.UnitOfWorks.RITSDB;
+using Microsoft.AspNetCore.Authorization;
+using DataAccess.DbContexts.RITSDB.Models;
+using Microsoft.AspNetCore.Identity;
+using DataAccess.DBContexts.RITSDB.Models;
+
+
 
 
 /*SERVICES CONTAINER*/
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
 
 /* Identity Server */
 IdentityServerApiDefinition identityServerApiDefinition = new();
@@ -31,16 +35,21 @@ builder.Services.AddSingleton(identityServerApiDefinition);
 ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 
 //Api Policy Authorization
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("SystemLog", builder =>
-//    {
-//        builder.RequireScope("RITSApi.SystemLog");
-//    });
-//});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("SystemLog", builder =>
+    {
+        builder.RequireScope("RITSApi.SystemLog");
+    });
+    options.AddPolicy("SystemData", builder =>
+    {
+        builder.RequireScope("RITSApi.SystemData");
+    });
+});
 
 //DBContext Registration
 builder.Services.AddDbContextPool<RITSDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB")));
+builder.Services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB")));
 
 //UoW Registration
 builder.Services.AddScoped<IRITSDBUnitOfWork, RITSDBUnitOfWork>();
@@ -54,33 +63,36 @@ builder.Services.AddScoped<IDbContextChangeTrackingService, DbContextChangeTrack
 builder.Services.AddAutoMapper(typeof(Program));
 
 // configure DI for application services
-builder.Services.AddScoped<IJwtUtils, JwtUtils>();
+//builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 // configure strongly typed settings object
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 
+// Configure Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<RITSDBContext>()
+    .AddDefaultTokenProviders();
+
+
+// Configure IdentityServer
+builder.Services.AddIdentityServer()
+    .AddAspNetIdentity<ApplicationUser>()
+    .AddConfigurationStore(options =>
+    {
+        options.ConfigureDbContext = b => b.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB"));
+    })
+    .AddOperationalStore(options =>
+    {
+        options.ConfigureDbContext = b => b.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB"));
+    }).AddDeveloperSigningCredential();
+
+
+
+
 /*HTTP REQUEST PIPELINE*/
 var app = builder.Build();
-
-
-// configure HTTP request pipeline
-{
-    // global cors policy
-    app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
-
-    // global error handler
-    app.UseMiddleware<ErrorHandlerMiddleware>();
-
-    // custom jwt auth middleware
-    app.UseMiddleware<JwtMiddleware>();
-
-    app.MapControllers();
-}
 
 app.UseExceptionHandler(errorLogger =>
 {
@@ -106,10 +118,19 @@ app.UseSwaggerUI(options =>
     }
 });
 
+
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// Enable IdentityServer4
+app.UseIdentityServer();
+
+// Enable authentication
 app.UseAuthentication();
+
+// Enable authorization
 app.UseAuthorization();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

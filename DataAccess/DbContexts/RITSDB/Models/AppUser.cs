@@ -11,9 +11,9 @@ namespace DataAccess.DBContexts.RITSDB.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
+        [Required]
         [StringLength(50)]
         public string LastName { get; set; }
         [Required]
@@ -21,5 +21,6 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }
+        public bool IsActive { get; set; }
     }
 }

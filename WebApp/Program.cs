@@ -1,7 +1,17 @@
 using ClientConfiguration.IdentityServerHandler;
 using Common.DataTransferObjects.AppSettings;
+using Common.DataTransferObjects.Configurations;
 using Common.DataTransferObjects.Token;
+using DataAccess.DBContexts.RITSDB;
+using DataAccess.DBContexts.RITSDB.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 IdentityServerClientDefinition identityServerClientDefinition = new();
 builder.Configuration.Bind("IdentityServerClientDefinition", identityServerClientDefinition);
 builder.Services.AddSingleton(identityServerClientDefinition);
+
+WebAppSetting webAppSetting = new();
+builder.Configuration.Bind("WebAppSetting", webAppSetting);
+builder.Services.AddSingleton(webAppSetting);
+
 
 ApiResourceUrl apiResourceUrl = new();
 
@@ -23,24 +38,28 @@ builder.Services.AddHttpClient("RITSApiClient", opt =>
     opt.Timeout = TimeSpan.FromMinutes(5);
     //TODO: Rename base URL
     opt.BaseAddress = new Uri(apiResourceUrl.RITSApiBaseUrl);
-});
-    //.AddHttpMessageHandler<IdentityServerTokenHandler>();
+}).AddHttpMessageHandler<IdentityServerTokenHandler>();
 
 AzureAdClientDefinition azureAdClientDefinition = new();
 builder.Configuration.Bind("AzureAdClientDefinition", azureAdClientDefinition);
-//builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-//    .AddMicrosoftIdentityWebApp(opt =>
-//    {
-//        opt.Instance = azureAdClientDefinition.Instance;
-//        opt.CallbackPath = azureAdClientDefinition.CallbackPath;
-//        opt.ClientId = azureAdClientDefinition.ClientId;
-//        opt.TenantId = azureAdClientDefinition.TenantId;
-//    });
+builder.Services.AddSingleton(azureAdClientDefinition);
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme);
+    //.AddMicrosoftIdentityWebApp(opt =>
+    //{
+    //    opt.Instance = azureAdClientDefinition.Instance;
+    //    opt.CallbackPath = azureAdClientDefinition.CallbackPath;
+    //    opt.ClientId = azureAdClientDefinition.ClientId;
+    //    opt.TenantId = azureAdClientDefinition.TenantId;
+    //    opt.ClientSecret = azureAdClientDefinition.ClientSecret;
+    //})
+    //.EnableTokenAcquisitionToCallDownstreamApi(azureAdClientDefinition.Scopes)
+    //.AddInMemoryTokenCaches();
 
-//builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
-//{
-//    opt.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath);
-//});
+builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
+{
+    opt.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath);
+});
+
 
 //Security Group Policy
 //SecurityGroup securityGroup = new();
@@ -59,12 +78,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddControllersWithViews(opt =>
 {
-    //var policy = new AuthorizationPolicyBuilder()
-    //   .RequireAuthenticatedUser()
-    //   //TODO: Remove below line if all users in tenant are allowed to access the application
-    //   .RequireClaim("groups", securityGroup.AllowedGroups)
-    //   .Build();
-    //opt.Filters.Add(new AuthorizeFilter(policy));
+    var policy = new AuthorizationPolicyBuilder()
+       .RequireAuthenticatedUser()
+       //TODO: Remove below line if all users in tenant are allowed to access the application
+       //.RequireClaim("groups", securityGroup.AllowedGroups)
+       .Build();
+    opt.Filters.Add(new AuthorizeFilter(policy));
 });
 
 builder.Services.AddHttpContextAccessor();
@@ -76,6 +95,17 @@ builder.Services.AddHsts(options =>
 // configure automapper with all automapper profiles from this assembly
 builder.Services.AddAutoMapper(typeof(Program));
 
+
+//Session and State Management
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".RITS.Session";
+    options.IdleTimeout = TimeSpan.FromMinutes(webAppSetting.SessionExpirationMinutes);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 /*CONFIGURE HTTP REQUEST PIPELINE*/
 var app = builder.Build();
@@ -93,8 +123,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

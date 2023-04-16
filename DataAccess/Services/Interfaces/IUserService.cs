@@ -1,5 +1,4 @@
 ﻿using Common.DataTransferObjects.AppUserDetails;
-using Common.Entities;
 using DataAccess.DBContexts.RITSDB.Models;
 
 namespace DataAccess.Services.Interfaces

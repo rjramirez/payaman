@@ -1,5 +1,8 @@
 ﻿using Common.Constants;
 using Common.DataTransferObjects.AppSettings;
+using DataAccess.DbContexts.RITSDB.Models;
+using DataAccess.DBContexts.RITSDB;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -15,19 +18,19 @@ namespace ApiConfiguration
     {
         public static void ConfigureServices(IServiceCollection services, IdentityServerApiDefinition identityServerApiDefinition)
         {
-            services.AddCors();
             services.AddControllers();
 
+
             //Identity Server Authorization
-            //services.AddAuthentication("Bearer")
-            //    .AddJwtBearer("Bearer", config =>
-            //    {
-            //        config.Authority = identityServerApiDefinition.Authority;
-            //        config.TokenValidationParameters = new TokenValidationParameters
-            //        {
-            //            ValidAudience = identityServerApiDefinition.ApiName,
-            //        };
-            //    });
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", config =>
+                {
+                    config.Authority = identityServerApiDefinition.Authority;
+                    config.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidAudience = identityServerApiDefinition.ApiName,
+                    };
+                });
 
             //Api Versioning
             services.AddApiVersioning(cfg =>

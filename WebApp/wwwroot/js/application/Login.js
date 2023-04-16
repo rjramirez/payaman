@@ -3,7 +3,7 @@
 });
 
 let Login = function () {
-    let userEndPoint = "/Home/AuthenticationCallback";
+    let userEndPoint = "/Home/Authenticate";
 
     return {
         initialize: function () {
@@ -41,18 +41,18 @@ let Login = function () {
                     App.requiredTextValidator($('#input_password').val(), $('#input_password'));
 
                     if (json.isCompleted) {
-                        
-                        App.alert("success", json.message, "Sucess", undefined);
+                        App.alert("success", "Sign in successful", "Success", undefined);
                         App.removeButtonSpinner($("#btn_login"));
 
+                        let dashboard = window.location.origin + "/Home/Index";
+                        window.location.replace(dashboard);
                     }
                     else {
                         App.alert("error", json.message, "Error", undefined);
 
                         setTimeout(function () {
-                            App.removeBoxSpinner($("#btn_login"));
+                            App.removeButtonSpinner($("#btn_login"));
                         }, 500);
-                        console.log(`Status Code: ${json.statusCode} - Error: ${json.error}`)
                     }
 
                 },

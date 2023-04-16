@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using Common.DataTransferObjects.AppUserDetails;
 using Common.DataTransferObjects.ErrorLog;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using WebApp.Extensions;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
@@ -19,32 +20,51 @@ namespace WebApp.Controllers
 
         public IActionResult Index()
         {
+            //var userId = User.Identity.Name;
+            return View();
+            //if (userId != null)
+            //    return View();
+            //else
+            //    return RedirectToAction("StatusPage", "Error", new { code = 401 });
+        }
+
+        public IActionResult Dashboard()
+        {
             return View();
         }
 
+        public IActionResult AuthenticationCallback()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> AuthenticationCallback([FromBody] AppUserDetail appUserDetail)
+        public async Task<IActionResult> Authenticate([FromBody] AppUserDetail appUserDetail)
         {
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
             var authRequest = _mapper.Map<AuthenticateRequest>(appUserDetail);
             var response = await client.PostAsync($"api/User/Authenticate", authRequest.GetStringContent());
 
+            AuthenticateResponse authResponse = JsonConvert.DeserializeObject<AuthenticateResponse>(await response.Content.ReadAsStringAsync());
+            MessageResponse message = JsonConvert.DeserializeObject<MessageResponse>(await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Index", "Home");
+                message.IsCompleted = true;
+                return Ok(message);
             }
             else
             {
-                var responseFail = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-                if (responseFail == null)
-                {
-                    responseFail = "Username or password is incorrect";
-                }
-                return PartialView("~/Views/Home/Login.cshtml", responseFail);
+                message.IsCompleted = false;
+                return Ok(message);
             }
-            
+
         }
+
+
+
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();

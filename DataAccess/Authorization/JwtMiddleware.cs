@@ -1,29 +1,28 @@
-using DataAccess.Authorization;
+namespace DataAccess.Authorization;
+
 using DataAccess.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
-namespace WebAPI.Authorization 
+public class JwtMiddleware
 {
-    public class JwtMiddleware
+    private readonly RequestDelegate _next;
+
+    public JwtMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public JwtMiddleware(RequestDelegate next)
+    public async Task Invoke(HttpContext context, IUserService userService, IJwtUtils jwtUtils)
+    {
+        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        var userId = jwtUtils.ValidateToken(token);
+        if (userId != null)
         {
-            _next = next;
+            // attach user to context on successful jwt validation
+            context.Items["User"] = userService.GetById(userId.Value);
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService, IJwtUtils jwtUtils)
-        {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            var userId = jwtUtils.ValidateToken(token);
-            if (userId != null)
-            {
-                // attach user to context on successful jwt validation
-                context.Items["User"] = userService.GetById(userId.Value);
-            }
-
-            await _next(context);
-        }
+        await _next(context);
     }
 }

@@ -1,12 +1,12 @@
 ﻿namespace WebAPI.Controllers;
 
 using Common.DataTransferObjects.AppUserDetails;
-using DataAccess.Authorization;
 using DataAccess.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-[Authorize]
+//[Authorize(Policy = "SystemData")]
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
@@ -19,7 +19,7 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    [AllowAnonymous]
+    //[AllowAnonymous]
     [HttpPost("Authenticate")]
     [SwaggerOperation(Summary = "Authenticate User")]
     public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
@@ -37,6 +37,7 @@ public class UserController : ControllerBase
         return Ok(new { message = "Registration successful" });
     }
 
+    [Authorize]
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -44,6 +45,7 @@ public class UserController : ControllerBase
         return Ok(users);
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -51,6 +53,7 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public IActionResult Update(int id, UpdateRequest model)
     {
@@ -58,6 +61,7 @@ public class UserController : ControllerBase
         return Ok(new { message = "User updated successfully" });
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {

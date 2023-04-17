@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using DataAccess.DBContexts.RITSDB.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace DataAccess.DBContexts.RITSDB
 {
     public partial class RITSDBContext : DbContext
     {
-        public RITSDBContext()
-        {
-        }
+        //public RITSDBContext()
+        //{
+        //}
 
         public RITSDBContext(DbContextOptions<RITSDBContext> options)
             : base(options)
@@ -106,6 +107,7 @@ namespace DataAccess.DBContexts.RITSDB
             {
                 entity.Property(e => e.ImageName).IsFixedLength();
             });
+
 
             OnModelCreatingPartial(modelBuilder);
         }

@@ -2,16 +2,11 @@ using ClientConfiguration.IdentityServerHandler;
 using Common.DataTransferObjects.AppSettings;
 using Common.DataTransferObjects.Configurations;
 using Common.DataTransferObjects.Token;
-using DataAccess.DBContexts.RITSDB;
-using DataAccess.DBContexts.RITSDB.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿using AuthenticationApi.Services;
+﻿using DataAccess.Services;
 using Common.DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
+//[Authorize(Policy = "SystemLog")]
+[ApiVersion("1.0")]
 public class UserController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
@@ -17,10 +19,7 @@ public class UserController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPost("login")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var response = await _authenticationService.Login(request);
@@ -29,10 +28,7 @@ public class UserController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPost("register")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         var response = await _authenticationService.Register(request);

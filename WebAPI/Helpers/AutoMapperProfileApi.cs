@@ -1,6 +1,7 @@
 namespace DataAccess.Helpers;
 
 using AutoMapper;
+using Common.DataTransferObjects;
 using Common.DataTransferObjects.AppUserDetails;
 using DataAccess.DBContexts.RITSDB.Models;
 
@@ -11,8 +12,8 @@ public class AutoMapperProfileApi : Profile
         // AppUser -> AuthenticateResponse
         //CreateMap<AppUser, AuthenticateResponse>();
 
-        //// RegisterRequest -> AppUser
-        //CreateMap<RegisterRequest, AppUser>();
+        // RegisterRequest -> AppUser
+        CreateMap<AppUserDetail, RegisterRequest>();
 
         //// UpdateRequest -> AppUser
         //CreateMap<UpdateRequest, AppUser>()

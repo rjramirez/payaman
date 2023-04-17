@@ -69,20 +69,22 @@ namespace WebApp.Controllers
         {
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
-            var loginRequest = _mapper.Map<LoginRequest>(appUserDetail);
-            var response = await client.PostAsync($"api/User/Register", loginRequest.GetStringContent());
+            var registerRequest = _mapper.Map<RegisterRequest>(appUserDetail);
+            var response = await client.PostAsync($"api/User/Register", registerRequest.GetStringContent());
 
-            string authResponse = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-            MessageResponse message = JsonConvert.DeserializeObject<MessageResponse>(await response.Content.ReadAsStringAsync());
+            MessageResponse messageResponse = new();
             if (response.IsSuccessStatusCode)
             {
-                message.IsCompleted = true;
-                return Ok(message);
+                string message = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+
+                messageResponse.IsCompleted = true;
+                messageResponse.Message = message;
+                return Ok(messageResponse);
             }
             else
             {
-                message.IsCompleted = false;
-                return Ok(message);
+                messageResponse.IsCompleted = false;
+                return Ok(messageResponse);
             }
 
         }

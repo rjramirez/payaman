@@ -4,12 +4,17 @@
 
 let Login = function () {
     let userEndPoint = "/Home/Login";
+    let registerEndPoint = "/Home/Register";
 
     return {
         initialize: function () {
             
             $("#btn_login").click(function () {
                 Login.authenticate();
+            });
+
+            $("#btn_signup_modal").click(function () {
+                $("#signUpModal").modal("show");
             });
 
             $("#btn_signup").click(function () {
@@ -19,37 +24,37 @@ let Login = function () {
         register: function () {
             App.addButtonSpinner($("#btn_signup"));
 
+            App.requiredTextValidator($('#input_signup_firstname').val(), $('#input_signup_firstname'));
+            App.requiredTextValidator($('#input_signup_username').val(), $('#input_signup_username'));
+            App.requiredTextValidator($('#input_signup_password').val(), $('#input_signup_password'));
 
+            let fn = $("#input_signup_firstname").val();
+            let ln = $("#input_signup_lastname").val();
+            let un = $("#input_signup_username").val();
+            let pw = $("#input_signup_password").val();
 
-            App.requiredTextValidator($('#input_username').val(), $('#input_username'));
-            App.requiredTextValidator($('#input_password').val(), $('#input_password'));
-
-            let un = $("#input_username").val();
-            let pw = $("#input_password").val();
-
-            if (un == "" || pw == "") {
-                App.alert("error", "Username and Password is required", "Error", undefined);
+            if (fn == "" | un == "" || pw == "") {
+                App.alert("error", "FirstName, Username, and Password is required", "Error", undefined);
                 App.removeButtonSpinner($("#btn_signup"));
                 return;
             }
 
             let param = {
+                FirstName: fn,
+                LastName: ln,
                 Username: un,
                 Password: pw
             };
 
 
-            App.ajaxPost(userEndPoint,
+            App.ajaxPost(registerEndPoint,
                 JSON.stringify(param),
                 'text',
                 function (data) {
                     var json = JSON.parse(data);
 
-                    App.requiredTextValidator($('#input_username').val(), $('#input_username'));
-                    App.requiredTextValidator($('#input_password').val(), $('#input_password'));
-
                     if (json.isCompleted) {
-                        App.alert("success", "Sign in successful", "Success", undefined);
+                        App.alert("success", "Signing Up successful", "Success", undefined);
                         App.removeButtonSpinner($("#btn_signup"));
 
                         let dashboard = window.location.origin + "/Home/Index";

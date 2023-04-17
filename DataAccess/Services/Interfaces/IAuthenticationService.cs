@@ -1,6 +1,7 @@
 ﻿using Common.DataTransferObjects;
-
-namespace AuthenticationApi.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+namespace DataAccess.Services;
 
 public interface IAuthenticationService
 {

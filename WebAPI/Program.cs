@@ -17,8 +17,6 @@ using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Authorization;
 using DataAccess.DbContexts.RITSDB.Models;
 using Microsoft.AspNetCore.Identity;
-using DataAccess.DBContexts.RITSDB.Models;
-
 
 
 
@@ -27,12 +25,13 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 
+
 /* Identity Server */
 IdentityServerApiDefinition identityServerApiDefinition = new();
 builder.Configuration.Bind("IdentityServerApiDefinition", identityServerApiDefinition);
 builder.Services.AddSingleton(identityServerApiDefinition);
 
-ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
+
 
 //Api Policy Authorization
 builder.Services.AddAuthorization(options =>
@@ -57,14 +56,12 @@ builder.Services.AddScoped<IRITSDBUnitOfWork, RITSDBUnitOfWork>();
 //Internal Service Registration
 builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
 builder.Services.AddScoped<IDbContextChangeTrackingService, DbContextChangeTrackingService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 
 // configure automapper with all automapper profiles from this assembly
 builder.Services.AddAutoMapper(typeof(Program));
 
-// configure DI for application services
-//builder.Services.AddScoped<IJwtUtils, JwtUtils>();
-////builder.Services.AddScoped<IUserService, UserService>();
 
 // configure strongly typed settings object
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
@@ -72,6 +69,7 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 
 // Configure Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<RITSDBContext>()
     .AddDefaultTokenProviders();
 
@@ -88,11 +86,19 @@ builder.Services.AddIdentityServer()
         options.ConfigureDbContext = b => b.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB"));
     }).AddDeveloperSigningCredential();
 
+ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 
+
+
+// configure automapper with all automapper profiles from this assembly
+builder.Services.AddAutoMapper(typeof(Program));
 
 
 /*HTTP REQUEST PIPELINE*/
 var app = builder.Build();
+
+// Seed data
+//SeedData.Initialize(app.Services);
 
 app.UseExceptionHandler(errorLogger =>
 {

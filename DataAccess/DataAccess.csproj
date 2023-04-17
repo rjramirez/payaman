@@ -17,8 +17,6 @@
   <ItemGroup>
     <Compile Remove="Data\ConfigurationDbContext.cs" />
     <Compile Remove="Data\PersistedGrantDbContext.cs" />
-    <Compile Remove="Repositories\RITSDB\AppUserRepository.cs" />
-    <Compile Remove="Repositories\RITSDB\Interfaces\IAppUserRepository.cs" />
     <Compile Remove="Services\Interfaces\IUserServiceOld.cs" />
     <Compile Remove="Services\UserService.cs" />
     <Compile Remove="Services\UserServiceOld.cs" />

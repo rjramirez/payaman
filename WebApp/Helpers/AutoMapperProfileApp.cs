@@ -8,7 +8,7 @@ public class AutoMapperProfileApp : Profile
 {
     public AutoMapperProfileApp()
     {
-        // AppUserDetail -> AuthenticateRequest
-        CreateMap<AppUserDetail, LoginRequest>();
+        // AppUserDetail -> RegisterRequest
+        CreateMap<AppUserDetail, RegisterRequest>();
     }
 }

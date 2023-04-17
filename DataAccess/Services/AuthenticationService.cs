@@ -3,54 +3,129 @@ using System.Security.Claims;
 using System.Text;
 using Common.DataTransferObjects;
 using DataAccess.DbContexts.RITSDB.Models;
+using DataAccess.DBContexts.RITSDB;
+using DataAccess.DBContexts.RITSDB.Models;
+using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AuthenticationApi.Services;
+namespace DataAccess.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;
+    private readonly RITSDBContext _context;
 
-    public AuthenticationService (UserManager<ApplicationUser> userManager, IConfiguration configuration)
+    public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IRITSDBUnitOfWork RITSDBUnitOfWork, RITSDBContext context)
     {
         _userManager = userManager;
         _configuration = configuration;
+        _RITSDBUnitOfWork = RITSDBUnitOfWork;
+        _context = context;
     }
 
     public async Task<string> Register(RegisterRequest request)
     {
-        var userByEmail = await _userManager.FindByEmailAsync(request.Email);
-        var userByUsername = await _userManager.FindByNameAsync(request.Username);
-        if (userByEmail is not null || userByUsername is not null)
+        if (await _RITSDBUnitOfWork.AspNetUserRepository.IsExistAsync(r => r.UserName != "Admin"))
         {
-            throw new ArgumentException($"User with email {request.Email} or username {request.Username} already exists.");
+            AspNetRole aspRoleAdmin = new();
+            aspRoleAdmin.Name = "Admin";
+            aspRoleAdmin.NormalizedName = "Admin".ToUpper();
+            aspRoleAdmin.ConcurrencyStamp = Guid.NewGuid().ToString();
+
+            AspNetRole aspRoleCashier = new();
+            aspRoleCashier.Name = "Cashier";
+            aspRoleCashier.NormalizedName = "Cashier".ToUpper();
+            aspRoleCashier.ConcurrencyStamp = Guid.NewGuid().ToString();
+
+            await _context.AddAsync(aspRoleAdmin);
+            await _context.AddAsync(aspRoleCashier);
         }
 
-        ApplicationUser user = new()
+        var adminUser = new AspNetUser
         {
-            Email = request.Email,
-            UserName = request.Username,
+            UserName = "adm_rjramirez",
+            NormalizedUserName = "adm_rjramirez",
+            Email = "",
+            NormalizedEmail = "",
+            EmailConfirmed = true,
+            LockoutEnabled = false,
             SecurityStamp = Guid.NewGuid().ToString()
         };
 
-        var result = await _userManager.CreateAsync(user, request.Password);
 
-        if(!result.Succeeded)
+        //Admin
+        if (!_context.AspNetUsers.Any(u => u.UserName == adminUser.UserName))
         {
-            throw new ArgumentException($"Unable to register user {request.Username} errors: {GetErrorsText(result.Errors)}");
+            var password = new PasswordHasher<AspNetUser>();
+            var hashed = password.HashPassword(adminUser, "R1TST3st3r07!?");
+            adminUser.PasswordHash = hashed;
+
+            await _context.AddAsync(adminUser);
         }
 
-        return await Login(new LoginRequest { Username = request.Email, Password = request.Password });
+        var cashierUser = new AspNetUser
+        {
+            UserName = "cash_rjramirez",
+            NormalizedUserName = "cash_rjramirez",
+            Email = "",
+            NormalizedEmail = "",
+            EmailConfirmed = true,
+            LockoutEnabled = false,
+            SecurityStamp = Guid.NewGuid().ToString()
+        };
+
+
+        //Cashier
+        if (!_context.AspNetUsers.Any(u => u.UserName == adminUser.UserName))
+        {
+            var password = new PasswordHasher<AspNetUser>();
+            var hashed = password.HashPassword(adminUser, "R1TST3st3r07!?");
+            adminUser.PasswordHash = hashed;
+
+            await _context.AddAsync(adminUser);
+
+            //Add Role Cashier
+            var userAdmin = await _RITSDBUnitOfWork.AspNetUserRepository.FindAsync(predicate: a => a.UserName == "adm_rjramirez");
+
+        }
+
+        await _context.SaveChangesAsync();
+
+
+
+        //var userByUsername = await _userManager.FindByNameAsync(request.Username);
+        //if (userByUsername is not null)
+        //{
+        //    throw new ArgumentException($"User with username {request.Username} already exists.");
+        //}
+
+        //ApplicationUser user = new()
+        //{
+        //    UserName = request.Username,
+        //    SecurityStamp = Guid.NewGuid().ToString()
+        //};
+
+        //var result = await _userManager.CreateAsync(user, request.Password);
+
+        //if (!result.Succeeded)
+        //{
+        //    throw new ArgumentException($"Unable to register user {request.Username} errors: {GetErrorsText(result.Errors)}");
+        //}
+
+        return await Login(new LoginRequest { Username = "adm_rjramirez", Password = "R1TST3st3r07!?" });
     }
 
     public async Task<string> Login(LoginRequest request)
     {
         var user = await _userManager.FindByNameAsync(request.Username);
 
-        if(user is null)
+        if (user is null)
         {
             user = await _userManager.FindByEmailAsync(request.Username);
         }

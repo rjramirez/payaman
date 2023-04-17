@@ -20,6 +20,7 @@ namespace DataAccess.UnitOfWorks.RITSDB
             ProductRepository = new ProductRepository(_context);
             OrderRepository = new OrderRepository(_context);
             StoreRepository = new StoreRepository(_context);
+            AspNetUserRepository = new AspNetUserRepository(_context);
         }
 
         public IErrorLogRepository ErrorLogRepository { get; private set; }
@@ -27,6 +28,7 @@ namespace DataAccess.UnitOfWorks.RITSDB
         public IProductRepository ProductRepository { get; private set; }
         public IOrderRepository OrderRepository { get; private set; }
         public IStoreRepository StoreRepository { get; private set; }
+        public IAspNetUserRepository AspNetUserRepository { get; private set; }
         public void Dispose()
         {
             _context.Dispose();

@@ -5,9 +5,9 @@ using DataAccess.Repositories.RITSDB.Interfaces;
 
 namespace DataAccess.Repositories.RITSDB
 {
-    public class AppUserRepository : BaseRepository<AppUser>, IAppUserRepository
+    public class AspNetUserRepository : BaseRepository<AspNetUser>, IAspNetUserRepository
     {
-        public AppUserRepository(RITSDBContext context) : base(context)
+        public AspNetUserRepository(RITSDBContext context) : base(context)
         {
 
         }

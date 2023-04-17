@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
 
 namespace ApiConfiguration
 {
@@ -19,7 +20,6 @@ namespace ApiConfiguration
         public static void ConfigureServices(IServiceCollection services, IdentityServerApiDefinition identityServerApiDefinition)
         {
             services.AddControllers();
-
 
             //Identity Server Authorization
             services.AddAuthentication("Bearer")
@@ -79,6 +79,7 @@ namespace ApiConfiguration
                 });
             });
         }
+
     }
 
     internal class ApiDocumentation : IConfigureOptions<SwaggerGenOptions>

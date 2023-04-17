@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DataTransferObjects\AppUserDetails\AuthenticateRequest.cs" />
+    <Compile Remove="DataTransferObjects\AppUserDetails\AuthenticateResponse.cs" />
+    <Compile Remove="DataTransferObjects\AppUserDetails\RegisterRequest.cs" />
+    <Compile Remove="DataTransferObjects\AppUserDetails\UpdateRequest.cs" />
     <Compile Remove="Entities\User.cs" />
     <Compile Remove="Helpers\DataContext.cs" />
     <Compile Remove="Helpers\SqliteDataContext.cs" />

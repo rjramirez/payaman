@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.DataTransferObjects;
 using Common.DataTransferObjects.AppUserDetails;
 using Common.DataTransferObjects.ErrorLog;
 using Microsoft.AspNetCore.Authorization;
@@ -20,12 +21,11 @@ namespace WebApp.Controllers
 
         public IActionResult Index()
         {
-            //var userId = User.Identity.Name;
-            return View();
-            //if (userId != null)
-            //    return View();
-            //else
-            //    return RedirectToAction("StatusPage", "Error", new { code = 401 });
+            var userId = User.Identity.Name;
+            if (userId != null)
+                return View();
+            else
+                return RedirectToAction("StatusPage", "Error", new { code = 401 });
         }
 
         public IActionResult Dashboard()
@@ -40,14 +40,39 @@ namespace WebApp.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Authenticate([FromBody] AppUserDetail appUserDetail)
+        public async Task<IActionResult> Login([FromBody] AppUserDetail appUserDetail)
         {
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
-            var authRequest = _mapper.Map<AuthenticateRequest>(appUserDetail);
-            var response = await client.PostAsync($"api/User/Authenticate", authRequest.GetStringContent());
+            var loginRequest = _mapper.Map<LoginRequest>(appUserDetail);
+            var response = await client.PostAsync($"api/User/Login", loginRequest.GetStringContent());
 
-            AuthenticateResponse authResponse = JsonConvert.DeserializeObject<AuthenticateResponse>(await response.Content.ReadAsStringAsync());
+            string authResponse = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+            MessageResponse message = JsonConvert.DeserializeObject<MessageResponse>(await response.Content.ReadAsStringAsync());
+            if (response.IsSuccessStatusCode)
+            {
+                message.IsCompleted = true;
+                return Ok(message);
+            }
+            else
+            {
+                message.IsCompleted = false;
+                return Ok(message);
+            }
+
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody] AppUserDetail appUserDetail)
+        {
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var loginRequest = _mapper.Map<LoginRequest>(appUserDetail);
+            var response = await client.PostAsync($"api/User/Register", loginRequest.GetStringContent());
+
+            string authResponse = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
             MessageResponse message = JsonConvert.DeserializeObject<MessageResponse>(await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
             {

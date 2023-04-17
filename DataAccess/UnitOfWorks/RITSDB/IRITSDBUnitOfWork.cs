@@ -5,7 +5,6 @@ namespace DataAccess.UnitOfWorks.RITSDB
 {
     public interface IRITSDBUnitOfWork : IBaseUnitOfWork
     {
-        public IAppUserRepository AppUserRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
         public IAuditTrailRepository AuditTrailRepository { get; }
     }

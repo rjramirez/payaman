@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataAccess.DBContexts.RITSDB.Models
 {
     [Table("Order")]
+    [Index("ProductId", Name = "IX_Order_ProductId")]
     public partial class Order
     {
         [Key]

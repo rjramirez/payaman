@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using DataAccess.DBContexts.RITSDB.Models;
-using DataAccess.DbContexts.RITSDB.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DataAccess.DBContexts.RITSDB
 {
-    public partial class RITSDBContext : IdentityDbContext<ApplicationUser>
+    public partial class RITSDBContext : DbContext
     {
         public RITSDBContext()
         {
@@ -19,7 +17,12 @@ namespace DataAccess.DBContexts.RITSDB
         {
         }
 
-        public virtual DbSet<AppUser> AppUsers { get; set; }
+        public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
+        public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+        public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
+        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
+        public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual DbSet<AuditTrail> AuditTrails { get; set; }
         public virtual DbSet<AuditTrailDetail> AuditTrailDetails { get; set; }
         public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
@@ -37,6 +40,45 @@ namespace DataAccess.DBContexts.RITSDB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AspNetRole>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedName] IS NOT NULL)");
+            });
+
+            modelBuilder.Entity<AspNetUser>(entity =>
+            {
+                entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
+                    .IsUnique()
+                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
+
+                entity.HasMany(d => d.Roles)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "AspNetUserRole",
+                        l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "RoleId");
+
+                            j.ToTable("AspNetUserRoles");
+
+                            j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
+                        });
+            });
+
+            modelBuilder.Entity<AspNetUserLogin>(entity =>
+            {
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+            });
+
+            modelBuilder.Entity<AspNetUserToken>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+            });
+
             modelBuilder.Entity<AuditTrailDetail>(entity =>
             {
                 entity.HasOne(d => d.AuditTrail)
@@ -65,7 +107,7 @@ namespace DataAccess.DBContexts.RITSDB
                 entity.Property(e => e.ImageName).IsFixedLength();
             });
 
-            base.OnModelCreating(modelBuilder);
+            OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

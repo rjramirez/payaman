@@ -15,7 +15,6 @@ namespace DataAccess.UnitOfWorks.RITSDB
         {
             _context = context;
             _dbContextChangeTrackingService = dbContextChangeTrackingService;
-            AppUserRepository = new AppUserRepository(_context);
             ErrorLogRepository = new ErrorLogRepository(_context);
             AuditTrailRepository = new AuditTrailRepository(_context);
             ProductRepository = new ProductRepository(_context);
@@ -23,7 +22,6 @@ namespace DataAccess.UnitOfWorks.RITSDB
             StoreRepository = new StoreRepository(_context);
         }
 
-        public IAppUserRepository AppUserRepository { get; private set; }
         public IErrorLogRepository ErrorLogRepository { get; private set; }
         public IAuditTrailRepository AuditTrailRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }

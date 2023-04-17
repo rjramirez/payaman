@@ -3,7 +3,7 @@
 });
 
 let Login = function () {
-    let userEndPoint = "/Home/Authenticate";
+    let userEndPoint = "/Home/Login";
 
     return {
         initialize: function () {

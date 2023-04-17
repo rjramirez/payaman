@@ -64,7 +64,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 // configure DI for application services
 //builder.Services.AddScoped<IJwtUtils, JwtUtils>();
-builder.Services.AddScoped<IUserService, UserService>();
+////builder.Services.AddScoped<IUserService, UserService>();
 
 // configure strongly typed settings object
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));

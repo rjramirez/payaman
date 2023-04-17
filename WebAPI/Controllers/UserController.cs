@@ -1,71 +1,43 @@
-﻿namespace WebAPI.Controllers;
-
-using Common.DataTransferObjects.AppUserDetails;
-using DataAccess.Services.Interfaces;
+﻿using AuthenticationApi.Services;
+using Common.DataTransferObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
-//[Authorize(Policy = "SystemData")]
+namespace WebAPI.Controllers;
+
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private IUserService _userService;
+    private readonly IAuthenticationService _authenticationService;
 
-    public UserController(
-        IUserService userService)
+    public UserController(IAuthenticationService authenticationService)
     {
-        _userService = userService;
+        _authenticationService = authenticationService;
     }
 
-    //[AllowAnonymous]
-    [HttpPost("Authenticate")]
-    [SwaggerOperation(Summary = "Authenticate User")]
-    public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
+    [AllowAnonymous]
+    [HttpPost("login")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var response = await _userService.Authenticate(model);
+        var response = await _authenticationService.Login(request);
+
         return Ok(response);
     }
 
     [AllowAnonymous]
-    [HttpPost("Register")]
-    [SwaggerOperation(Summary = "Register User")]
-    public IActionResult Register(RegisterRequest model)
+    [HttpPost("register")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        _userService.Register(model);
-        return Ok(new { message = "Registration successful" });
-    }
+        var response = await _authenticationService.Register(request);
 
-    [Authorize]
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        var users = _userService.GetAll();
-        return Ok(users);
-    }
-
-    [Authorize]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var user = await _userService.GetById(id);
-        return Ok(user);
-    }
-
-    [Authorize]
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, UpdateRequest model)
-    {
-        _userService.Update(id, model);
-        return Ok(new { message = "User updated successfully" });
-    }
-
-    [Authorize]
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
-    {
-        _userService.Delete(id);
-        return Ok(new { message = "User deleted successfully" });
+        return Ok(response);
     }
 }
+

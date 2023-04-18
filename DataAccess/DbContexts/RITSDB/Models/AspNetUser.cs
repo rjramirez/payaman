@@ -13,8 +13,8 @@ namespace DataAccess.DBContexts.RITSDB.Models
         {
             AspNetUserClaims = new HashSet<AspNetUserClaim>();
             AspNetUserLogins = new HashSet<AspNetUserLogin>();
+            AspNetUserRoles = new HashSet<AspNetUserRole>();
             AspNetUserTokens = new HashSet<AspNetUserToken>();
-            Roles = new HashSet<AspNetRole>();
         }
 
         [Key]
@@ -43,10 +43,8 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [InverseProperty("User")]
         public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; }
         [InverseProperty("User")]
+        public virtual ICollection<AspNetUserRole> AspNetUserRoles { get; set; }
+        [InverseProperty("User")]
         public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; }
-
-        [ForeignKey("UserId")]
-        [InverseProperty("Users")]
-        public virtual ICollection<AspNetRole> Roles { get; set; }
     }
 }

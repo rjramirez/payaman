@@ -6,17 +6,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DBContexts.RITSDB.Models
 {
-    [Index("RoleId", Name = "IX_AspNetRoleClaims_RoleId")]
-    public partial class AspNetRoleClaim
+    [Index("RoleId", Name = "IX_AspNetUserRoles_RoleId")]
+    public partial class AspNetUserRole
     {
         [Key]
         public int Id { get; set; }
+        [Required]
+        [StringLength(450)]
+        public string UserId { get; set; }
         public int RoleId { get; set; }
-        public string ClaimType { get; set; }
-        public string ClaimValue { get; set; }
 
         [ForeignKey("RoleId")]
-        [InverseProperty("AspNetRoleClaims")]
+        [InverseProperty("AspNetUserRoles")]
         public virtual AspNetRole Role { get; set; }
+        [ForeignKey("UserId")]
+        [InverseProperty("AspNetUserRoles")]
+        public virtual AspNetUser User { get; set; }
     }
 }

@@ -48,77 +48,102 @@ namespace DataAccess.Migrations
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
-            //migrationBuilder.CreateTable(
-            //    name: "AuditTrail",
-            //    columns: table => new
-            //    {
-            //        AuditTrailId = table.Column<long>(type: "bigint", nullable: false)
-            //            .Annotation("SqlServer:Identity", "1, 1"),
-            //        TransactionBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-            //        TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-            //    },
-            //    constraints: table =>
-            //    {
-            //        table.PrimaryKey("PK_AuditTrail", x => x.AuditTrailId);
-            //    });
+            migrationBuilder.CreateTable(
+                name: "AuditTrailDetail",
+                columns: table => new
+                {
+                    AuditTrailDetailId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AuditTrailId = table.Column<long>(type: "bigint", nullable: false),
+                    EntityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TableName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EntityField = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OldValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Action = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditTrailDetail", x => x.AuditTrailDetailId);
+                    table.ForeignKey(
+                        name: "FK_AuditTrailDetail_AuditTrail",
+                        column: x => x.AuditTrailId,
+                        principalTable: "AuditTrail",
+                        principalColumn: "AuditTrailId");
+                });
 
-            //migrationBuilder.CreateTable(
-            //    name: "ErrorLog",
-            //    columns: table => new
-            //    {
-            //        ErrorId = table.Column<int>(type: "int", nullable: false)
-            //            .Annotation("SqlServer:Identity", "1, 1"),
-            //        Message = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-            //        DateCreated = table.Column<DateTime>(type: "datetime", nullable: false),
-            //        StackTrace = table.Column<string>(type: "nvarchar(max)", nullable: false),
-            //        Path = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-            //        StackTraceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-            //        Source = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-            //        UserIdentity = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-            //        BuildVersion = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-            //    },
-            //    constraints: table =>
-            //    {
-            //        table.PrimaryKey("PK_ErrorLog", x => x.ErrorId);
-            //    });
 
-            //migrationBuilder.CreateTable(
-            //    name: "Product",
-            //    columns: table => new
-            //    {
-            //        Id = table.Column<short>(type: "smallint", nullable: false)
-            //            .Annotation("SqlServer:Identity", "1, 1"),
-            //        Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-            //        Description = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-            //        ImageName = table.Column<string>(type: "nchar(10)", fixedLength: true, maxLength: 10, nullable: true),
-            //        CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-            //        CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-            //        ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-            //        ModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false)
-            //    },
-            //    constraints: table =>
-            //    {
-            //        table.PrimaryKey("PK_Product", x => x.Id);
-            //    });
+            migrationBuilder.CreateTable(
+                name: "AuditTrail",
+                columns: table => new
+                {
+                    AuditTrailId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditTrail", x => x.AuditTrailId);
+                });
 
-            //migrationBuilder.CreateTable(
-            //    name: "Store",
-            //    columns: table => new
-            //    {
-            //        Id = table.Column<short>(type: "smallint", nullable: false)
-            //            .Annotation("SqlServer:Identity", "1, 1"),
-            //        Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-            //        Description = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-            //        ImageName = table.Column<string>(type: "nchar(10)", fixedLength: true, maxLength: 10, nullable: true),
-            //        CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-            //        CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-            //        ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-            //        ModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false)
-            //    },
-            //    constraints: table =>
-            //    {
-            //        table.PrimaryKey("PK_Store", x => x.Id);
-            //    });
+            migrationBuilder.CreateTable(
+                name: "ErrorLog",
+                columns: table => new
+                {
+                    ErrorId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Message = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime", nullable: false),
+                    StackTrace = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Path = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    StackTraceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Source = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UserIdentity = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    BuildVersion = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ErrorLog", x => x.ErrorId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Product",
+                columns: table => new
+                {
+                    Id = table.Column<short>(type: "smallint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ImageName = table.Column<string>(type: "nchar(10)", fixedLength: true, maxLength: 10, nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Product", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Store",
+                columns: table => new
+                {
+                    Id = table.Column<short>(type: "smallint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ImageName = table.Column<string>(type: "nchar(10)", fixedLength: true, maxLength: 10, nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Store", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
@@ -226,54 +251,31 @@ namespace DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            //migrationBuilder.CreateTable(
-            //    name: "AuditTrailDetail",
-            //    columns: table => new
-            //    {
-            //        AuditTrailDetailId = table.Column<long>(type: "bigint", nullable: false)
-            //            .Annotation("SqlServer:Identity", "1, 1"),
-            //        AuditTrailId = table.Column<long>(type: "bigint", nullable: false),
-            //        EntityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-            //        TableName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-            //        EntityField = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-            //        OldValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
-            //        NewValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
-            //        Action = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
-            //    },
-            //    constraints: table =>
-            //    {
-            //        table.PrimaryKey("PK_AuditTrailDetail", x => x.AuditTrailDetailId);
-            //        table.ForeignKey(
-            //            name: "FK_AuditTrailDetail_AuditTrail",
-            //            column: x => x.AuditTrailId,
-            //            principalTable: "AuditTrail",
-            //            principalColumn: "AuditTrailId");
-            //    });
-
-            //migrationBuilder.CreateTable(
-            //    name: "Order",
-            //    columns: table => new
-            //    {
-            //        Id = table.Column<short>(type: "smallint", nullable: false)
-            //            .Annotation("SqlServer:Identity", "1, 1"),
-            //        ProductId = table.Column<short>(type: "smallint", nullable: false),
-            //        Quantity = table.Column<int>(type: "int", nullable: false),
-            //        CashierId = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-            //        TotalAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-            //        CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-            //        CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-            //        ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-            //        ModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false)
-            //    },
-            //    constraints: table =>
-            //    {
-            //        table.PrimaryKey("PK_Order", x => x.Id);
-            //        table.ForeignKey(
-            //            name: "FK_Order_Product",
-            //            column: x => x.ProductId,
-            //            principalTable: "Product",
-            //            principalColumn: "Id");
-            //    });
+            
+            migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    Id = table.Column<short>(type: "smallint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<short>(type: "smallint", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    CashierId = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Order_Product",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Common.DataTransferObjects.AppUserDetails;
 using Common.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
-using WebApp.Authorization;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +20,7 @@ namespace WebApp.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Policy="Admin")]
         public IActionResult Index()
         {
             return View();
@@ -47,12 +47,12 @@ namespace WebApp.Controllers
             AuthenticateResponse authResponse = JsonConvert.DeserializeObject<AuthenticateResponse>(await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
             {
-
                 AuthenticateResponse authDetails = JsonConvert.DeserializeObject<AuthenticateResponse>(await response.Content.ReadAsStringAsync());
 
                 // Create a new ClaimsIdentity with the desired claims
                 var claims = new[]
                 {
+                    new Claim(ClaimTypes.PrimarySid, authDetails.Id.ToString()),
                     new Claim(ClaimTypes.Name, authDetails.Username),
                     new Claim(ClaimTypes.Role, authDetails.Role.ToString())
                 };
@@ -63,6 +63,7 @@ namespace WebApp.Controllers
 
                 // Set the HttpContext.User property to the custom principal
                 _httpContextAccessor.HttpContext.User = principal;
+                _httpContextAccessor.HttpContext.Items["User"] = authDetails.Id;
 
                 var messageResponse = new
                 {
@@ -95,8 +96,7 @@ namespace WebApp.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                AuthenticateResponse authDetails = JsonConvert.DeserializeObject<AuthenticateResponse>(await response.Content.ReadAsStringAsync());
-
+                RegisterResponse authDetails = JsonConvert.DeserializeObject<RegisterResponse>(await response.Content.ReadAsStringAsync());
 
                 // Create a new ClaimsIdentity with the desired claims
                 var claims = new[]

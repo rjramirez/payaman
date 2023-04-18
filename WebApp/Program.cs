@@ -1,7 +1,10 @@
 using ClientConfiguration.IdentityServerHandler;
+using Common.Constants;
 using Common.DataTransferObjects.AppSettings;
 using Common.DataTransferObjects.Token;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Filters;
+using WebApp.Authorizations.Requirements;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 IdentityServerClientDefinition identityServerClientDefinition = new();
 builder.Configuration.Bind("IdentityServerClientDefinition", identityServerClientDefinition);
 builder.Services.AddSingleton(identityServerClientDefinition);
+
+ClientSetting clientSetting = new();
+builder.Configuration.Bind("ClientSetting", clientSetting);
+builder.Services.AddSingleton(clientSetting);
 
 ApiResourceUrl apiResourceUrl = new();
 
@@ -28,6 +35,16 @@ builder.Services.AddHttpClient("RITSApiClient", opt =>
 
 AzureAdClientDefinition azureAdClientDefinition = new();
 builder.Configuration.Bind("AzureAdClientDefinition", azureAdClientDefinition);
+builder.Services.AddAuthorization(options =>
+{
+    //options.DefaultPolicy(openId)
+    options.AddPolicy("Admin",
+         policy => policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Admin })));
+
+    options.AddPolicy("Cashier",
+         policy => policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Cashier })));
+
+});
 //builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 //    .AddMicrosoftIdentityWebApp(opt =>
 //    {
@@ -66,7 +83,6 @@ builder.Services.AddControllersWithViews(opt =>
     //   .Build();
     //opt.Filters.Add(new AuthorizeFilter(policy));
 });
-
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHsts(options =>
 {
@@ -85,6 +101,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.Use((context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Add("Server", "Server"); //For IIS 8 Only
+    return next.Invoke();
+});
+
 app.UseStatusCodePagesWithRedirects("/Error/StatusPage?code={0}");
 app.UseExceptionHandler("/Error/LogError");
 app.UseForwardedHeaders();
@@ -94,7 +118,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 //app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

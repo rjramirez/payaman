@@ -1,4 +1,5 @@
 ﻿using Common.DataTransferObjects.AppUserDetails;
+using Common.DataTransferObjects.ReferenceData;
 using Common.Entities;
 using DataAccess.DBContexts.RITSDB.Models;
 
@@ -8,8 +9,9 @@ namespace WebAPI.Services.Interfaces
     {
         Task<AuthenticateResponse> Authenticate(AuthenticateRequest model);
         Task<IEnumerable<AppUser>> GetAll();
+        Task<ReferenceDataDetail> GetByName(string name);
         Task<AppUser> GetById(int id);
-        void Register(RegisterRequest model);
+        Task<RegisterResponse> Register(RegisterRequest model);
         void Update(int id, UpdateRequest model);
         void Delete(int id);
     }

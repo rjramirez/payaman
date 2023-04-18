@@ -14,6 +14,9 @@ public class AutoMapperProfileApi : Profile
         // RegisterRequest -> AppUser
         CreateMap<RegisterRequest, AppUser>();
 
+        // RegisterRequest -> AppUser
+        CreateMap<AppUser, RegisterResponse>();
+
         // UpdateRequest -> AppUser
         CreateMap<UpdateRequest, AppUser>()
             .ForAllMembers(x => x.Condition(

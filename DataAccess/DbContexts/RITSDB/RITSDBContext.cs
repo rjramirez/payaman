@@ -8,14 +8,12 @@ namespace DataAccess.DBContexts.RITSDB
 {
     public partial class RITSDBContext : DbContext
     {
-
         public RITSDBContext(DbContextOptions<RITSDBContext> options)
             : base(options)
         {
         }
 
         public virtual DbSet<AppUser> AppUsers { get; set; }
-        public virtual DbSet<AppUserRole> AppUserRoles { get; set; }
         public virtual DbSet<AuditTrail> AuditTrails { get; set; }
         public virtual DbSet<AuditTrailDetail> AuditTrailDetails { get; set; }
         public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
@@ -34,19 +32,15 @@ namespace DataAccess.DBContexts.RITSDB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AppUserRole>(entity =>
+            modelBuilder.Entity<AppUser>(entity =>
             {
-                entity.HasOne(d => d.AppUser)
-                    .WithMany(p => p.AppUserRoles)
-                    .HasForeignKey(d => d.AppUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AppUserRole_AppUser");
+                entity.Property(e => e.RoleId).HasDefaultValueSql("((2))");
 
                 entity.HasOne(d => d.Role)
-                    .WithMany(p => p.AppUserRoles)
+                    .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AppUserRole_Role");
+                    .HasConstraintName("FK_AppUser_Role");
             });
 
             modelBuilder.Entity<AuditTrailDetail>(entity =>

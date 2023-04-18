@@ -5,6 +5,7 @@ using Common.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Runtime.CompilerServices;
 using WebAPI.Authorization;
 using WebAPI.Services.Interfaces;
 
@@ -26,17 +27,26 @@ public class UserController : ControllerBase
     [SwaggerOperation(Summary = "Authenticate User")]
     public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
     {
-        var response = await _userService.Authenticate(model);
+        AuthenticateResponse response = await _userService.Authenticate(model);
         return Ok(response);
     }
 
     [AllowAnonymous]
     [HttpPost("Register")]
     [SwaggerOperation(Summary = "Register User")]
-    public IActionResult Register(RegisterRequest model)
+    public async Task<IActionResult> Register(RegisterRequest model)
     {
-        _userService.Register(model);
-        return Ok(new { message = "Registration successful" });
+        RegisterResponse response = await _userService.Register(model);
+        return Ok(response);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{name}")]
+    [SwaggerOperation(Summary = "User Role")]
+    public IActionResult UserRole(string name)
+    {
+        var user = _userService.GetByName(name);
+        return Ok(user);
     }
 
     [HttpGet]

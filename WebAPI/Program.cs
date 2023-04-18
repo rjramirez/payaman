@@ -104,6 +104,7 @@ app.UseSwaggerUI(options =>
     }
 });
 
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();

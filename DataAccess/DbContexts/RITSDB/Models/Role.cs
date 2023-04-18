@@ -11,7 +11,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
     {
         public Role()
         {
-            AppUserRoles = new HashSet<AppUserRole>();
+            AppUsers = new HashSet<AppUser>();
         }
 
         [Key]
@@ -20,6 +20,6 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public string Name { get; set; }
 
         [InverseProperty("Role")]
-        public virtual ICollection<AppUserRole> AppUserRoles { get; set; }
+        public virtual ICollection<AppUser> AppUsers { get; set; }
     }
 }

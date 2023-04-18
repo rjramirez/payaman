@@ -10,6 +10,8 @@ using WebAPI.Services.Interfaces;
 using DataAccess.UnitOfWorks.RITSDB;
 using WebAPI.Authorization;
 using Common.Entities;
+using Common.DataTransferObjects.ReferenceData;
+using System.Security.Principal;
 
 public class UserService : IUserService
 {
@@ -39,29 +41,55 @@ public class UserService : IUserService
             throw new ArgumentException("Username or password is incorrect");
 
         // authentication successful
-        var response = _mapper.Map<AuthenticateResponse>(user);
+        AuthenticateResponse response = _mapper.Map<AuthenticateResponse>(user);
         response.Token = _jwtUtils.GenerateToken(user);
 
-        var userRole = await _RITSDBUnitOfWork.AppUserRoleRepository.SingleOrDefaultAsync(x => x.AppUserId == user.Id);
-        var role = await _RITSDBUnitOfWork.RoleRepository.SingleOrDefaultAsync(x => x.Id == userRole.Id);
-
+        var role = await _RITSDBUnitOfWork.RoleRepository.SingleOrDefaultAsync(x => x.Id == user.RoleId);
 
         // Create a new ClaimsIdentity with the desired claims
         var claims = new[]
         {
+            new Claim(ClaimTypes.PrimarySid, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, role.Name)
+            new Claim(ClaimTypes.Role, role.Id.ToString())
         };
         var identity = new ClaimsIdentity(claims, "User");
 
         // Create a new ClaimsPrincipal with the custom identity
         var principal = new ClaimsPrincipal(identity);
+        response.Role = Common.Entities.Role.Admin;
+
 
         // Set the HttpContext.User property to the custom principal
         _httpContextAccessor.HttpContext.User = principal;
-
+        _httpContextAccessor.HttpContext.Items["User"] = user.Id;
+        
 
         return response;
+    }
+
+    public async Task<RegisterResponse> Register(RegisterRequest model)
+    {
+        // validate
+        var checkUser = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(x => x.Username == model.Username);
+        if (checkUser != null)
+            throw new Exception("Username '" + model.Username + "' is already taken");
+
+        // map model to new user object
+        var user = _mapper.Map<AppUser>(model);
+
+        // hash password
+        user.Password = BCrypt.HashPassword(model.Password);
+        user.IsActive = true;
+
+        // save user
+        await _RITSDBUnitOfWork.AppUserRepository.AddAsync(user);
+        await _RITSDBUnitOfWork.SaveChangesAsync(model.Username);
+
+        // map model to new user object
+        RegisterResponse registeredUser = _mapper.Map<RegisterResponse>(user);
+
+        return registeredUser;
     }
 
     public async Task<IEnumerable<AppUser>> GetAll()
@@ -73,23 +101,11 @@ public class UserService : IUserService
     {
         return await getUser(id);
     }
-
-    public async void Register(RegisterRequest model)
+    public async Task<ReferenceDataDetail> GetByName(string name)
     {
-        // validate
-        if (await _RITSDBUnitOfWork.AppUserRepository.IsExistAsync(x => x.Username == model.Username))
-            throw new Exception("Username '" + model.Username + "' is already taken");
-
-        // map model to new user object
-        var user = _mapper.Map<AppUser>(model);
-
-        // hash password
-        user.Password = BCrypt.HashPassword(model.Password);
-
-        // save user
-        await _RITSDBUnitOfWork.AppUserRepository.AddAsync(user);
-        await _RITSDBUnitOfWork.SaveChangesAsync(model.Username);
+        return await getUserByName(name);
     }
+
 
     public async void Update(int id, UpdateRequest model)
     {
@@ -120,6 +136,21 @@ public class UserService : IUserService
     }
 
     //// helper methods
+
+    private async Task<ReferenceDataDetail> getUserByName(string name)
+    {
+        var user = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(x => x.Username == name);
+        if (user == null) throw new KeyNotFoundException("User not found");
+
+        ReferenceDataDetail referenceData = new()
+        {
+            Value = user.Id,
+            Name = user.Role.Name,
+            Active = true,
+        };
+
+        return referenceData;
+    }
 
     private async Task<AppUser> getUser(int id)
     {

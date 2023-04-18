@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using Common.DataTransferObjects.AppUserDetails;
 using Common.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using IdentityModel;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +23,7 @@ namespace WebApp.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [Authorize(Policy="Admin")]
+        [Authorize]
         public IActionResult Index()
         {
             return View();
@@ -56,10 +59,17 @@ namespace WebApp.Controllers
                     new Claim(ClaimTypes.Name, authDetails.Username),
                     new Claim(ClaimTypes.Role, authDetails.Role.ToString())
                 };
-                var identity = new ClaimsIdentity(claims, "User");
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties { IsPersistent = true };
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
 
                 // Create a new ClaimsPrincipal with the custom identity
-                var principal = new ClaimsPrincipal(identity);
+                var principal = new ClaimsPrincipal(claimsIdentity);
 
                 // Set the HttpContext.User property to the custom principal
                 _httpContextAccessor.HttpContext.User = principal;

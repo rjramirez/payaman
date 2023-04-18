@@ -2,7 +2,12 @@ using ClientConfiguration.IdentityServerHandler;
 using Common.Constants;
 using Common.DataTransferObjects.AppSettings;
 using Common.DataTransferObjects.Token;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using WebApp.Authorizations.Requirements;
 
@@ -35,6 +40,13 @@ builder.Services.AddHttpClient("RITSApiClient", opt =>
 
 AzureAdClientDefinition azureAdClientDefinition = new();
 builder.Configuration.Bind("AzureAdClientDefinition", azureAdClientDefinition);
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = "/Forbidden/";
+    });
+
 builder.Services.AddAuthorization(options =>
 {
     //options.DefaultPolicy(openId)
@@ -54,10 +66,10 @@ builder.Services.AddAuthorization(options =>
 //        opt.TenantId = azureAdClientDefinition.TenantId;
 //    });
 
-//builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
-//{
-//    opt.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath);
-//});
+builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
+{
+    opt.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath);
+});
 
 //Security Group Policy
 //SecurityGroup securityGroup = new();
@@ -74,15 +86,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 
-builder.Services.AddControllersWithViews(opt =>
-{
-    //var policy = new AuthorizationPolicyBuilder()
-    //   .RequireAuthenticatedUser()
-    //   //TODO: Remove below line if all users in tenant are allowed to access the application
-    //   .RequireClaim("groups", securityGroup.AllowedGroups)
-    //   .Build();
-    //opt.Filters.Add(new AuthorizeFilter(policy));
-});
+builder.Services.AddControllersWithViews();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHsts(options =>
 {
@@ -117,8 +122,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-//app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",

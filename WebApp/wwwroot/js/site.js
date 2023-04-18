@@ -161,7 +161,7 @@ var App = function () {
             });
         },
 
-        checkboxvalue : function (controlSelector) {
+        checkboxvalue: function (controlSelector) {
             $(controlSelector).on('change', function () {
                 if ($(this).is(':checked')) {
                     $(this).val('true');
@@ -218,19 +218,25 @@ var App = function () {
                 });
             }
         },
-        requiredTextValidator: function (value, message, control, validationMessages) {
+        requiredTextValidator: function (value, control) {
             if (value == "") {
-                validationMessages.push(message);
+                //validationMessages.push(message);
                 control.addClass("is-invalid");
             }
-            return validationMessages;
+            else {
+                control.removeClass("is-invalid");
+            }
+            //return validationMessages;
         },
-        requiredSingleSelectValidator: function (value, message, control, validationMessages) {
+        requiredSingleSelectValidator: function (value, control) {
             if (value == "" || value == 0) {
-                validationMessages.push(message);
+                //validationMessages.push(message);
                 control.addClass("is-invalid");
             }
-            return validationMessages;
+            else {
+                control.removeClass("is-invalid");
+            }
+            //return validationMessages;
         }
     }
 }();

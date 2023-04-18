@@ -1,4 +1,4 @@
-namespace DataAccess.Authorization;
+namespace WebAPI.Authorization;
 
 using DataAccess.DBContexts.RITSDB.Models;
 using Microsoft.Extensions.Options;

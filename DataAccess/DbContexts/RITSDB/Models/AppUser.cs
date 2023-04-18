@@ -9,6 +9,11 @@ namespace DataAccess.DBContexts.RITSDB.Models
     [Table("AppUser")]
     public partial class AppUser
     {
+        public AppUser()
+        {
+            AppUserRoles = new HashSet<AppUserRole>();
+        }
+
         [Key]
         public int Id { get; set; }
         [Required]
@@ -21,5 +26,9 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }
+        public bool? IsActive { get; set; }
+
+        [InverseProperty("AppUser")]
+        public virtual ICollection<AppUserRole> AppUserRoles { get; set; }
     }
 }

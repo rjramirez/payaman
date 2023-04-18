@@ -1,6 +1,5 @@
-using DataAccess.Authorization;
-using DataAccess.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
+using WebAPI.Authorization;
+using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Authorization 
 {

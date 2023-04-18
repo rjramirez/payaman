@@ -16,19 +16,25 @@ namespace DataAccess.UnitOfWorks.RITSDB
             _context = context;
             _dbContextChangeTrackingService = dbContextChangeTrackingService;
             AppUserRepository = new AppUserRepository(_context);
+            AppUserRoleRepository = new AppUserRoleRepository(_context);
+            RoleRepository = new RoleRepository(_context);
             ErrorLogRepository = new ErrorLogRepository(_context);
             AuditTrailRepository = new AuditTrailRepository(_context);
             ProductRepository = new ProductRepository(_context);
             OrderRepository = new OrderRepository(_context);
             StoreRepository = new StoreRepository(_context);
+            
         }
 
         public IAppUserRepository AppUserRepository { get; private set; }
+        public IAppUserRoleRepository AppUserRoleRepository { get; private set; }
+        public IRoleRepository RoleRepository { get; private set; }
         public IErrorLogRepository ErrorLogRepository { get; private set; }
         public IAuditTrailRepository AuditTrailRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IOrderRepository OrderRepository { get; private set; }
         public IStoreRepository StoreRepository { get; private set; }
+        
         public void Dispose()
         {
             _context.Dispose();

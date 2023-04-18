@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "SystemLog")]
+    //[Authorize(Policy = "SystemLog")]
     public class ErrorLogController : ControllerBase
     {
         private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;

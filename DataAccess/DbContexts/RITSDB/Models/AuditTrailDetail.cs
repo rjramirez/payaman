@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataAccess.DBContexts.RITSDB.Models
 {
     [Table("AuditTrailDetail")]
+    [Index("AuditTrailId", Name = "IX_AuditTrailDetail_AuditTrailId")]
     public partial class AuditTrailDetail
     {
         [Key]

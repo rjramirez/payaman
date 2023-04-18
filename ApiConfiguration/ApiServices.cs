@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text.Json.Serialization;
 
 namespace ApiConfiguration
 {
@@ -16,7 +16,11 @@ namespace ApiConfiguration
         public static void ConfigureServices(IServiceCollection services, IdentityServerApiDefinition identityServerApiDefinition)
         {
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(x =>
+            {
+                // serialize enums as strings in api responses (e.g. Role)
+                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            }); ;
 
             //Identity Server Authorization
             //services.AddAuthentication("Bearer")

@@ -14,7 +14,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebAPI.Services;
 using WebAPI.Services.Interfaces;
-using DataAccess.Authorization;
 using WebApi.Helpers;
 using DataAccess.UnitOfWorks.RITSDB;
 
@@ -48,14 +47,13 @@ builder.Services.AddScoped<IRITSDBUnitOfWork, RITSDBUnitOfWork>();
 //Internal Service Registration
 builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
 builder.Services.AddScoped<IDbContextChangeTrackingService, DbContextChangeTrackingService>();
-
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtUtils, JwtUtils>();
+builder.Services.AddHttpContextAccessor();
 
 // configure automapper with all automapper profiles from this assembly
 builder.Services.AddAutoMapper(typeof(Program));
 
-// configure DI for application services
-builder.Services.AddScoped<IJwtUtils, JwtUtils>();
-builder.Services.AddScoped<IUserService, UserService>();
 
 // configure strongly typed settings object
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
@@ -79,7 +77,7 @@ var app = builder.Build();
     // custom jwt auth middleware
     app.UseMiddleware<JwtMiddleware>();
 
-    app.MapControllers();
+    //app.MapControllers();
 }
 
 app.UseExceptionHandler(errorLogger =>

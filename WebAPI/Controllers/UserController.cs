@@ -1,10 +1,12 @@
 ﻿namespace WebAPI.Controllers;
 
 using Common.DataTransferObjects.AppUserDetails;
-using DataAccess.Authorization;
-using DataAccess.Services.Interfaces;
+using Common.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using WebAPI.Authorization;
+using WebAPI.Services.Interfaces;
 
 [Authorize]
 [ApiController]
@@ -38,6 +40,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Role.Admin)]
     public IActionResult GetAll()
     {
         var users = _userService.GetAll();
@@ -52,6 +55,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Role.Admin)]
     public IActionResult Update(int id, UpdateRequest model)
     {
         _userService.Update(id, model);
@@ -59,6 +63,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Role.Admin)]
     public IActionResult Delete(int id)
     {
         _userService.Delete(id);

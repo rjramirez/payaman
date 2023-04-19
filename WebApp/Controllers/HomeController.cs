@@ -23,7 +23,7 @@ namespace WebApp.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [Authorize]
+        [Authorize(Policy="Admin")]
         public IActionResult Index()
         {
             return View();

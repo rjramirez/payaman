@@ -27,8 +27,8 @@ ApiResourceUrl apiResourceUrl = new();
 builder.Configuration.Bind("ApiResourceUrl", apiResourceUrl);
 builder.Services.AddSingleton(apiResourceUrl);
 
-builder.Services.AddSingleton<IdentityServerTokenDetail>();
-builder.Services.AddTransient<IdentityServerTokenHandler>();
+//builder.Services.AddSingleton<IdentityServerTokenDetail>();
+//builder.Services.AddTransient<IdentityServerTokenHandler>();
 
 builder.Services.AddHttpClient("RITSApiClient", opt =>
 {
@@ -49,7 +49,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization(options =>
 {
-    //options.DefaultPolicy(openId)
     options.AddPolicy("Admin",
          policy => policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Admin })));
 

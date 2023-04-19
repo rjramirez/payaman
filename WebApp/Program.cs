@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using WebApp.Authorizations.Handler;
 using WebApp.Authorizations.Requirements;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,9 +28,6 @@ ApiResourceUrl apiResourceUrl = new();
 builder.Configuration.Bind("ApiResourceUrl", apiResourceUrl);
 builder.Services.AddSingleton(apiResourceUrl);
 
-//builder.Services.AddSingleton<IdentityServerTokenDetail>();
-//builder.Services.AddTransient<IdentityServerTokenHandler>();
-
 builder.Services.AddHttpClient("RITSApiClient", opt =>
 {
     opt.Timeout = TimeSpan.FromMinutes(5);
@@ -44,40 +42,22 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options => {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/Forbidden/";
+        options.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath); ;
     });
+
+builder.Services.AddSingleton<IAuthorizationHandler, RoleHandler>();
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin",
-         policy => policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Admin })));
+         policy => {
+			 //policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+			 policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Admin }));
+         });
 
     options.AddPolicy("Cashier",
          policy => policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Cashier })));
-
 });
-//builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-//    .AddMicrosoftIdentityWebApp(opt =>
-//    {
-//        opt.Instance = azureAdClientDefinition.Instance;
-//        opt.CallbackPath = azureAdClientDefinition.CallbackPath;
-//        opt.ClientId = azureAdClientDefinition.ClientId;
-//        opt.TenantId = azureAdClientDefinition.TenantId;
-//    });
-
-builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
-{
-    opt.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath);
-});
-
-//Security Group Policy
-//SecurityGroup securityGroup = new();
-//builder.Configuration.Bind("SecurityGroup", securityGroup);
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("Support",
-//         policy => policy.RequireClaim("groups", securityGroup.ApplicationSupport));
-//});
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

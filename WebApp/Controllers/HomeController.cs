@@ -16,7 +16,8 @@ namespace WebApp.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private IMapper _mapper;
         private IHttpContextAccessor _httpContextAccessor;
-        public HomeController(IHttpClientFactory httpClientFactory, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+
+		public HomeController(IHttpClientFactory httpClientFactory, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
             _mapper = mapper;
@@ -57,7 +58,7 @@ namespace WebApp.Controllers
                 {
                     new Claim(ClaimTypes.PrimarySid, authDetails.Id.ToString()),
                     new Claim(ClaimTypes.Name, authDetails.Username),
-                    new Claim(ClaimTypes.Role, authDetails.Role.ToString())
+					new Claim(ClaimTypes.Role, authDetails.Role.ToString())
                 };
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -67,13 +68,6 @@ namespace WebApp.Controllers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
-
-                // Create a new ClaimsPrincipal with the custom identity
-                var principal = new ClaimsPrincipal(claimsIdentity);
-
-                // Set the HttpContext.User property to the custom principal
-                _httpContextAccessor.HttpContext.User = principal;
-                _httpContextAccessor.HttpContext.Items["User"] = authDetails.Id;
 
                 var messageResponse = new
                 {

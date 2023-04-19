@@ -1,29 +1,26 @@
-﻿using Common.Constants;
-using Common.DataTransferObjects.AppSettings;
-using System.Security.Claims;
+﻿using Common.DataTransferObjects.ReferenceData;
 using System.Security.Principal;
+using WebApp.Services.Interfaces;
 
 namespace WebApp.Extensions
 {
     public static class UserRoleExtension
     {
-        public static List<string> ApplicationRoleName(this IPrincipal User)
+        public async static Task<string> RoleName(this IPrincipal principal, ICommonService commonService)
         {
-            //TODO: Customize Application role
-            IConfiguration configuration = StaticConfiguration.Configuration;
-            List<string> applicationRole = new();
-            SecurityGroup securityGroup = new();
-            configuration.Bind("SecurityGroup", securityGroup);
+            ReferenceDataDetail roleDetail = await commonService.GetUserRole(principal);
+            return roleDetail.Name;
+        }
 
-            ClaimsIdentity claimsIdentity = (ClaimsIdentity)User.Identity;
-            IEnumerable<Claim> groupClaims = claimsIdentity.Claims.Where(c => c.Type == "groups").ToList();
+        public async static Task<byte> RoleId(this IPrincipal principal, ICommonService commonService)
+        {
+            ReferenceDataDetail roleDetail = await commonService.GetUserRole(principal);
+            return byte.Parse(roleDetail.Name.ToString());
+        }
 
-            if (groupClaims.Any(c => securityGroup.ApplicationSupport.Contains(c.Value)))
-            {
-                applicationRole.Add(RoleConstant.Support);
-            }
-
-            return applicationRole;
+        public async static Task<ReferenceDataDetail> UserRole(this IPrincipal principal, ICommonService commonService)
+        {
+            return await commonService.GetUserRole(principal);
         }
     }
 }

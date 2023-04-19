@@ -1,5 +1,6 @@
-using ClientConfiguration.IdentityServerHandler;
+using Common.Constants;
 using Common.DataTransferObjects.AppSettings;
+<<<<<<< HEAD
 using Common.DataTransferObjects.Configurations;
 using Common.DataTransferObjects.Token;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -7,6 +8,16 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
+=======
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
+using WebApp.Authorizations.Handler;
+using WebApp.Authorizations.Requirements;
+using WebApp.Services.Interfaces;
+using WebApp.Services;
+>>>>>>> dev
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,18 +26,24 @@ IdentityServerClientDefinition identityServerClientDefinition = new();
 builder.Configuration.Bind("IdentityServerClientDefinition", identityServerClientDefinition);
 builder.Services.AddSingleton(identityServerClientDefinition);
 
+<<<<<<< HEAD
 WebAppSetting webAppSetting = new();
 builder.Configuration.Bind("WebAppSetting", webAppSetting);
 builder.Services.AddSingleton(webAppSetting);
 
+=======
+ClientSetting clientSetting = new();
+builder.Configuration.Bind("ClientSetting", clientSetting);
+builder.Services.AddSingleton(clientSetting);
+>>>>>>> dev
 
 ApiResourceUrl apiResourceUrl = new();
 
 builder.Configuration.Bind("ApiResourceUrl", apiResourceUrl);
 builder.Services.AddSingleton(apiResourceUrl);
 
-builder.Services.AddSingleton<IdentityServerTokenDetail>();
-builder.Services.AddTransient<IdentityServerTokenHandler>();
+
+builder.Services.AddSingleton<ICommonService, CommonService>();
 
 builder.Services.AddHttpClient("RITSApiClient", opt =>
 {
@@ -35,6 +52,7 @@ builder.Services.AddHttpClient("RITSApiClient", opt =>
     opt.BaseAddress = new Uri(apiResourceUrl.RITSApiBaseUrl);
 }).AddHttpMessageHandler<IdentityServerTokenHandler>();
 
+<<<<<<< HEAD
 AzureAdClientDefinition azureAdClientDefinition = new();
 builder.Configuration.Bind("AzureAdClientDefinition", azureAdClientDefinition);
 builder.Services.AddSingleton(azureAdClientDefinition);
@@ -55,15 +73,30 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
     opt.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath);
 });
 
+=======
 
-//Security Group Policy
-//SecurityGroup securityGroup = new();
-//builder.Configuration.Bind("SecurityGroup", securityGroup);
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("Support",
-//         policy => policy.RequireClaim("groups", securityGroup.ApplicationSupport));
-//});
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = new PathString(clientSetting.AccessDeniedPath); ;
+    });
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin",
+         policy => {
+			 //policy.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
+			 policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Admin }));
+         });
+
+    options.AddPolicy("Cashier",
+         policy => policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Cashier })));
+});
+builder.Services.AddSingleton<IAuthorizationHandler, RoleHandler>();
+>>>>>>> dev
+
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -71,6 +104,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 
+<<<<<<< HEAD
 builder.Services.AddControllersWithViews(opt =>
 {
     var policy = new AuthorizationPolicyBuilder()
@@ -80,6 +114,9 @@ builder.Services.AddControllersWithViews(opt =>
        .Build();
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
+=======
+builder.Services.AddControllersWithViews();
+>>>>>>> dev
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHsts(options =>
@@ -110,6 +147,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.Use((context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Add("Server", "Server"); //For IIS 8 Only
+    return next.Invoke();
+});
+
 app.UseStatusCodePagesWithRedirects("/Error/StatusPage?code={0}");
 app.UseExceptionHandler("/Error/LogError");
 app.UseForwardedHeaders();
@@ -120,6 +165,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+<<<<<<< HEAD
+=======
+
+>>>>>>> dev
 
 app.MapControllerRoute(
     name: "default",

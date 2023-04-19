@@ -12,9 +12,9 @@ namespace WebAPI.Services
     {
         private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;
 
-        public ErrorLogService(IRITSDBUnitOfWork oatsDBUnitOfWork)
+        public ErrorLogService(IRITSDBUnitOfWork ritsDBUnitOfWork)
         {
-            _RITSDBUnitOfWork = oatsDBUnitOfWork;
+            _RITSDBUnitOfWork = ritsDBUnitOfWork;
         }
 
         public async Task<ErrorMessage> LogApiError(HttpContext context)

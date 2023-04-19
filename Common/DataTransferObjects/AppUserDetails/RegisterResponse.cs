@@ -2,7 +2,7 @@ using Common.Entities;
 
 namespace Common.DataTransferObjects.AppUserDetails
 {
-    public class AuthenticateResponse
+    public class RegisterResponse
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

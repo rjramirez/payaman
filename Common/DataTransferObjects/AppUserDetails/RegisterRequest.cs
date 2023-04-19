@@ -1,8 +1,9 @@
+using Common.DataTransferObjects._Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace Common.DataTransferObjects.AppUserDetails
 {
-    public class RegisterRequest
+    public class RegisterRequest : SaveDTOExtension
     {
         [Required]
         public string FirstName { get; set; }

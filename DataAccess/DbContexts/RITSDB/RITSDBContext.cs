@@ -14,6 +14,7 @@ namespace DataAccess.DBContexts.RITSDB
         }
         public virtual DbSet<AspNetUser> ApplicationUser { get; set; }
 
+<<<<<<< HEAD
         public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
         public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
@@ -21,6 +22,10 @@ namespace DataAccess.DBContexts.RITSDB
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
+=======
+        public virtual DbSet<AppUser> AppUsers { get; set; }
+        public virtual DbSet<AppUserRole> AppUserRoles { get; set; }
+>>>>>>> dev
         public virtual DbSet<AuditTrail> AuditTrails { get; set; }
         public virtual DbSet<AuditTrailDetail> AuditTrailDetails { get; set; }
         public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
@@ -38,6 +43,7 @@ namespace DataAccess.DBContexts.RITSDB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+<<<<<<< HEAD
             modelBuilder.Entity<AspNetRole>(entity =>
             {
                 entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
@@ -60,6 +66,15 @@ namespace DataAccess.DBContexts.RITSDB
             modelBuilder.Entity<AspNetUserToken>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+=======
+            modelBuilder.Entity<AppUser>(entity =>
+            {
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.AppUsers)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUser_Role");
+>>>>>>> dev
             });
 
             modelBuilder.Entity<AuditTrailDetail>(entity =>

@@ -1,5 +1,7 @@
-namespace DataAccess.Authorization;
+namespace WebAPI.Authorization;
 
+using Common.Constants;
+using Common.Entities;
 using DataAccess.DBContexts.RITSDB.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -30,7 +32,12 @@ public class JwtUtils : IJwtUtils
         var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+            Subject = new ClaimsIdentity(new[] { 
+                new Claim("id", user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimConstant.ClientId, user.Username),
+                new Claim(ClaimTypes.Role, ((Role)user.RoleId).ToString())
+            }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 ﻿Scaffold-DbContext "Server=DESKTOP-44OTDTM\SQLEXPRESS;Database=rits;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -DataAnnotations -OutputDir DBContexts/RITSDB/Models -ContextDir DBContexts/RITSDB -Context RITSDBContext -Tables AspNetRoleClaims, AspNetRoles, AspNetUserClaims, AspNetUserLogins, AspNetUsers, AspNetUserTokens, AspNetUserRoles, AuditTrail, AuditTrailDetail, ErrorLog, Order, Product, Store -Force
+=======
+﻿ Scaffold-DbContext "Server=DESKTOP-44OTDTM\SQLEXPRESS;Database=rits;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -DataAnnotations -OutputDir DBContexts/RITSDB/Models -ContextDir DBContexts/RITSDB -Context RITSDBContext -Tables AppUser, AppUserRole, Order, Product, Store, AuditTrail, AuditTrailDetail, ErrorLog -Force
+>>>>>>> dev

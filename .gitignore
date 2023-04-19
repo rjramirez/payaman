@@ -387,3 +387,5 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 /.sonarqube
+/ApiConfiguration/ApiServices.cs
+/Common/Constants/RoleConstant.cs

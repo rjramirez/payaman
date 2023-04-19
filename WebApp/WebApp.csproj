@@ -9,6 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Authorizations\AllowAnonymousAttribute.cs" />
+    <Compile Remove="Authorizations\AuthorizeAttribute.cs" />
+    <Compile Remove="Authorizations\Handler\ProjectAdminAccessHandler.cs" />
+    <Compile Remove="Authorizations\Requirements\ProjectAdminAccessRequirement.cs" />
+    <Compile Remove="Services\ActivityCacheService.cs" />
+    <Compile Remove="Services\ExportService.cs" />
+    <Compile Remove="Services\GlobalMappingService.cs" />
+    <Compile Remove="Services\Interfaces\IActivityCacheService.cs" />
+    <Compile Remove="Services\Interfaces\IExportService.cs" />
+    <Compile Remove="Services\Interfaces\IGlobalMappingService.cs" />
+    <Compile Remove="Services\Interfaces\IMicrosoftGraphService.cs" />
+    <Compile Remove="Services\MicrosoftGraphService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
   </ItemGroup>
 

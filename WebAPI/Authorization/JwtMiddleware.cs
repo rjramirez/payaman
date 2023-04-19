@@ -1,8 +1,13 @@
+<<<<<<< HEAD:DataAccess/Authorization/JwtMiddleware.cs
 namespace DataAccess.Authorization;
 
 using DataAccess.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+=======
+using WebAPI.Authorization;
+using WebAPI.Services.Interfaces;
+>>>>>>> dev:WebAPI/Authorization/JwtMiddleware.cs
 
 public class JwtMiddleware
 {

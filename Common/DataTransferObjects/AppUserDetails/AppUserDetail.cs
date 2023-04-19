@@ -1,4 +1,5 @@
 ﻿using Common.DataTransferObjects._Base;
+using System.Text.Json.Serialization;
 
 namespace Common.DataTransferObjects.AppUserDetails
 {
@@ -9,5 +10,6 @@ namespace Common.DataTransferObjects.AppUserDetails
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+
     }
 }

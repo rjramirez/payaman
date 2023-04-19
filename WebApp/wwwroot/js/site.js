@@ -161,7 +161,7 @@ var App = function () {
             });
         },
 
-        checkboxvalue : function (controlSelector) {
+        checkboxvalue: function (controlSelector) {
             $(controlSelector).on('change', function () {
                 if ($(this).is(':checked')) {
                     $(this).val('true');

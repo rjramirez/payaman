@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "SystemLog")]
+    //[Authorize(Policy = "SystemLog")]
     [ApiVersion("1.0")]
     public class AuditTrailController : ControllerBase
     {

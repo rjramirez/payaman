@@ -15,24 +15,41 @@ namespace DataAccess.UnitOfWorks.RITSDB
         {
             _context = context;
             _dbContextChangeTrackingService = dbContextChangeTrackingService;
+<<<<<<< HEAD
+=======
+            AppUserRepository = new AppUserRepository(_context);
+            AppUserRoleRepository = new AppUserRoleRepository(_context);
+>>>>>>> dev
             ErrorLogRepository = new ErrorLogRepository(_context);
             AuditTrailRepository = new AuditTrailRepository(_context);
             ProductRepository = new ProductRepository(_context);
             OrderRepository = new OrderRepository(_context);
             StoreRepository = new StoreRepository(_context);
+<<<<<<< HEAD
             AspNetUserRepository = new AspNetUserRepository(_context);
             AspNetUserRoleRepository = new AspNetUserRoleRepository(_context);
             AspNetRoleRepository = new AspNetRoleRepository(_context);
         }
 
+=======
+            
+        }
+
+        public IAppUserRepository AppUserRepository { get; private set; }
+        public IAppUserRoleRepository AppUserRoleRepository { get; private set; }
+>>>>>>> dev
         public IErrorLogRepository ErrorLogRepository { get; private set; }
         public IAuditTrailRepository AuditTrailRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IOrderRepository OrderRepository { get; private set; }
         public IStoreRepository StoreRepository { get; private set; }
+<<<<<<< HEAD
         public IAspNetUserRepository AspNetUserRepository { get; private set; }
         public IAspNetUserRoleRepository AspNetUserRoleRepository { get; private set; }
         public IAspNetRoleRepository AspNetRoleRepository { get; private set; }
+=======
+        
+>>>>>>> dev
         public void Dispose()
         {
             _context.Dispose();

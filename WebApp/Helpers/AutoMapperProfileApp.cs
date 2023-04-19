@@ -10,5 +10,11 @@ public class AutoMapperProfileApp : Profile
     {
         // AppUserDetail -> RegisterRequest
         CreateMap<AppUserDetail, RegisterRequest>();
+<<<<<<< HEAD
+=======
+
+        // AppUserDetail -> AuthenticateRequest
+        CreateMap<AppUserDetail, AuthenticateRequest>();
+>>>>>>> dev
     }
 }

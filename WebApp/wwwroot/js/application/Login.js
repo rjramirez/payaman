@@ -8,7 +8,7 @@ let Login = function () {
 
     return {
         initialize: function () {
-            
+
             $("#btn_login").click(function () {
                 Login.authenticate();
             });

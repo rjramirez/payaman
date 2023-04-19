@@ -31,7 +31,15 @@ IdentityServerApiDefinition identityServerApiDefinition = new();
 builder.Configuration.Bind("IdentityServerApiDefinition", identityServerApiDefinition);
 builder.Services.AddSingleton(identityServerApiDefinition);
 
+<<<<<<< HEAD
 
+=======
+ClientSetting clientSetting = new();
+builder.Configuration.Bind("ClientSetting", clientSetting);
+builder.Services.AddSingleton(clientSetting);
+
+ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
+>>>>>>> dev
 
 //Api Policy Authorization
 builder.Services.AddAuthorization(options =>
@@ -56,8 +64,14 @@ builder.Services.AddScoped<IRITSDBUnitOfWork, RITSDBUnitOfWork>();
 //Internal Service Registration
 builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
 builder.Services.AddScoped<IDbContextChangeTrackingService, DbContextChangeTrackingService>();
+<<<<<<< HEAD
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
+=======
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtUtils, JwtUtils>();
+builder.Services.AddHttpContextAccessor();
+>>>>>>> dev
 
 // configure automapper with all automapper profiles from this assembly
 builder.Services.AddAutoMapper(typeof(Program));
@@ -97,8 +111,28 @@ builder.Services.AddAutoMapper(typeof(Program));
 /*HTTP REQUEST PIPELINE*/
 var app = builder.Build();
 
+<<<<<<< HEAD
 // Seed data
 //SeedData.Initialize(app.Services);
+=======
+
+// configure HTTP request pipeline
+{
+    // global cors policy
+    app.UseCors(x => x
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+
+    // global error handler
+    app.UseMiddleware<ErrorHandlerMiddleware>();
+
+    // custom jwt auth middleware
+    app.UseMiddleware<JwtMiddleware>();
+
+    //app.MapControllers();
+}
+>>>>>>> dev
 
 app.UseExceptionHandler(errorLogger =>
 {

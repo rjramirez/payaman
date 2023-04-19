@@ -3,7 +3,7 @@ using DataAccess.Repositories.Base;
 
 namespace DataAccess.Repositories.RITSDB.Interfaces
 {
-    public interface IRoleRepository : IBaseRepository<Role>
+    public interface IAppUserRoleRepository : IBaseRepository<AppUserRole>
     {
     }
 }

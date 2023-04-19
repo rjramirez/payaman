@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using IdentityModel;
+using Common.Constants;
 
 namespace WebApp.Controllers
 {
@@ -58,7 +59,8 @@ namespace WebApp.Controllers
                 {
                     new Claim(ClaimTypes.PrimarySid, authDetails.Id.ToString()),
                     new Claim(ClaimTypes.Name, authDetails.Username),
-					new Claim(ClaimTypes.Role, authDetails.Role.ToString())
+                    new Claim(ClaimConstant.ClientId, authDetails.Username),
+                    new Claim(ClaimTypes.Role, authDetails.Role.ToString())
                 };
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -101,20 +103,6 @@ namespace WebApp.Controllers
             if (response.IsSuccessStatusCode)
             {
                 RegisterResponse authDetails = JsonConvert.DeserializeObject<RegisterResponse>(await response.Content.ReadAsStringAsync());
-
-                // Create a new ClaimsIdentity with the desired claims
-                var claims = new[]
-                {
-                    new Claim(ClaimTypes.Name, authDetails.Username),
-                    new Claim(ClaimTypes.Role, authDetails.Role.ToString())
-                };
-                var identity = new ClaimsIdentity(claims, "User");
-
-                // Create a new ClaimsPrincipal with the custom identity
-                var principal = new ClaimsPrincipal(identity);
-
-                // Set the HttpContext.User property to the custom principal
-                _httpContextAccessor.HttpContext.User = principal;
 
                 var messageResponse = new
                 {

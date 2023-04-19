@@ -1,16 +1,13 @@
-using ClientConfiguration.IdentityServerHandler;
 using Common.Constants;
 using Common.DataTransferObjects.AppSettings;
-using Common.DataTransferObjects.Token;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Filters;
 using WebApp.Authorizations.Handler;
 using WebApp.Authorizations.Requirements;
+using WebApp.Services.Interfaces;
+using WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +25,9 @@ ApiResourceUrl apiResourceUrl = new();
 builder.Configuration.Bind("ApiResourceUrl", apiResourceUrl);
 builder.Services.AddSingleton(apiResourceUrl);
 
+
+builder.Services.AddSingleton<ICommonService, CommonService>();
+
 builder.Services.AddHttpClient("RITSApiClient", opt =>
 {
     opt.Timeout = TimeSpan.FromMinutes(5);
@@ -36,16 +36,14 @@ builder.Services.AddHttpClient("RITSApiClient", opt =>
 });
     //.AddHttpMessageHandler<IdentityServerTokenHandler>();
 
-AzureAdClientDefinition azureAdClientDefinition = new();
-builder.Configuration.Bind("AzureAdClientDefinition", azureAdClientDefinition);
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options => {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = new PathString(azureAdClientDefinition.AccessDeniedPath); ;
+        options.AccessDeniedPath = new PathString(clientSetting.AccessDeniedPath); ;
     });
 
-builder.Services.AddSingleton<IAuthorizationHandler, RoleHandler>();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -58,6 +56,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Cashier",
          policy => policy.Requirements.Add(new RoleRequirement(new byte[] { RoleConstant.Cashier })));
 });
+builder.Services.AddSingleton<IAuthorizationHandler, RoleHandler>();
+
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

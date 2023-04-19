@@ -12,6 +12,7 @@ using WebAPI.Authorization;
 using Common.Entities;
 using Common.DataTransferObjects.ReferenceData;
 using System.Security.Principal;
+using Common.Constants;
 
 public class UserService : IUserService
 {
@@ -44,20 +45,21 @@ public class UserService : IUserService
         AuthenticateResponse response = _mapper.Map<AuthenticateResponse>(user);
         response.Token = _jwtUtils.GenerateToken(user);
 
-        var role = await _RITSDBUnitOfWork.RoleRepository.SingleOrDefaultAsync(x => x.Id == user.RoleId);
+        var role = await _RITSDBUnitOfWork.AppUserRoleRepository.SingleOrDefaultAsync(x => x.Id == user.RoleId);
 
         // Create a new ClaimsIdentity with the desired claims
         var claims = new[]
         {
             new Claim(ClaimTypes.PrimarySid, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, role.Id.ToString())
+            new Claim(ClaimConstant.ClientId, user.Username),
+            new Claim(ClaimTypes.Role, role.Name)
         };
         var identity = new ClaimsIdentity(claims, "User");
 
         // Create a new ClaimsPrincipal with the custom identity
         var principal = new ClaimsPrincipal(identity);
-        response.Role = Common.Entities.Role.Admin;
+        response.Role = (Common.Entities.Role)role.Id;
 
 
         // Set the HttpContext.User property to the custom principal
@@ -101,9 +103,10 @@ public class UserService : IUserService
     {
         return await getUser(id);
     }
-    public async Task<ReferenceDataDetail> GetByName(string name)
+    public async Task<ReferenceDataDetail> GetUserRoleByName(string name)
     {
-        return await getUserByName(name);
+        var appUserRole = await getUserRoleByName(name);
+        return appUserRole;
     }
 
 
@@ -137,15 +140,17 @@ public class UserService : IUserService
 
     //// helper methods
 
-    private async Task<ReferenceDataDetail> getUserByName(string name)
+    private async Task<ReferenceDataDetail> getUserRoleByName(string name)
     {
         var user = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(x => x.Username == name);
+        var userRole = await _RITSDBUnitOfWork.AppUserRoleRepository.SingleOrDefaultAsync(x => x.Id == user.RoleId);
+
         if (user == null) throw new KeyNotFoundException("User not found");
 
         ReferenceDataDetail referenceData = new()
         {
-            Value = user.Id,
-            Name = user.Role.Name,
+            Value = user.RoleId,
+            Name = userRole.Name,
             Active = true,
         };
 

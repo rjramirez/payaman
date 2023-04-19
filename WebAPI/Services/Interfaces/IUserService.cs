@@ -9,7 +9,7 @@ namespace WebAPI.Services.Interfaces
     {
         Task<AuthenticateResponse> Authenticate(AuthenticateRequest model);
         Task<IEnumerable<AppUser>> GetAll();
-        Task<ReferenceDataDetail> GetByName(string name);
+        Task<ReferenceDataDetail> GetUserRoleByName(string name);
         Task<AppUser> GetById(int id);
         Task<RegisterResponse> Register(RegisterRequest model);
         void Update(int id, UpdateRequest model);

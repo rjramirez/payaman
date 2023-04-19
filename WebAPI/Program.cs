@@ -27,6 +27,10 @@ IdentityServerApiDefinition identityServerApiDefinition = new();
 builder.Configuration.Bind("IdentityServerApiDefinition", identityServerApiDefinition);
 builder.Services.AddSingleton(identityServerApiDefinition);
 
+ClientSetting clientSetting = new();
+builder.Configuration.Bind("ClientSetting", clientSetting);
+builder.Services.AddSingleton(clientSetting);
+
 ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 
 //Api Policy Authorization

@@ -9,16 +9,20 @@ namespace DataAccess.DBContexts.RITSDB.Models
     [Table("AppUserRole")]
     public partial class AppUserRole
     {
+        public AppUserRole()
+        {
+            AppUsers = new HashSet<AppUser>();
+        }
+
         [Key]
         public int Id { get; set; }
-        public int AppUserId { get; set; }
-        public int RoleId { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string Name { get; set; }
+        [StringLength(20)]
+        public string Description { get; set; }
 
-        [ForeignKey("AppUserId")]
-        [InverseProperty("AppUserRoles")]
-        public virtual AppUser AppUser { get; set; }
-        [ForeignKey("RoleId")]
-        [InverseProperty("AppUserRoles")]
-        public virtual Role Role { get; set; }
+        [InverseProperty("Role")]
+        public virtual ICollection<AppUser> AppUsers { get; set; }
     }
 }

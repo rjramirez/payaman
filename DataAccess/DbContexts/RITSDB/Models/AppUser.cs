@@ -22,10 +22,10 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [Required]
         public string Password { get; set; }
         public int RoleId { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
 
         [ForeignKey("RoleId")]
         [InverseProperty("AppUsers")]
-        public virtual Role Role { get; set; }
+        public virtual AppUserRole Role { get; set; }
     }
 }

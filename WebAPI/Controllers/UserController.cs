@@ -2,12 +2,16 @@
 
 using Common.DataTransferObjects.AppUserDetails;
 using Common.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using WebAPI.Authorization;
 using WebAPI.Services.Interfaces;
+using Common.Constants;
 
 [Authorize]
 [ApiController]
@@ -27,8 +31,26 @@ public class UserController : ControllerBase
     [SwaggerOperation(Summary = "Authenticate User")]
     public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
     {
-        AuthenticateResponse response = await _userService.Authenticate(model);
-        return Ok(response);
+        AuthenticateResponse authDetails = await _userService.Authenticate(model);
+
+        // Create a new ClaimsIdentity with the desired claims
+        //var claims = new[]
+        //{
+        //            new Claim(ClaimTypes.PrimarySid, authDetails.Id.ToString()),
+        //            new Claim(ClaimTypes.Name, authDetails.Username),
+        //            new Claim(ClaimConstant.ClientId, authDetails.Username),
+        //            new Claim(ClaimTypes.Role, authDetails.Role.ToString())
+        //        };
+        //var claimsIdentity = new ClaimsIdentity(
+        //    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+        //var authProperties = new AuthenticationProperties { IsPersistent = true };
+        //await HttpContext.SignInAsync(
+        //    CookieAuthenticationDefaults.AuthenticationScheme,
+        //    new ClaimsPrincipal(claimsIdentity),
+        //    authProperties);
+
+        return Ok(authDetails);
     }
 
     [AllowAnonymous]
@@ -37,15 +59,16 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Register(RegisterRequest model)
     {
         RegisterResponse response = await _userService.Register(model);
+
         return Ok(response);
     }
 
     [AllowAnonymous]
-    [HttpGet("{name}")]
+    [HttpGet("UserRole/{name}")]
     [SwaggerOperation(Summary = "User Role")]
-    public IActionResult UserRole(string name)
+    public async Task<IActionResult> UserRole(string name)
     {
-        var user = _userService.GetByName(name);
+        var user = await _userService.GetUserRoleByName(name);
         return Ok(user);
     }
 

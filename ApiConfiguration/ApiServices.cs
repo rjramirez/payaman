@@ -21,7 +21,7 @@ namespace ApiConfiguration
                 // serialize enums as strings in api responses (e.g. Role)
                 x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             }); ;
-
+            
             //Identity Server Authorization
             //services.AddAuthentication("Bearer")
             //    .AddJwtBearer("Bearer", config =>

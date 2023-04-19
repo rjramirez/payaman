@@ -5,9 +5,9 @@ using DataAccess.Repositories.RITSDB.Interfaces;
 
 namespace DataAccess.Repositories.RITSDB
 {
-    public class RoleRepository : BaseRepository<Role>, IRoleRepository
+    public class AppUserRoleRepository : BaseRepository<AppUserRole>, IAppUserRoleRepository
     {
-        public RoleRepository(RITSDBContext context) : base(context)
+        public AppUserRoleRepository(RITSDBContext context) : base(context)
         {
 
         }

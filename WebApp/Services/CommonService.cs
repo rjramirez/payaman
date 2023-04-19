@@ -68,7 +68,7 @@ namespace WebApp.Services
         {
             if (!_memoryCache.TryGetValue(apiEndpoint, out IEnumerable<ReferenceDataDetail> referenceDataDetails))
             {
-                var client = _httpClientFactory.CreateClient("RITSApiClientt");
+                var client = _httpClientFactory.CreateClient("RITSApiClient");
                 var response = await client.GetAsync(apiEndpoint);
 
                 if (response.IsSuccessStatusCode)
@@ -94,11 +94,11 @@ namespace WebApp.Services
 
         public async Task<ReferenceDataDetail> GetUserRole(IPrincipal principal)
         {
-            HttpClient ritsHttpClient = _httpClientFactory.CreateClient("RITSApiClientt");
+            HttpClient ritsHttpClient = _httpClientFactory.CreateClient("RITSApiClient");
             string userRolesCacheName = string.Format(RoleConstant.UserRolesCacheName, principal.Identity.Name);
             if (!_memoryCache.TryGetValue(userRolesCacheName, out ReferenceDataDetail userRole))
             {
-                var response = await ritsHttpClient.GetAsync($"api/User/{principal.Identity.Name}");
+                var response = await ritsHttpClient.GetAsync($"api/User/UserRole/{principal.Identity.Name}");
                 if (response.IsSuccessStatusCode)
                 {
                     userRole = JsonConvert.DeserializeObject<ReferenceDataDetail>(await response.Content.ReadAsStringAsync());

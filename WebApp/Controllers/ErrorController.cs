@@ -93,7 +93,7 @@ namespace WebApp.Controllers
 
         [AllowAnonymous]
         public async Task<IActionResult> LogError()
-       {
+        {
             string user = User.Identity.Name;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");

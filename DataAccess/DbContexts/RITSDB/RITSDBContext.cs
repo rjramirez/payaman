@@ -61,7 +61,7 @@ namespace DataAccess.DBContexts.RITSDB
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.Property(e => e.ImageName).IsFixedLength();
+                entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
             });
 
             modelBuilder.Entity<Store>(entity =>

@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Layout\**" />
+    <Content Remove="Models\Layout\**" />
+    <EmbeddedResource Remove="Models\Layout\**" />
+    <None Remove="Models\Layout\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Authorizations\AllowAnonymousAttribute.cs" />
     <Compile Remove="Authorizations\AuthorizeAttribute.cs" />
     <Compile Remove="Authorizations\Handler\ProjectAdminAccessHandler.cs" />
@@ -39,7 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Layout\" />
     <Folder Include="Views\Error\" />
   </ItemGroup>
 

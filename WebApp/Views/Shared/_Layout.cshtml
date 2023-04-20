@@ -20,6 +20,7 @@
     @{
         await Html.RenderPartialAsync("_LayoutHead");
     }
+    @RenderSection("Styles", false)
 </head>
 <body class="hold-transition sidebar-mini layout-fixed text-sm">
     <div class="wrapper">

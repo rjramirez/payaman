@@ -75,8 +75,8 @@ namespace WebApp.Controllers
                 // Create a new ClaimsIdentity with the desired claims
                 var claims = new[]
                 {
-                    new Claim(ClaimTypes.PrimarySid, authDetails.Id.ToString()),
                     new Claim(ClaimTypes.Name, authDetails.Username),
+                    new Claim("name", authDetails.FirstName + " " + authDetails.LastName),
                     new Claim(ClaimConstant.ClientId, authDetails.Username),
                     new Claim("Token", authDetails.Token),
                     new Claim(ClaimTypes.Role, authDetails.Role.ToString())

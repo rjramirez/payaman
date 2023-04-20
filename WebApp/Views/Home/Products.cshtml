@@ -1,11 +1,40 @@
-﻿<div class="container-fluid">
-    <div class="row ">
-        <div class="col-2 mt-2">
-            <div class="bd-callout bd-callout-warning">
-                <span class="text-xs">Iced Spanish Latte</span></br>
-                <span>P90</span>
-            </div>
-        </div>
+﻿@section Styles
+{
+    <link href="~/lib/datatables-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+}
+
+
+<div class="container-fluid">
+    <div class="row">
+
+    </div>
+    <div class="row">
+        <table id="example" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Office</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Office</th>
+                    <th>Salary</th>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 
+@section Scripts
+{
+    <script src="~/lib/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/application/Product.js"></script>
+}

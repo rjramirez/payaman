@@ -2,12 +2,12 @@ using Common.Constants;
 using Common.DataTransferObjects.AppSettings;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using WebApp.Authorizations.Handler;
 using WebApp.Authorizations.Requirements;
 using WebApp.Services.Interfaces;
 using WebApp.Services;
+using Common.DataTransferObjects.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +21,12 @@ builder.Configuration.Bind("ClientSetting", clientSetting);
 builder.Services.AddSingleton(clientSetting);
 
 ApiResourceUrl apiResourceUrl = new();
-
 builder.Configuration.Bind("ApiResourceUrl", apiResourceUrl);
 builder.Services.AddSingleton(apiResourceUrl);
+
+WebAppSetting webAppSetting = new();
+builder.Configuration.Bind("WebAppSetting", webAppSetting);
+builder.Services.AddSingleton(webAppSetting);
 
 
 builder.Services.AddSingleton<ICommonService, CommonService>();
@@ -62,6 +65,17 @@ builder.Services.AddSingleton<IAuthorizationHandler, RoleHandler>();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
+//Session and State Management
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".RITS.Session";
+    options.IdleTimeout = TimeSpan.FromMinutes(webAppSetting.SessionExpirationMinutes);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 

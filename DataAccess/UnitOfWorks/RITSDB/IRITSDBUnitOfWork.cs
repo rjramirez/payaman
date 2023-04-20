@@ -9,5 +9,8 @@ namespace DataAccess.UnitOfWorks.RITSDB
         public IAppUserRoleRepository AppUserRoleRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
         public IAuditTrailRepository AuditTrailRepository { get; }
+        public IProductRepository ProductRepository { get; }
+        public IStoreRepository StoreRepository { get; }
+        public IOrderRepository OrderRepository { get; }
     }
 }

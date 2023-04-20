@@ -12,6 +12,9 @@ const AppConstant = {
     queryStringDateTimeFormat: "D MMMM YYYY hh:mm:ss A"
 };
 
+const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"]
+
 var App = function () {
     return {
         initialize: function () {

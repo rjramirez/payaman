@@ -31,6 +31,24 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [Authorize(Policy = "Admin")]
+        public IActionResult Products()
+        {
+            return View();
+        }
+
+        [Authorize(Policy = "Admin")]
+        public IActionResult Stores()
+        {
+            return View();
+        }
+
+        [Authorize(Policy = "Admin")]
+        public IActionResult Orders()
+        {
+            return View();
+        }
+
         public IActionResult Dashboard()
         {
             return View();
@@ -60,6 +78,7 @@ namespace WebApp.Controllers
                     new Claim(ClaimTypes.PrimarySid, authDetails.Id.ToString()),
                     new Claim(ClaimTypes.Name, authDetails.Username),
                     new Claim(ClaimConstant.ClientId, authDetails.Username),
+                    new Claim("Token", authDetails.Token),
                     new Claim(ClaimTypes.Role, authDetails.Role.ToString())
                 };
                 var claimsIdentity = new ClaimsIdentity(

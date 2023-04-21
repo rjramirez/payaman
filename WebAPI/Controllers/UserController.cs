@@ -33,23 +33,6 @@ public class UserController : ControllerBase
     {
         AuthenticateResponse authDetails = await _userService.Authenticate(model);
 
-        // Create a new ClaimsIdentity with the desired claims
-        //var claims = new[]
-        //{
-        //            new Claim(ClaimTypes.PrimarySid, authDetails.Id.ToString()),
-        //            new Claim(ClaimTypes.Name, authDetails.Username),
-        //            new Claim(ClaimConstant.ClientId, authDetails.Username),
-        //            new Claim(ClaimTypes.Role, authDetails.Role.ToString())
-        //        };
-        //var claimsIdentity = new ClaimsIdentity(
-        //    claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-        //var authProperties = new AuthenticationProperties { IsPersistent = true };
-        //await HttpContext.SignInAsync(
-        //    CookieAuthenticationDefaults.AuthenticationScheme,
-        //    new ClaimsPrincipal(claimsIdentity),
-        //    authProperties);
-
         return Ok(authDetails);
     }
 

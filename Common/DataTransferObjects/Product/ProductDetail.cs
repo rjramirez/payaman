@@ -1,6 +1,8 @@
-﻿namespace Common.DataTransferObjects.Product
+﻿using Common.DataTransferObjects._Base;
+
+namespace Common.DataTransferObjects.Product
 {
-    public class ProductDetail
+    public class ProductDetail : SaveDTOExtension
     {
         public int Id { get; set; }
         public string Name { get; set; }

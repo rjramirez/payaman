@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route("GetPagedList")]
-        [SwaggerOperation(Summary = "Get Product List")]
+        [SwaggerOperation(Summary = "Get Product Paged List")]
         public async Task<ActionResult<PagedList<ProductSearchResult>>> GetPagedList([FromQuery] ProductSearchFilter employeeSearchFilter)
         {
 
@@ -75,7 +75,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateProduct")]
+        [Route("Update")]
         [SwaggerOperation(Summary = "Update Product")]
         public async Task<ActionResult<ClientResponse>> UpdateProduct(ProductDetail productDetail)
         {
@@ -86,7 +86,31 @@ namespace WebAPI.Controllers
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
 
             if (result == 0 || result == -1)
-                throw new Exception("Updating product went unsuccessful");
+                throw new Exception("Updating product failed");
+
+            ClientResponse clientResponse = new()
+            {
+                Message = "Product updated Successfully",
+                IsSuccessful = true,
+            };
+
+
+            return Ok(clientResponse);
+        }
+
+        [HttpPost]
+        [Route("Remove")]
+        [SwaggerOperation(Summary = "Remove Product")]
+        public async Task<ActionResult<ClientResponse>> Remove(ProductDetail productDetail)
+        {
+            var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.Id == productDetail.Id);
+
+            _RITSDBUnitOfWork.ProductRepository.Remove(productFromDB);
+
+            var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
+
+            if (result == 0 || result == -1)
+                throw new Exception("Removing product failed");
 
             ClientResponse clientResponse = new()
             {

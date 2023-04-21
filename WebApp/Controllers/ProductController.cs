@@ -1,10 +1,13 @@
 ﻿using Common.Constants;
 using Common.DataTransferObjects.CollectionPaging;
 using Common.DataTransferObjects.Employee;
+using Common.DataTransferObjects.Product;
 using Common.DataTransferObjects.ReferenceData;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
 using WebApp.Models.Product;
 
 namespace WebApp.Controllers
@@ -13,6 +16,7 @@ namespace WebApp.Controllers
     public class ProductController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
+
         public ProductController(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -36,11 +40,31 @@ namespace WebApp.Controllers
             return new JsonResult(new { data = "" });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Update()
+        [HttpPut]
+        public async Task<IActionResult> Update(ProductDetail productDetail)
         {
+            var ident = User.Identity as ClaimsIdentity;
+            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-            HttpResponseMessage response = await client.GetAsync($"api/Product/GetAllProducts");
+            HttpResponseMessage response = await client.PutAsync($"api/Product/Update", productDetail.GetStringContent());
+
+            ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
+
+            if (response.IsSuccessStatusCode)
+                return Ok(clientResponse);
+            else
+                return BadRequest(clientResponse);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(ProductDetail productDetail)
+        {
+            var ident = User.Identity as ClaimsIdentity;
+            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+            HttpResponseMessage response = await client.PostAsync($"api/Product/Remove", productDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
 

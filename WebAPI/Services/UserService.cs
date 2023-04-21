@@ -50,9 +50,8 @@ public class UserService : IUserService
         // Create a new ClaimsIdentity with the desired claims
         var claims = new[]
         {
-            new Claim(ClaimTypes.PrimarySid, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimConstant.ClientId, user.Username),
+            new Claim(ClaimConstant.ClientId, user.Id.ToString()),
             new Claim(ClaimTypes.Role, role.Name)
         };
         var identity = new ClaimsIdentity(claims, "User");

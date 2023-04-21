@@ -17,40 +17,58 @@ namespace WebApp.Controllers
             _httpClientFactory = httpClientFactory;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ProductSearch(ProductSearchFilter ProductSearchFilter)
-        {
-            ProductVM productVM;
 
-            HttpClient client = _httpClientFactory.CreateClient("OATSApiClient");
-            HttpResponseMessage response = await client.GetAsync($"api/Product/GetPagedList?{ProductSearchFilter.GetQueryString()}");
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+            HttpResponseMessage response = await client.GetAsync($"api/Product/GetAllProducts");
 
             if (response.IsSuccessStatusCode)
             {
-                IEnumerable<ProductSearchResult> ProductSearchResults = JsonConvert.DeserializeObject<IEnumerable<ProductSearchResult>>(await response.Content.ReadAsStringAsync());
-                PagingMetadata pagingMetadata = JsonConvert.DeserializeObject<PagingMetadata>(response.Headers.GetValues(PagingConstant.PagingHeaderKey).FirstOrDefault());
-                PagedList<ProductSearchResult> result = new(ProductSearchResults.ToList(), pagingMetadata)
-                {
-                    PageClickEvent = "ControlCenter.ProductChangePage({0})"
-                };
-
-                productVM = new()
-                {
-                    ProductSearchFilter = ProductSearchFilter,
-                    ProductSearchResults = result
-                };
-
-                return PartialView("_ProductSearchResult", productVM);
+                IEnumerable<ProductVM> products = JsonConvert.DeserializeObject<IEnumerable<ProductVM>>(await response.Content.ReadAsStringAsync());
+                
+                //var productList = new JsonResult(new { data = JsonConvert.SerializeObject(products) });
+                return Ok(JsonConvert.SerializeObject(products));
             }
 
-            productVM = new()
-            {
-                ProductSearchFilter = ProductSearchFilter,
-                ProductSearchResults = new PagedList<ProductSearchResult>()
-            };
-
-            return PartialView("_ProductSearchResult", productVM);
+            return new JsonResult(new { data = "" });
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> ProductSearch(ProductSearchFilter ProductSearchFilter)
+        //{
+        //    ProductVM productVM;
+
+        //    HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+        //    HttpResponseMessage response = await client.GetAsync($"api/Product/GetPagedList?{ProductSearchFilter.GetQueryString()}");
+
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        IEnumerable<ProductSearchResult> ProductSearchResults = JsonConvert.DeserializeObject<IEnumerable<ProductSearchResult>>(await response.Content.ReadAsStringAsync());
+        //        PagingMetadata pagingMetadata = JsonConvert.DeserializeObject<PagingMetadata>(response.Headers.GetValues(PagingConstant.PagingHeaderKey).FirstOrDefault());
+        //        PagedList<ProductSearchResult> result = new(ProductSearchResults.ToList(), pagingMetadata)
+        //        {
+        //            PageClickEvent = "ControlCenter.ProductChangePage({0})"
+        //        };
+
+        //        productVM = new()
+        //        {
+        //            ProductSearchFilter = ProductSearchFilter,
+        //            ProductSearchResults = result
+        //        };
+
+        //        return PartialView("_ProductSearchResult", productVM);
+        //    }
+
+        //    productVM = new()
+        //    {
+        //        ProductSearchFilter = ProductSearchFilter,
+        //        ProductSearchResults = new PagedList<ProductSearchResult>()
+        //    };
+
+        //    return PartialView("_ProductSearchResult", productVM);
+        //}
 
     }
 }

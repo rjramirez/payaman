@@ -1,6 +1,7 @@
 ﻿using Common.Constants;
 using Common.DataTransferObjects.CollectionPaging;
 using Common.DataTransferObjects.Employee;
+using Common.DataTransferObjects.Product;
 using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -45,6 +46,27 @@ namespace WebAPI.Controllers
             Response.Headers.Add(PagingConstant.PagingHeaderKey, productSearchResults.PagingHeaderValue);
             return Ok(productSearchResults);
 
+        }
+
+        [HttpGet]
+        [Route("GetAllProducts")]
+        [SwaggerOperation(Summary = "Get Product List")]
+        public async Task<ActionResult<IEnumerable<ProductDetail>>> GetAll()
+        {
+
+            IEnumerable<ProductDetail> products = await _RITSDBUnitOfWork.ProductRepository.FindAsync(
+                        selector: c => new ProductDetail()
+                        {
+                            Id = c.Id,
+                            Name = c.Name,
+                            Price = c.Price,
+                            Description = c.Description,
+                            CreatedDate = c.CreatedDate
+                        },
+                        predicate: a => !String.IsNullOrEmpty(a.Name),
+                        orderBy: o => o.OrderBy(a => a.Name));
+
+            return Ok(products);
         }
 
     }

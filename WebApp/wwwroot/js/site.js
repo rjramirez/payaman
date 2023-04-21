@@ -5,6 +5,16 @@
         App.alert(toastrMsg.type, toastrMsg.message, toastrMsg.title);
         window.localStorage.clear();
     }
+
+    $('[data-widget="pushmenu"]').PushMenu('collapse');
+    $(document).on('shown.lte.pushmenu', function () {
+        $('[data-widget="pushmenu"]').css("margin-left", 250 + "px");
+    });
+
+    $(document).on('collapsed.lte.pushmenu', function () {
+        $('[data-widget="pushmenu"]').css("margin-left", 0 + "px");
+    });
+    
 });
 
 const AppConstant = {
@@ -17,6 +27,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 
 var App = function () {
     return {
+
         initialize: function () {
             toastr.options = {
                 "closeButton": true,

@@ -1,35 +1,53 @@
 ﻿var employeeSearchPageIndex = 1;
 
 
-
 /* Formatting function for row details - modify as you need */
 function format(d) {
     // `d` is the original data object for the row
     return (
         '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
         '<tr>' +
-        '<td>Full name:</td>' +
+        '<td>ID:</td>' +
         '<td>' +
-        d.name +
+        d.Id +
         '</td>' +
         '</tr>' +
         '<tr>' +
-        '<td>Extension number:</td>' +
+        '<td>Date Created:</td>' +
         '<td>' +
-        d.extn +
+        moment(d.CreatedDate).format('MMMM Do YYYY, h:mm:ss a') +
         '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Extra info:</td>' +
-        '<td>And any further details here (images etc)...</td>' +
         '</tr>' +
         '</table>'
     );
 }
 
+let Product = function () {
+    return {
+        initialize: function () {
+
+
+        },
+
+    }
+}();
+
 $(document).ready(function () {
-    var table = $('#example').DataTable({
-        ajax: '../ajax/data/objects.txt',
+    let productsEndPoint = "/Product/GetAllProducts";
+
+
+
+    var table = $('#products_table').DataTable({
+        ajax:
+        {
+            url: window.location.origin + productsEndPoint,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataSrc: function (receivedData) {
+                console.log(receivedData);
+                return receivedData;
+            },
+        },
         columns: [
             {
                 className: 'dt-control',
@@ -37,16 +55,24 @@ $(document).ready(function () {
                 data: null,
                 defaultContent: '',
             },
-            { data: 'name' },
-            { data: 'position' },
-            { data: 'office' },
-            { data: 'salary' },
+            { data: 'Name'},
+            {
+                data: 'Price',
+                render: function (data) {
+                    return '₱' + data;
+                }
+            },
+            {
+                data: 'Id', render: function (data, type, row) {
+                    return '<button class="btn btn-success btn-xs"><i class="fa-solid fa-plus"></i></button> | <button class="btn btn-danger btn-xs"><i class="fa-solid fa-trash"></i></button>'
+                }
+            }
         ],
         order: [[1, 'asc']],
     });
 
     // Add event listener for opening and closing details
-    $('#example tbody').on('click', 'td.dt-control', function () {
+    $('#products_table tbody').on('click', 'td.dt-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row(tr);
 
@@ -63,80 +89,6 @@ $(document).ready(function () {
 });
 
 
-let Product = function () {
-    let userEndPoint = "/Home/Login";
-    let registerEndPoint = "/Home/Register";
 
-    return {
-        initialize: function () {
-
-            $("#btn_login").click(function () {
-                Login.authenticate();
-            });
-
-            $("#btn_signup_modal").click(function () {
-                $("#signUpModal").modal("show");
-            });
-
-            $("#btn_signup").click(function () {
-                Login.register();
-            });
-        },
-        executeSearch: function () {
-
-            $("#search-employeebtn").attr("disabled", true);
-            $("#modalheader-sicklinetracker").text("Employee Finder - Searching...");
-
-            let Keyword = $("#inpSearchEmpNum").val();
-            let ProjectId = $("#ddlProject").val();
-            let EmployeeSearchEndpoint = "/ControlCenter/EmployeeSearch";
-            let url = EmployeeSearchEndpoint + `?PageNumber=${employeeSearchPageIndex}`;
-
-            if (Keyword != "")
-                url += `&Keyword=${Keyword}`;
-
-            if (ProjectId != "")
-                url += `&Price=${ProjectId}`;
-
-            console.log(employeeSearchPageIndex);
-            App.ajaxGet(url
-                , "html"
-                , function (data) {
-                    $("#employee-search-container").html("");
-                    $("#employee-search-container").html(data);
-
-                    $(".row-employee").on("click", function (e) {
-                        console.log($(this).attr("data-employeeId"));
-                        inpEmployeeNumber = $(this).attr("data-employeeId");
-                        $("#employeeno").val($(this).attr("data-employeeId"));
-                        $("#btnCloseModalSicklineTracker").trigger("click")
-                        ControlCenter.getHistory();
-                    });
-                    setTimeout(function () {
-                        $("#search-employeebtn").attr("disabled", false);
-                        $("#modalheader-sicklinetracker").text("Employee Finder");
-                    }, 500);
-                }
-                , function (response) {
-                    console.log(response);
-                    setTimeout(function () {
-                        $("#modalheader-sicklinetracker").text("Employee Finder");
-                    }, 500);
-
-                }
-            );
-
-
-        },
-        employeeChangePage: function (pageId) {
-            employeeSearchPageIndex = pageId;
-            ControlCenter.executeSearch();
-        },
-        clearInputs: function () {
-            $("#txtDateRange").val('');
-            $("#txtSearchKeyword").val('');
-        }
-    }
-}();
 
 

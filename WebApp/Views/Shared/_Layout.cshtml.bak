@@ -22,7 +22,7 @@
     }
     @RenderSection("Styles", false)
 </head>
-<body class="hold-transition sidebar-collapse layout-top-nav text-sm">
+<body class="hold-transition sidebar-collapse layout-fixed text-sm">
     <div class="wrapper">
 
         <!-- Preloader -->
@@ -35,37 +35,27 @@
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link sidebar-toggle-btn" data-widget="pushmenu" data-enable-remember="true" href="#" role="button"><em class="fas fa-bars"></em></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button" data-enable-remember="true"><em class="fas fa-bars"></em></a>
                 </li>
             </ul>
 
             <!-- Right navbar links -->
-@*            @{
+            @{
                 await Html.RenderPartialAsync("_LayoutRightNavBarLink");
-            }*@
+            }
 
         </nav>
         <!-- /.navbar -->
         <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <aside class="main-sidebar sidebar-dark-primary elevation-4" aria-labelledby="Main Sidebar">
             <!-- Brand Logo -->
-            <a href="#" class="brand-link">
-                <img src="../wwwroot/img/AppLogo.png" alt="App Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">RITS POS</span>
+            <a href="/" class="brand-link">
+                <img src="~/img/AppLogo.png" alt="Logo" class="brand-image img-circle elevation-3">
+                <span class="brand-text font-weight-light text-md text-white">RITS POS</span>
             </a>
 
             <!-- Sidebar -->
             <div class="sidebar">
-                <!-- Sidebar user (optional) -->
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                    <div class="image">
-                        <img src="../wwwroot/img/AppLogo.png" class="img-circle elevation-2" alt="User Image">
-                    </div>
-                    <div class="info">
-                        <a href="#" class="d-block">@User.FindFirst("name")?.Value;</a>
-                    </div>
-                </div>
-
                 <!-- Sidebar Menu -->
                 @{
                     await Html.RenderPartialAsync("~/Views/Menu/_MainMenu.cshtml");

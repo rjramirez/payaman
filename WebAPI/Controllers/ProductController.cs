@@ -79,18 +79,21 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Update Product")]
         public async Task<ActionResult<ClientResponse>> UpdateProduct(ProductDetail productDetail)
         {
-
             var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.Id == productDetail.Id);
 
             var product = _mapper.Map(productDetail, productFromDB);
 
-            await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
+            var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
+
+            if (result == 0 || result == -1)
+                throw new Exception("Updating product went unsuccessful");
 
             ClientResponse clientResponse = new()
             {
                 Message = "Product updated Successfully",
                 IsSuccessful = true,
             };
+
 
             return Ok(clientResponse);
         }

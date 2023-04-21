@@ -1,6 +1,7 @@
 ﻿using Common.Constants;
 using Common.DataTransferObjects.CollectionPaging;
 using Common.DataTransferObjects.Employee;
+using Common.DataTransferObjects.ReferenceData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -41,14 +42,12 @@ namespace WebApp.Controllers
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             HttpResponseMessage response = await client.GetAsync($"api/Product/GetAllProducts");
 
+            ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
+
             if (response.IsSuccessStatusCode)
-            {
-                IEnumerable<ProductVM> products = JsonConvert.DeserializeObject<IEnumerable<ProductVM>>(await response.Content.ReadAsStringAsync());
-
-                return Ok(JsonConvert.SerializeObject(products));
-            }
-
-            return new JsonResult(new { data = "" });
+                return Ok(clientResponse);
+            else
+                return BadRequest(clientResponse);
         }
 
         //[HttpGet]

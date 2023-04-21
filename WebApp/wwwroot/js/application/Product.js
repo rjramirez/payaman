@@ -36,7 +36,6 @@ $(document).ready(function () {
     let productsEndPoint = "/Product/GetAllProducts";
 
 
-
     var table = $('#products_table').DataTable({
         ajax:
         {
@@ -64,7 +63,7 @@ $(document).ready(function () {
             },
             {
                 data: 'Id', render: function (data, type, row) {
-                    return '<button class="btn btn-success btn-xs"><i class="fa-solid fa-plus"></i></button> | <button class="btn btn-danger btn-xs"><i class="fa-solid fa-trash"></i></button>'
+                    return '<button class="btn btn-success btn-xs btn-product-edit" data-id=' + data.Id + '><i class="fa-solid fa-pencil"></i></button> | <button class="btn btn-danger btn-xs btn-product-remove" data-id=' + data.Id +'><i class="fa-solid fa-trash"></i></button>'
                 }
             }
         ],
@@ -85,6 +84,15 @@ $(document).ready(function () {
             row.child(format(row.data())).show();
             tr.addClass('shown');
         }
+    });
+
+
+    $(".btn-product-edit").click(function () {
+        let id = $(this).data("id");
+    });
+
+    $(".btn-product-remove").click(function () {
+        let id = $(this).data("id");
     });
 });
 

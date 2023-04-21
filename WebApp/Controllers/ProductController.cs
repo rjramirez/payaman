@@ -35,6 +35,22 @@ namespace WebApp.Controllers
             return new JsonResult(new { data = "" });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Update()
+        {
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+            HttpResponseMessage response = await client.GetAsync($"api/Product/GetAllProducts");
+
+            if (response.IsSuccessStatusCode)
+            {
+                IEnumerable<ProductVM> products = JsonConvert.DeserializeObject<IEnumerable<ProductVM>>(await response.Content.ReadAsStringAsync());
+
+                return Ok(JsonConvert.SerializeObject(products));
+            }
+
+            return new JsonResult(new { data = "" });
+        }
+
         //[HttpGet]
         //public async Task<IActionResult> ProductSearch(ProductSearchFilter ProductSearchFilter)
         //{

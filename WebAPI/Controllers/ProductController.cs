@@ -1,7 +1,10 @@
-﻿using Common.Constants;
+﻿using AutoMapper;
+using Common.Constants;
 using Common.DataTransferObjects.CollectionPaging;
 using Common.DataTransferObjects.Employee;
 using Common.DataTransferObjects.Product;
+using Common.DataTransferObjects.ReferenceData;
+using DataAccess.DBContexts.RITSDB.Models;
 using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -14,9 +17,11 @@ namespace WebAPI.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;
-        public ProductController(IRITSDBUnitOfWork RITSDBUnitOfWork)
+        private readonly IMapper _mapper;
+        public ProductController(IRITSDBUnitOfWork RITSDBUnitOfWork, IMapper mapper)
         {
             _RITSDBUnitOfWork = RITSDBUnitOfWork;
+            _mapper = mapper;
         }
 
 
@@ -67,6 +72,27 @@ namespace WebAPI.Controllers
                         orderBy: o => o.OrderBy(a => a.Name));
 
             return Ok(products);
+        }
+
+        [HttpPut]
+        [Route("UpdateProduct")]
+        [SwaggerOperation(Summary = "Update Product")]
+        public async Task<ActionResult<ClientResponse>> UpdateProduct(ProductDetail productDetail)
+        {
+
+            var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.Id == productDetail.Id);
+
+            var product = _mapper.Map(productDetail, productFromDB);
+
+            await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
+
+            ClientResponse clientResponse = new()
+            {
+                Message = "Product updated Successfully",
+                IsSuccessful = true,
+            };
+
+            return Ok(clientResponse);
         }
 
     }

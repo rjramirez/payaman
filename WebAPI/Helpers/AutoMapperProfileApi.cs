@@ -2,6 +2,7 @@ namespace DataAccess.Helpers;
 
 using AutoMapper;
 using Common.DataTransferObjects.AppUserDetails;
+using Common.DataTransferObjects.Product;
 using DataAccess.DBContexts.RITSDB.Models;
 
 public class AutoMapperProfileApi : Profile
@@ -16,6 +17,20 @@ public class AutoMapperProfileApi : Profile
 
         // RegisterRequest -> AppUser
         CreateMap<AppUser, RegisterResponse>();
+
+        // ProductDetail -> Product
+        CreateMap<ProductDetail, Product>()
+            .ForAllMembers(x => x.Condition(
+                (src, dest, prop) =>
+                {
+                    // ignore null & empty string properties
+                    if (prop == null) return false;
+                    if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
+
+                    return true;
+                }
+            )); ;
+
 
         // UpdateRequest -> AppUser
         CreateMap<UpdateRequest, AppUser>()

@@ -64,7 +64,7 @@ namespace WebAPI.Controllers
                         {
                             Id = c.Id,
                             Name = c.Name,
-                            Price = c.Price,
+                            Price = c.Price.ToString(),
                             Description = c.Description,
                             CreatedDate = c.CreatedDate
                         },

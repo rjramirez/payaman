@@ -41,7 +41,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(ProductDetail productDetail)
+        public async Task<IActionResult> Update([FromBody] ProductDetail productDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
             productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
@@ -58,7 +58,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Remove(ProductDetail productDetail)
+        public async Task<IActionResult> Remove([FromBody] ProductDetail productDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
             productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;

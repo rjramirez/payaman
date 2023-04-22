@@ -3,8 +3,8 @@
     <link href="~/lib/datatables-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
 }
 
-<div class="container-fluid">
-    <div class="row">
+<div class="row">
+    <div class="mx-auto mt-2">
         <table id="products_table" class="display compact stripe mt-3" style="width:100%">
             <thead>
                 <tr>
@@ -40,25 +40,26 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="input_edit_productname">Name</label>
-                        <input type="text" class="form-control form-control-sm" id="input_edit_productname">
-                        <input type="hidden" class="form-control" id="input_edit_productid">
-                    </div>
-                    <div class="form-group">
-                        <label for="input_edit_productprice">Price</label>
                         <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
-                                <div class="input-group-text">₱</div>
+                                <div class="input-group-text">Name</div>
+                            </div>
+                            <input type="text" class="form-control form-control-sm" id="input_edit_productname">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">Price (₱)</div>
                             </div>
                             <input type="number" class="form-control form-control-sm" id="input_edit_productprice">
                         </div>
                     </div>
                 </form>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" id="btn_product_update" class="btn btn-primary">Update</button>
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary btn-xs btn-block" data-dismiss="modal">Close</button>
+                    <button type="button" id="btn_product_update" class="btn btn-primary btn-xs btn-block">Update</button>
+                </div>
             </div>
         </div>
     </div>

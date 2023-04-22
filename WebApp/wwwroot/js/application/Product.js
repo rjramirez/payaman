@@ -99,20 +99,20 @@ $(document).ready(function () {
                 App.requiredTextValidator($('#input_edit_productname').val(), $('#input_edit_productname'));
                 App.requiredTextValidator($('#input_edit_productprice').val(), $('#input_edit_productprice'));
 
-                if (productNameUpdate == "" || productPriceUpdate == "") {
+                if (productNameUpdate == "" || productPriceUpdate == "" || productPriceUpdate == 0) {
                     App.alert("error", "Name and Price is required", "Error", undefined);
                     App.removeButtonSpinner($("#btn_product_update"));
                     return;
                 }
 
-                let param = {
+                let model = {
                     Id: productId,
-                    Name: productName,
-                    Price: productPrice
+                    Name: productNameUpdate,
+                    Price: productPriceUpdate
                 }
 
                 App.ajaxPut(updateProductEndPoint,
-                    JSON.stringify(param),
+                    JSON.stringify(model),
                     'text',
                     function (data) {
                         var json = JSON.parse(data);

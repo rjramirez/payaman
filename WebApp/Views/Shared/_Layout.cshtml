@@ -50,7 +50,7 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="#" class="brand-link">
-                <img src="../wwwroot/img/AppLogo.png" alt="App Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <img src="~/img/AppLogo.png" alt="App Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">RITS POS</span>
             </a>
 
@@ -59,10 +59,10 @@
                 <!-- Sidebar user (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img src="../wwwroot/img/AppLogo.png" class="img-circle elevation-2" alt="User Image">
+                        <img src="~/img/AppLogo.png" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">@User.FindFirst("name")?.Value;</a>
+                        <a href="#" class="d-block">@User.FindFirst("name")?.Value</a>
                     </div>
                 </div>
 
@@ -107,14 +107,14 @@
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script>
+@*    <script>
         $.widget.bridge('uibutton', $.ui.button)
-    </script>
+    </script>*@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/select2/js/select2.full.min.js"></script>
     <script src="~/lib/moment/moment.min.js"></script>
     <script src="~/lib/daterangepicker/daterangepicker.min.js"></script>
-    <script src="~/lib/bootstrap4-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    @*<script src="~/lib/bootstrap4-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>*@
     <script src="~/lib/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
     <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/lib/adminlte/js/adminlte.min.js"></script>

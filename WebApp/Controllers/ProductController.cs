@@ -74,6 +74,23 @@ namespace WebApp.Controllers
                 return BadRequest(clientResponse);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] ProductDetail productDetail)
+        {
+            var ident = User.Identity as ClaimsIdentity;
+            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+            HttpResponseMessage response = await client.PostAsync($"api/Product/Add", productDetail.GetStringContent());
+
+            ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
+
+            if (response.IsSuccessStatusCode)
+                return Ok(clientResponse);
+            else
+                return BadRequest(clientResponse);
+        }
+
         //[HttpGet]
         //public async Task<IActionResult> ProductSearch(ProductSearchFilter ProductSearchFilter)
         //{

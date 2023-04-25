@@ -1,6 +1,4 @@
-﻿var employeeSearchPageIndex = 1;
-
-
+﻿
 /* Formatting function for row details - modify as you need */
 function format(d) {
     // `d` is the original data object for the row
@@ -25,32 +23,10 @@ function format(d) {
 let Product = function () {
     let productsEndPoint = "/Product/GetAllProducts";
     let updateProductEndPoint = "/Product/Update";
-    let removeProductEndPoint = "/Product/Delete";
+    let removeProductEndPoint = "/Product/Remove";
 
     return {
         initializeProductsTable: function () {
-            $('#div_products').empty();
-
-            var productsTableHtml = '<table id="products_table" class="display compact stripe mt-3" style="width:100%">' +
-                '<thead>' +
-                '<tr>' +
-                '<th></th>' +
-                '<th>Name</th>' +
-                '<th>Price</th>' +
-                '<th>Actions</th>' +
-                '</tr>' +
-                '</thead>' +
-                '<tfoot>' +
-                '<tr>' +
-                '<th></th>' +
-                '<th>Name</th>' +
-                '<th>Price</th>' +
-                '<th>Actions</th>' +
-                '</tr>' +
-                '</tfoot>' +
-                '</table>';
-
-            $('#div_products').html(productsTableHtml);
 
             var tableProducts = $('#products_table').DataTable({
                 ajax:
@@ -63,6 +39,66 @@ let Product = function () {
                         return receivedData;
                     },
                 },
+                dom: "<'top'<'row'<'col-sm-2'B><'col-sm-4'l><'col-sm-4'f>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-4'l><'col-sm-8'p>>",
+                buttons: [
+                    {
+                        className: 'btn-xs btn-success mt-1',
+                        text: '<i class="fa-solid fa-plus"></i> Add',
+                        action: function (e, dt, node, config) {
+                            $('#addProductModal').modal('show');
+
+                            $("#btn_product_add").click(function () {
+                                App.addButtonSpinner($("#btn_product_add"));
+
+                                let productNameAdd = $("#input_add_productname").val();
+                                let productPriceAdd = $("#input_add_productprice").val();
+
+                                App.requiredTextValidator($('#input_add_productname').val(), $('#input_add_productname'));
+                                App.requiredTextValidator($('#input_add_productprice').val(), $('#input_add_productprice'));
+
+                                if (productNameAdd == "" || productPriceAdd == "" || productPriceAdd == 0) {
+                                    App.alert("error", "Name and Price is required", "Error", undefined);
+                                    App.removeButtonSpinner($("#btn_product_add"));
+                                    return;
+                                }
+
+                                let model = {
+                                    Name: productNameAdd,
+                                    Price: productPriceAdd
+                                }
+
+                                App.ajaxPut(updateProductEndPoint,
+                                    JSON.stringify(model),
+                                    'text',
+                                    function (data) {
+                                        var json = JSON.parse(data);
+
+                                        if (json.isSuccessful) {
+                                            App.removeButtonSpinner($("#btn_product_add"));
+                                            $("#addProductModal").modal("hide");
+                                            App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
+                                        }
+                                        else {
+                                            App.alert("error", json.message, "Error", undefined);
+
+                                            setTimeout(function () {
+                                                App.removeButtonSpinner($("#btn_product_add"));
+                                            }, 500);
+                                        }
+
+                                    },
+                                    function (response) {
+                                        console.log(response);
+                                    }
+                                );
+
+
+                            });
+                        }
+                    }
+                ],
                 columns: [
                     {
                         className: 'dt-control',
@@ -90,8 +126,6 @@ let Product = function () {
                 order: [[1, 'asc']]
             });
 
-            $('#products_table tbody').off('click');
-
             // Add event listener for opening and closing details
             $('#products_table tbody').on('click', 'td.dt-control', function () {
                 var tr = $(this).closest('tr');
@@ -108,9 +142,6 @@ let Product = function () {
                 }
             });
 
-            Product.addInitListenerOnTable();
-        },
-        addInitListenerOnTable: function () {
 
             $('#products_table').on('init.dt', function () {
 
@@ -157,18 +188,9 @@ let Product = function () {
                             var json = JSON.parse(data);
 
                             if (json.isSuccessful) {
-                                App.alert("success", json.message, "Success", undefined);
-                                //tableProducts.ajax.reload();
-
-
-                                $('#products_table').DataTable().clear();
-                                $('#products_table').DataTable().destroy();
-
-                                
-                                Product.initializeProductsTable();
-
                                 App.removeButtonSpinner($("#btn_product_update"));
                                 $("#editProductModal").modal("hide");
+                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
                             }
                             else {
                                 App.alert("error", json.message, "Error", undefined);
@@ -203,10 +225,8 @@ let Product = function () {
                             var json = JSON.parse(data);
 
                             if (json.isSuccessful) {
-                                App.alert("success", "Product deleted successfully", "Success", undefined);
+                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
 
-                                let dashboard = window.location.origin + "/Home/Products";
-                                window.location.replace(dashboard);
                             }
                             else {
                                 App.alert("error", json.message, "Error", undefined);

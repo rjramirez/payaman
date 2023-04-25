@@ -122,5 +122,29 @@ namespace WebAPI.Controllers
             return Ok(clientResponse);
         }
 
+        [HttpPost]
+        [Route("Remove")]
+        [SwaggerOperation(Summary = "Add Product")]
+        public async Task<ActionResult<ClientResponse>> Add(ProductDetail productDetail)
+        {
+            var product = _mapper.Map(productDetail, new Product());
+
+            await _RITSDBUnitOfWork.ProductRepository.AddAsync(product);
+
+            var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
+
+            if (result == 0 || result == -1)
+                throw new Exception("Adding product failed");
+
+            ClientResponse clientResponse = new()
+            {
+                Message = "Product added Successfully",
+                IsSuccessful = true,
+            };
+
+
+            return Ok(clientResponse);
+        }
+
     }
 }

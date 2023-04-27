@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using Common.Constants;
-using Common.DataTransferObjects.CollectionPaging;
-using Common.DataTransferObjects.Employee;
 using Common.DataTransferObjects.Product;
 using Common.DataTransferObjects.ReferenceData;
 using DataAccess.DBContexts.RITSDB.Models;
@@ -25,33 +22,33 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet]
-        [Route("GetPagedList")]
-        [SwaggerOperation(Summary = "Get Product Paged List")]
-        public async Task<ActionResult<PagedList<ProductSearchResult>>> GetPagedList([FromQuery] ProductSearchFilter employeeSearchFilter)
-        {
+        //[HttpGet]
+        //[Route("GetPagedList")]
+        //[SwaggerOperation(Summary = "Get Product Paged List")]
+        //public async Task<ActionResult<PagedList<ProductSearchResult>>> GetPagedList([FromQuery] ProductSearchFilter employeeSearchFilter)
+        //{
 
-            PagedList<ProductSearchResult> productSearchResults = await _RITSDBUnitOfWork.ProductRepository.GetPagedListAsync(
-                        selector: c => new ProductSearchResult()
-                        {
-                            Name = c.Name,
-                            Price = c.Price
-                        },
-                        predicate: a =>
-                        (
-                            string.IsNullOrEmpty(employeeSearchFilter.Keyword) ||
-                            (
-                                a.Name.Contains(employeeSearchFilter.Keyword) ||
-                                a.Price.ToString().Contains(employeeSearchFilter.Keyword)
-                            )
-                        ),
-                        pagingParameter: employeeSearchFilter,
-                        orderBy: o => o.OrderBy(a => a.Name));
+        //    PagedList<ProductSearchResult> productSearchResults = await _RITSDBUnitOfWork.ProductRepository.GetPagedListAsync(
+        //                selector: c => new ProductSearchResult()
+        //                {
+        //                    Name = c.Name,
+        //                    Price = c.Price
+        //                },
+        //                predicate: a =>
+        //                (
+        //                    string.IsNullOrEmpty(employeeSearchFilter.Keyword) ||
+        //                    (
+        //                        a.Name.Contains(employeeSearchFilter.Keyword) ||
+        //                        a.Price.ToString().Contains(employeeSearchFilter.Keyword)
+        //                    )
+        //                ),
+        //                pagingParameter: employeeSearchFilter,
+        //                orderBy: o => o.OrderBy(a => a.Name));
 
-            Response.Headers.Add(PagingConstant.PagingHeaderKey, productSearchResults.PagingHeaderValue);
-            return Ok(productSearchResults);
+        //    Response.Headers.Add(PagingConstant.PagingHeaderKey, productSearchResults.PagingHeaderValue);
+        //    return Ok(productSearchResults);
 
-        }
+        //}
 
         [HttpGet]
         [Route("GetAllProducts")]
@@ -105,6 +102,8 @@ namespace WebAPI.Controllers
         {
             var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.Id == productDetail.Id);
 
+            productFromDB.ModifiedBy = productDetail.TransactionBy;
+
             _RITSDBUnitOfWork.ProductRepository.Remove(productFromDB);
 
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
@@ -123,11 +122,13 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("Remove")]
+        [Route("Add")]
         [SwaggerOperation(Summary = "Add Product")]
         public async Task<ActionResult<ClientResponse>> Add(ProductDetail productDetail)
         {
             var product = _mapper.Map(productDetail, new Product());
+
+            product.ModifiedBy = productDetail.TransactionBy;
 
             await _RITSDBUnitOfWork.ProductRepository.AddAsync(product);
 

@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DataTransferObjects\Product\ProductSearchFilter.cs" />
+    <Compile Remove="DataTransferObjects\Product\ProductSearchResult.cs" />
     <Compile Remove="Helpers\DataContext.cs" />
     <Compile Remove="Helpers\SqliteDataContext.cs" />
   </ItemGroup>
@@ -23,8 +25,6 @@
 
   <ItemGroup>
     <Folder Include="DataTransferObjects\Cart\" />
-    <Folder Include="DataTransferObjects\Store\" />
-    <Folder Include="DataTransferObjects\Order\" />
   </ItemGroup>
 
 </Project>

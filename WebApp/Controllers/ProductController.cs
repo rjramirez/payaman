@@ -1,6 +1,4 @@
 ﻿using Common.Constants;
-using Common.DataTransferObjects.CollectionPaging;
-using Common.DataTransferObjects.Employee;
 using Common.DataTransferObjects.Product;
 using Common.DataTransferObjects.ReferenceData;
 using IdentityModel;

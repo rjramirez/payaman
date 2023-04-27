@@ -66,7 +66,7 @@ namespace DataAccess.DBContexts.RITSDB
 
             modelBuilder.Entity<Store>(entity =>
             {
-                entity.Property(e => e.ImageName).IsFixedLength();
+                entity.Property(e => e.Image).IsFixedLength();
             });
 
             OnModelCreatingPartial(modelBuilder);

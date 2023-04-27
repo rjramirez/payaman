@@ -1,6 +1,6 @@
-﻿namespace WebApp.Models.Product
+﻿namespace WebApp.Models.Store
 {
-    public class ProductVM
+    public class StoreVM
     {
         public int Id { get; set; }
         public string Name { get; set; }

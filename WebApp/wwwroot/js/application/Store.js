@@ -20,19 +20,19 @@ function format(d) {
     );
 }
 
-let Product = function () {
-    let productsEndPoint = "/Product/GetAllProducts";
-    let updateProductEndPoint = "/Product/Update";
-    let removeProductEndPoint = "/Product/Remove";
-    let addProductEndPoint = "/Product/Add";
+let Store = function () {
+    let storesEndPoint = "/Store/GetAllStores";
+    let updateStoreEndPoint = "/Store/Update";
+    let removeStoreEndPoint = "/Store/Remove";
+    let addStoreEndPoint = "/Store/Add";
 
     return {
-        initializeProductsTable: function () {
+        initializeStoresTable: function () {
 
-            var tableProducts = $('#products_table').DataTable({
+            var tableStores = $('#stores_table').DataTable({
                 ajax:
                 {
-                    url: window.location.origin + productsEndPoint,
+                    url: window.location.origin + storesEndPoint,
                     type: 'GET',
                     contentType: 'application/json; charset=utf-8',
                     dataSrc: function (receivedData) {
@@ -48,44 +48,41 @@ let Product = function () {
                         className: 'btn-xs btn-success mt-1',
                         text: '<i class="fa-solid fa-plus"></i> Add',
                         action: function (e, dt, node, config) {
-                            $('#addProductModal').modal('show');
+                            $('#addStoreModal').modal('show');
 
-                            $("#btn_product_add").click(function () {
-                                App.addButtonSpinner($("#btn_product_add"));
+                            $("#btn_store_add").click(function () {
+                                App.addButtonSpinner($("#btn_store_add"));
 
-                                let productNameAdd = $("#input_add_productname").val();
-                                let productPriceAdd = $("#input_add_productprice").val();
+                                let storeNameAdd = $("#input_add_storename").val();
 
-                                App.requiredTextValidator($('#input_add_productname').val(), $('#input_add_productname'));
-                                App.requiredTextValidator($('#input_add_productprice').val(), $('#input_add_productprice'));
+                                App.requiredTextValidator($('#input_add_storename').val(), $('#input_add_storename'));
 
-                                if (productNameAdd == "" || productPriceAdd == "" || productPriceAdd == 0) {
-                                    App.alert("error", "Name and Price is required", "Error", undefined);
-                                    App.removeButtonSpinner($("#btn_product_add"));
+                                if (storeNameAdd == "") {
+                                    App.alert("error", "Name is required", "Error", undefined);
+                                    App.removeButtonSpinner($("#btn_store_add"));
                                     return;
                                 }
 
                                 let model = {
-                                    Name: productNameAdd,
-                                    Price: productPriceAdd
+                                    Name: storeNameAdd,
                                 }
 
-                                App.ajaxPost(addProductEndPoint,
+                                App.ajaxPost(addStoreEndPoint,
                                     JSON.stringify(model),
                                     'text',
                                     function (data) {
                                         var json = JSON.parse(data);
 
                                         if (json.isSuccessful) {
-                                            App.removeButtonSpinner($("#btn_product_add"));
-                                            $("#addProductModal").modal("hide");
-                                            App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
+                                            App.removeButtonSpinner($("#btn_store_add"));
+                                            $("#addStoreModal").modal("hide");
+                                            App.alert("success", json.message, "Success", window.location.origin + "/Home/Stores");
                                         }
                                         else {
                                             App.alert("error", json.message, "Error", undefined);
 
                                             setTimeout(function () {
-                                                App.removeButtonSpinner($("#btn_product_add"));
+                                                App.removeButtonSpinner($("#btn_store_add"));
                                             }, 500);
                                         }
 
@@ -109,18 +106,11 @@ let Product = function () {
                     },
                     { data: 'Name' },
                     {
-                        data: 'Price',
-                        render: function (data) {
-                            return '₱' + data;
-                        }
-                    },
-                    {
                         data: 'Id',
                         render: function (data, type, row) {
-                            return '<button type="button" class="btn btn-success btn-xs btn-product-edit" data-id="' + data + '"'
+                            return '<button type="button" class="btn btn-success btn-xs btn-store-edit" data-id="' + data + '"'
                                 + 'data-name="' + row.Name + '"'
-                                + 'data-price="' + row.Price + '"'
-                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btn-product-remove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
+                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btn-store-remove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
@@ -128,9 +118,9 @@ let Product = function () {
             });
 
             // Add event listener for opening and closing details
-            $('#products_table tbody').on('click', 'td.dt-control', function () {
+            $('#stores_table tbody').on('click', 'td.dt-control', function () {
                 var tr = $(this).closest('tr');
-                var row = tableProducts.row(tr);
+                var row = tableStores.row(tr);
 
                 if (row.child.isShown()) {
                     // This row is already open - close it
@@ -144,60 +134,55 @@ let Product = function () {
             });
 
 
-            $('#products_table').on('init.dt', function () {
+            $('#stores_table').on('init.dt', function () {
 
-                $(".btn-product-edit").click(function () {
-                    let productId = $(this).data("id");
-                    let productName = $(this).data("name");
-                    let productPrice = $(this).data("price");
+                $(".btn-store-edit").click(function () {
+                    let storeId = $(this).data("id");
+                    let storeName = $(this).data("name");
 
-                    $("#input_edit_productname").val(productName);
-                    $("#input_edit_productprice").val(productPrice);
-                    $("#input_edit_productid").val(productId);
+                    $("#input_edit_storename").val(storeName);
+                    $("#input_edit_storeid").val(storeId);
 
-                    $("#editProductModal").modal("show");
+                    $("#editStoreModal").modal("show");
                 });
 
 
 
-                $("#btn_product_update").click(function () {
-                    App.addButtonSpinner($("#btn_product_update"));
+                $("#btn_store_update").click(function () {
+                    App.addButtonSpinner($("#btn_store_update"));
 
-                    let productId = $("#input_edit_productid").val();
-                    let productNameUpdate = $("#input_edit_productname").val();
-                    let productPriceUpdate = $("#input_edit_productprice").val();
+                    let storeId = $("#input_edit_storeid").val();
+                    let storeNameUpdate = $("#input_edit_storename").val();
 
-                    App.requiredTextValidator($('#input_edit_productname').val(), $('#input_edit_productname'));
-                    App.requiredTextValidator($('#input_edit_productprice').val(), $('#input_edit_productprice'));
+                    App.requiredTextValidator($('#input_edit_storename').val(), $('#input_edit_storename'));
 
-                    if (productNameUpdate == "" || productPriceUpdate == "" || productPriceUpdate == 0) {
+                    if (storeNameUpdate == "") {
                         App.alert("error", "Name and Price is required", "Error", undefined);
-                        App.removeButtonSpinner($("#btn_product_update"));
+                        App.removeButtonSpinner($("#btn_store_update"));
                         return;
                     }
 
                     let model = {
-                        Id: productId,
-                        Name: productNameUpdate,
-                        Price: productPriceUpdate
+                        Id: storeId,
+                        Name: storeNameUpdate,
                     }
 
-                    App.ajaxPut(updateProductEndPoint,
+                    App.ajaxPut(updateStoreEndPoint,
                         JSON.stringify(model),
                         'text',
                         function (data) {
                             var json = JSON.parse(data);
 
                             if (json.isSuccessful) {
-                                App.removeButtonSpinner($("#btn_product_update"));
-                                $("#editProductModal").modal("hide");
-                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
+                                App.removeButtonSpinner($("#btn_store_update"));
+                                $("#editStoreModal").modal("hide");
+                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Stores");
                             }
                             else {
                                 App.alert("error", json.message, "Error", undefined);
 
                                 setTimeout(function () {
-                                    App.removeButtonSpinner($("#btn_product_update"));
+                                    App.removeButtonSpinner($("#btn_store_update"));
                                 }, 500);
                             }
 
@@ -212,21 +197,21 @@ let Product = function () {
 
 
 
-                $(".btn-product-remove").click(function () {
-                    let productId = $(this).data("id");
+                $(".btn-store-remove").click(function () {
+                    let storeId = $(this).data("id");
 
                     let param = {
-                        Id: productId
+                        Id: storeId
                     }
 
-                    App.ajaxPost(removeProductEndPoint,
+                    App.ajaxPost(removeStoreEndPoint,
                         JSON.stringify(param),
                         'text',
                         function (data) {
                             var json = JSON.parse(data);
 
                             if (json.isSuccessful) {
-                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
+                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Stores");
 
                             }
                             else {
@@ -250,5 +235,5 @@ let Product = function () {
 
 
 $(document).ready(function () {
-    Product.initializeProductsTable();
+    Store.initializeStoresTable();
 });

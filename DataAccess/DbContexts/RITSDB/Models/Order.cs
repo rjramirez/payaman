@@ -14,12 +14,11 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public short Id { get; set; }
         public short ProductId { get; set; }
         public int Quantity { get; set; }
-        [Required]
-        [StringLength(128)]
-        public string CashierId { get; set; }
+        public short CashierId { get; set; }
         [Column(TypeName = "decimal(10, 2)")]
         public decimal TotalAmount { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        [Required]
         [StringLength(128)]
         public string CreatedBy { get; set; }
         public DateTime ModifiedDate { get; set; }

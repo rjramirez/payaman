@@ -17,12 +17,12 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [StringLength(20)]
         public string Description { get; set; }
         [StringLength(10)]
-        public string ImageName { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public string Image { get; set; }
+        public DateTime CreatedDate { get; set; }
+        [Required]
         [StringLength(128)]
         public string CreatedBy { get; set; }
-        public DateTime ModifiedDate { get; set; }
-        [Required]
+        public DateTime? ModifiedDate { get; set; }
         [StringLength(128)]
         public string ModifiedBy { get; set; }
     }

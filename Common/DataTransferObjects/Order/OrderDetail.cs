@@ -12,6 +12,6 @@ namespace Common.DataTransferObjects.Order
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public string TransactionBy { get; set; }
-
+        public bool Active { get; set; }
     }
 }

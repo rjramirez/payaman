@@ -25,14 +25,21 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public decimal Price { get; set; }
         [StringLength(50)]
         public string Image { get; set; }
+        public short StoreId { get; set; }
+        public bool Active { get; set; }
+        [Precision(4)]
         public DateTime CreatedDate { get; set; }
         [Required]
         [StringLength(128)]
         public string CreatedBy { get; set; }
+        [Precision(4)]
         public DateTime? ModifiedDate { get; set; }
         [StringLength(128)]
         public string ModifiedBy { get; set; }
 
+        [ForeignKey("StoreId")]
+        [InverseProperty("Products")]
+        public virtual Store Store { get; set; }
         [InverseProperty("Product")]
         public virtual ICollection<Order> Orders { get; set; }
     }

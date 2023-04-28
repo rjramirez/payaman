@@ -65,7 +65,7 @@ namespace WebAPI.Controllers
                             Description = c.Description,
                             CreatedDate = c.CreatedDate
                         },
-                        predicate: a => !String.IsNullOrEmpty(a.Name),
+                        predicate: a => a.Active == true,
                         orderBy: o => o.OrderBy(a => a.Name));
 
             return Ok(products);

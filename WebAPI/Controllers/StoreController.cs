@@ -63,9 +63,9 @@ namespace WebAPI.Controllers
                             Name = c.Name,
                             Description = c.Description,
                             Image = c.Image,
-                            CreatedDate = c.CreatedDate.Value
+                            CreatedDate = c.CreatedDate
                         },
-                        predicate: a => !String.IsNullOrEmpty(a.Name),
+                        predicate: a => a.Active == true,
                         orderBy: o => o.OrderBy(a => a.Name));
 
             return Ok(Stores);
@@ -76,9 +76,13 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Update Store")]
         public async Task<ActionResult<ClientResponse>> UpdateStore(StoreDetail StoreDetail)
         {
-            var StoreFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == StoreDetail.Id);
+            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == StoreDetail.Id);
 
-            var Store = _mapper.Map(StoreDetail, StoreFromDB);
+            var today = DateTime.UtcNow;
+            storeFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            storeFromDB.ModifiedBy = StoreDetail.TransactionBy;
+
+            var Store = _mapper.Map(StoreDetail, storeFromDB);
 
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(StoreDetail.TransactionBy);
 
@@ -100,11 +104,13 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Remove Store")]
         public async Task<ActionResult<ClientResponse>> Remove(StoreDetail StoreDetail)
         {
-            var StoreFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == StoreDetail.Id);
+            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == StoreDetail.Id);
 
-            StoreFromDB.ModifiedBy = StoreDetail.TransactionBy;
+            var today = DateTime.UtcNow;
+            storeFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            storeFromDB.ModifiedBy = StoreDetail.TransactionBy;
 
-            _RITSDBUnitOfWork.StoreRepository.Remove(StoreFromDB);
+            _RITSDBUnitOfWork.StoreRepository.Remove(storeFromDB);
 
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(StoreDetail.TransactionBy);
 
@@ -127,9 +133,6 @@ namespace WebAPI.Controllers
         public async Task<ActionResult<ClientResponse>> Add(StoreDetail StoreDetail)
         {
             var store = _mapper.Map(StoreDetail, new Store());
-
-            var today = DateTime.UtcNow;
-            //store.CreatedDate = today.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
             await _RITSDBUnitOfWork.StoreRepository.AddAsync(store);
 

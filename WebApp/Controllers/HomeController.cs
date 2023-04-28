@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
-using IdentityModel;
 using Common.Constants;
 
 namespace WebApp.Controllers
@@ -28,6 +27,7 @@ namespace WebApp.Controllers
         [Authorize(Policy="Admin")]
         public IActionResult Index()
         {
+            ViewBag.Title = "Dashboard";
             return View();
         }
 

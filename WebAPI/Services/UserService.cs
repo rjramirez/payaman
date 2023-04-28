@@ -81,7 +81,7 @@ public class UserService : IUserService
 
         // hash password
         user.Password = BCrypt.HashPassword(model.Password);
-        user.IsActive = true;
+        user.Active = true;
 
         // save user
         await _RITSDBUnitOfWork.AppUserRepository.AddAsync(user);
@@ -95,7 +95,9 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<AppUser>> GetAll()
     {
-        return await _RITSDBUnitOfWork.AppUserRepository.GetAllAsync();
+
+        return await _RITSDBUnitOfWork.AppUserRepository.FindAsync(
+            predicate: a => a.Active == true);
     }
 
     public async Task<AppUser> GetById(int id)
@@ -131,7 +133,7 @@ public class UserService : IUserService
     {
         var user = await getUser(id);
 
-        user.IsActive = false;
+        user.Active = false;
         string name = _httpContextAccessor.HttpContext.User.Identity.Name;
 
         await _RITSDBUnitOfWork.SaveChangesAsync(name);

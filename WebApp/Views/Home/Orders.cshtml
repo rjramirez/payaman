@@ -1,0 +1,86 @@
+﻿@section Styles
+{
+    <link href="~/lib/datatables/css/datatables.min.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-md-5 mx-auto mt-2">
+        <table id="orders_table" class="display compact stripe mt-3" style="width:100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Date</th>
+                    <th>Cashier</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th>Date</th>
+                    <th>Cashier</th>
+                    <th>Total</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+
+
+<!-- Add Order Modal -->
+<div class="modal fade" id="addOrderModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="addOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">Name</div>
+                            </div>
+                            <input type="text" class="form-control form-control-sm" id="input_add_ordername">
+                        </div>
+                    </div>
+                </form>
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary btn-xs btn-block" data-dismiss="modal">Close</button>
+                    <button type="button" id="btn_order_add" class="btn btn-primary btn-xs btn-block">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Edit Order Modal -->
+<div class="modal fade" id="editOrderModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="editOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">Name</div>
+                            </div>
+                            <input type="text" class="form-control form-control-sm" id="input_edit_ordername">
+                            <input type="hidden" id="input_edit_orderid">
+                        </div>
+                    </div>
+                </form>
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary btn-xs btn-block" data-dismiss="modal">Close</button>
+                    <button type="button" id="btn_order_update" class="btn btn-primary btn-xs btn-block">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/lib/datatables/js/datatables.min.js"></script>
+    <script src="~/js/application/Order.js"></script>
+}

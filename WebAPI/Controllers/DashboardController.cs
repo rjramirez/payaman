@@ -10,44 +10,44 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderController : ControllerBase
+    public class DashboardController : ControllerBase
     {
         private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;
         private readonly IMapper _mapper;
-        public OrderController(IRITSDBUnitOfWork RITSDBUnitOfWork, IMapper mapper)
+        public DashboardController(IRITSDBUnitOfWork RITSDBUnitOfWork, IMapper mapper)
         {
             _RITSDBUnitOfWork = RITSDBUnitOfWork;
             _mapper = mapper;
         }
 
 
-        //[HttpGet]
-        //[Route("GetPagedList")]
-        //[SwaggerOperation(Summary = "Get Order Paged List")]
-        //public async Task<ActionResult<PagedList<OrderSearchResult>>> GetPagedList([FromQuery] OrderSearchFilter employeeSearchFilter)
-        //{
+        [HttpGet]
+        [Route("GetPagedList")]
+        [SwaggerOperation(Summary = "Get Order Paged List")]
+        public async Task<ActionResult<PagedList<OrderSearchResult>>> GetPagedList([FromQuery] OrderSearchFilter employeeSearchFilter)
+        {
 
-        //    PagedList<OrderSearchResult> OrderSearchResults = await _RITSDBUnitOfWork.OrderRepository.GetPagedListAsync(
-        //                selector: c => new OrderSearchResult()
-        //                {
-        //                    Name = c.Name,
-        //                    Price = c.Price
-        //                },
-        //                predicate: a =>
-        //                (
-        //                    string.IsNullOrEmpty(employeeSearchFilter.Keyword) ||
-        //                    (
-        //                        a.Name.Contains(employeeSearchFilter.Keyword) ||
-        //                        a.Price.ToString().Contains(employeeSearchFilter.Keyword)
-        //                    )
-        //                ),
-        //                pagingParameter: employeeSearchFilter,
-        //                orderBy: o => o.OrderBy(a => a.Name));
+            PagedList<OrderSearchResult> OrderSearchResults = await _RITSDBUnitOfWork.OrderRepository.GetPagedListAsync(
+                        selector: c => new OrderSearchResult()
+                        {
+                            Name = c.Name,
+                            Price = c.Price
+                        },
+                        predicate: a =>
+                        (
+                            string.IsNullOrEmpty(employeeSearchFilter.Keyword) ||
+                            (
+                                a.Name.Contains(employeeSearchFilter.Keyword) ||
+                                a.Price.ToString().Contains(employeeSearchFilter.Keyword)
+                            )
+                        ),
+                        pagingParameter: employeeSearchFilter,
+                        orderBy: o => o.OrderBy(a => a.Name));
 
-        //    Response.Headers.Add(PagingConstant.PagingHeaderKey, OrderSearchResults.PagingHeaderValue);
-        //    return Ok(OrderSearchResults);
+            Response.Headers.Add(PagingConstant.PagingHeaderKey, OrderSearchResults.PagingHeaderValue);
+            return Ok(OrderSearchResults);
 
-        //}
+        }
 
         [HttpGet]
         [Route("GetAllOrders")]

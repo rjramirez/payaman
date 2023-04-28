@@ -17,6 +17,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public short CashierId { get; set; }
         [Column(TypeName = "decimal(10, 2)")]
         public decimal TotalAmount { get; set; }
+        public bool Active { get; set; }
         public DateTime CreatedDate { get; set; }
         [Required]
         [StringLength(128)]

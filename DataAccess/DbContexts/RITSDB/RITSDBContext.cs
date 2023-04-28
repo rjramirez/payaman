@@ -62,10 +62,18 @@ namespace DataAccess.DBContexts.RITSDB
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.StoreId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Store");
             });
 
             modelBuilder.Entity<Store>(entity =>
             {
+                entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+
                 entity.Property(e => e.Image).IsFixedLength();
             });
 

@@ -14,6 +14,12 @@
     $(document).on('collapsed.lte.pushmenu', function () {
         $('[data-widget="pushmenu"]').css("margin-left", 0 + "px");
     });
+
+
+    $('.nav-sidebar .nav-item').click(function () {
+        $('.nav-sidebar .nav-item').removeClass('active');
+        $(this).addClass('active');
+    });
     
 });
 

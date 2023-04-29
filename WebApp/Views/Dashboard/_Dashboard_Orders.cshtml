@@ -1,0 +1,34 @@
+﻿@model WebApp.Models.Order.OrderSearchViewModel
+@using Common.Constants
+@using Common.DataTransferObjects.CollectionPaging
+
+<div id="orders_wrapper">
+    <div class="col-2 mt-2">
+        <div class="row">
+            @if (Model == null)
+            {
+                <h2>No Data Available</h2>            
+            }
+
+            @foreach (var order in Model.OrderSearchResults)
+            {
+                @foreach (var item in order.OrderItemList)
+                {
+                    <button class="btn btn-outline-success btn-block text-left mt-2 text-bold">
+                        @item.ProductName <br>
+                        ₱ @item.ProductPrice x @item.Quantity
+                    </button>
+                }
+            }
+        </div>
+        <div class="row">
+            <div>
+                @{
+                    await Html.RenderPartialAsync("_Paging", new PagingMetadata(Model.OrderSearchResults.CurrentPage, Model.OrderSearchResults.TotalPages, Model.OrderSearchResults.PageSize, Model.OrderSearchResults.TotalCount, Model.OrderSearchResults.PageClickEvent));
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+

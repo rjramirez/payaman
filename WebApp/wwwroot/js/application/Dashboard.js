@@ -198,8 +198,19 @@ let Dashboard = function () {
             let url = searchEndPoint + `?PageNumber=${dashboardSearchPageIndex}`;
             url += `&Keyword=${searchKeyword}`;
 
-            let searchurl = window.location.origin + url;
-            window.location.replace(searchurl);
+            let orderSearchUrl = window.location.origin + url;
+            //window.location.replace(searchurl);
+
+            App.ajaxGet(orderSearchUrl
+                , "html"
+                , function (data) {
+                    $("#orders_row").html(data);
+                }
+                ,function () {
+                    App.hidePreloader();
+                }
+            );
+
         },
     }
 }();
@@ -207,7 +218,10 @@ let Dashboard = function () {
 
 
 $(document).ready(function () {
-    $("#btn_search_bar").click(function () {
-        Dashboard.executeSearch();
+    $("#input_search_bar").keyup(function () {
+        let num = $(this).length;
+        if (num > 2) {
+            Dashboard.executeSearch();
+        }
     });
 });

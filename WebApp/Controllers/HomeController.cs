@@ -89,7 +89,7 @@ namespace WebApp.Controllers
                 PagingMetadata pagingMetadata = JsonConvert.DeserializeObject<PagingMetadata>(response.Headers.GetValues(PagingConstant.PagingHeaderKey).FirstOrDefault());
                 PagedList<OrderSearchResult> result = new(orderSearchResult.ToList(), pagingMetadata)
                 {
-                    PageClickEvent = "OrderSearch.changePage({0})"
+                    PageClickEvent = "Dashboard.changePage({0})"
                 };
 
                 OrderSearchViewModel orderSearchViewModel = new()
@@ -100,7 +100,7 @@ namespace WebApp.Controllers
 
                 //await _notificationHubContext.Clients.All.SendAsync(NotificationConstant.RefreshNotification);
 
-                return View("Views/Home/Search.cshtml", orderSearchViewModel);
+                return View("~/Views/Dashboard/_Dashboard_Orders.cshtml", orderSearchViewModel);
             }
 
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());

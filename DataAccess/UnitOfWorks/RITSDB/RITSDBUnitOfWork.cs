@@ -21,8 +21,8 @@ namespace DataAccess.UnitOfWorks.RITSDB
             AuditTrailRepository = new AuditTrailRepository(_context);
             ProductRepository = new ProductRepository(_context);
             OrderRepository = new OrderRepository(_context);
+            OrderItemRepository = new OrderItemRepository(_context);
             StoreRepository = new StoreRepository(_context);
-            
         }
 
         public IAppUserRepository AppUserRepository { get; private set; }
@@ -31,6 +31,7 @@ namespace DataAccess.UnitOfWorks.RITSDB
         public IAuditTrailRepository AuditTrailRepository { get; private set; }
         public IProductRepository ProductRepository { get; private set; }
         public IOrderRepository OrderRepository { get; private set; }
+        public IOrderItemRepository OrderItemRepository { get; private set; }
         public IStoreRepository StoreRepository { get; private set; }
         
         public void Dispose()

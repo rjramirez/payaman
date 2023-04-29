@@ -12,5 +12,6 @@ namespace DataAccess.UnitOfWorks.RITSDB
         public IProductRepository ProductRepository { get; }
         public IStoreRepository StoreRepository { get; }
         public IOrderRepository OrderRepository { get; }
+        public IOrderItemRepository OrderItemRepository { get; }
     }
 }

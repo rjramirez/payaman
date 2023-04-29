@@ -29,8 +29,6 @@ namespace WebApp.Controllers
             if (response.IsSuccessStatusCode)
             {
                 IEnumerable<OrderVM> Orders = JsonConvert.DeserializeObject<IEnumerable<OrderVM>>(await response.Content.ReadAsStringAsync());
-
-                //var OrderList = new JsonResult(new { data = JsonConvert.SerializeObject(Orders) });
                 return Ok(JsonConvert.SerializeObject(Orders));
             }
 

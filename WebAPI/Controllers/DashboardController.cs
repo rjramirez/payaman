@@ -5,6 +5,9 @@ using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using DataAccess.DBContexts.RITSDB.Models;
+using Common.DataTransferObjects.CollectionPaging;
+using Common.Constants;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI.Controllers
 {
@@ -22,53 +25,30 @@ namespace WebAPI.Controllers
 
 
         [HttpGet]
-        [Route("GetPagedList")]
-        [SwaggerOperation(Summary = "Get Order Paged List")]
-        public async Task<ActionResult<PagedList<OrderSearchResult>>> GetPagedList([FromQuery] OrderSearchFilter employeeSearchFilter)
-        {
-
-            PagedList<OrderSearchResult> OrderSearchResults = await _RITSDBUnitOfWork.OrderRepository.GetPagedListAsync(
-                        selector: c => new OrderSearchResult()
-                        {
-                            Name = c.Name,
-                            Price = c.Price
-                        },
-                        predicate: a =>
-                        (
-                            string.IsNullOrEmpty(employeeSearchFilter.Keyword) ||
-                            (
-                                a.Name.Contains(employeeSearchFilter.Keyword) ||
-                                a.Price.ToString().Contains(employeeSearchFilter.Keyword)
-                            )
-                        ),
-                        pagingParameter: employeeSearchFilter,
-                        orderBy: o => o.OrderBy(a => a.Name));
-
-            Response.Headers.Add(PagingConstant.PagingHeaderKey, OrderSearchResults.PagingHeaderValue);
-            return Ok(OrderSearchResults);
-
-        }
-
-        [HttpGet]
         [Route("GetAllOrders")]
         [SwaggerOperation(Summary = "Get Order List")]
         public async Task<ActionResult<IEnumerable<OrderDetail>>> GetAll()
         {
-            IEnumerable<OrderDetail> Orders = await _RITSDBUnitOfWork.OrderRepository.FindAsync(
+            IEnumerable<OrderDetail> orders = await _RITSDBUnitOfWork.OrderRepository.FindAsync(
                         selector: c => new OrderDetail()
                         {
                             Id = c.Id,
-                            ProductId = c.ProductId,
-                            Quantity = c.Quantity,
                             CashierId = c.CashierId,
                             TotalAmount = c.TotalAmount,
                             CreatedDate = c.CreatedDate,
-                            ModifiedDate = c.ModifiedDate
+                            ModifiedDate = c.ModifiedDate,
+                            OrderItemList = c.OrderItems.Select(oi => new OrderItemDetail() { 
+                                Id = oi.Id,
+                                ProductId = oi.ProductId,
+                                Quantity = oi.Quantity,
+                                TotalAmount = oi.TotalAmount,
+                                CreatedDate = oi.CreatedDate,
+                            })
                         },
                         predicate: a => a.Active == true,
                         orderBy: o => o.OrderBy(a => a.Id));
 
-            return Ok(Orders);
+            return Ok(orders);
         }
 
         [HttpPut]

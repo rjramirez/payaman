@@ -8,6 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using Common.Constants;
+using Common.DataTransferObjects.CollectionPaging;
+using Common.DataTransferObjects.ReferenceData;
+using WebApp.Extensions;
+using Common.DataTransferObjects.Order;
+using Microsoft.Extensions.Caching.Memory;
+using WebApp.Models.Order;
 
 namespace WebApp.Controllers
 {
@@ -16,12 +22,15 @@ namespace WebApp.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private IMapper _mapper;
         private IHttpContextAccessor _httpContextAccessor;
+        private readonly IMemoryCache _memoryCache;
 
-		public HomeController(IHttpClientFactory httpClientFactory, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public HomeController(IHttpClientFactory httpClientFactory, IMapper mapper, IMemoryCache memoryCache, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _memoryCache = memoryCache;
         }
 
         [Authorize(Policy="Admin")]
@@ -52,6 +61,49 @@ namespace WebApp.Controllers
         public IActionResult Dashboard()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(OrderSearchFilter orderSearchFilter)
+        {
+            //Get the role of the current user of Search
+            //string userRoleCacheName = string.Format(RoleConstant.UserRoleCacheName, User.Identity.Name);
+            //if (_memoryCache.TryGetValue(userRoleCacheName, out ReferenceDataDetail userRole))
+            //{
+            //    if (Convert.ToInt32(userRole.Value) == AppRoleConstant.OPSLV1 ||
+            //        Convert.ToInt32(userRole.Value) == AppRoleConstant.OPSLV2)
+            //    {
+            //        string msGraphEmployeeCacheName = string.Format(RoleConstant.MsGraphEmployeeCacheName, User.Identity.Name);
+            //        if (_memoryCache.TryGetValue(msGraphEmployeeCacheName, out IEnumerable<ReferenceDataDetail> msGraphEmployeeCached))
+            //        {
+            //            string loggedInEmployeeId = msGraphEmployeeCached.SingleOrDefault(r => r.Name == "MMTEmployeeId").Value.ToString();
+            //        }
+            //    }
+            //}
+
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+            HttpResponseMessage response = await client.GetAsync($"api/Order/Search?{orderSearchFilter.GetQueryString()}");
+            if (response.IsSuccessStatusCode)
+            {
+                IEnumerable<OrderSearchResult> orderSearchResult = JsonConvert.DeserializeObject<IEnumerable<OrderSearchResult>>(await response.Content.ReadAsStringAsync());
+                PagingMetadata pagingMetadata = JsonConvert.DeserializeObject<PagingMetadata>(response.Headers.GetValues(PagingConstant.PagingHeaderKey).FirstOrDefault());
+                PagedList<OrderSearchResult> result = new(orderSearchResult.ToList(), pagingMetadata)
+                {
+                    PageClickEvent = "OrderSearch.changePage({0})"
+                };
+
+                OrderSearchViewModel orderSearchViewModel = new()
+                {
+                    OrderSearchFilter = orderSearchFilter,
+                    OrderSearchResults = result
+                };
+
+                //await _notificationHubContext.Clients.All.SendAsync(NotificationConstant.RefreshNotification);
+
+                return View("Views/Home/Search.cshtml", orderSearchViewModel);
+            }
+
+            return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
         }
 
         public IActionResult AuthenticationCallback()

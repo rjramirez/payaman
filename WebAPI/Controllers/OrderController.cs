@@ -5,6 +5,9 @@ using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using DataAccess.DBContexts.RITSDB.Models;
+using Common.Constants;
+using Common.DataTransferObjects.CollectionPaging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI.Controllers
 {
@@ -21,33 +24,42 @@ namespace WebAPI.Controllers
         }
 
 
-        //[HttpGet]
-        //[Route("GetPagedList")]
-        //[SwaggerOperation(Summary = "Get Order Paged List")]
-        //public async Task<ActionResult<PagedList<OrderSearchResult>>> GetPagedList([FromQuery] OrderSearchFilter employeeSearchFilter)
-        //{
+        [HttpGet]
+        [Route("Search")]
+        [SwaggerOperation(Summary = "Search and Get Order Paged List")]
+        public async Task<ActionResult<PagedList<OrderSearchResult>>> OrderSearchPagedList([FromQuery] OrderSearchFilter employeeSearchFilter)
+        {
+            PagedList<OrderSearchResult> OrderSearchResults = await _RITSDBUnitOfWork.OrderRepository.GetPagedListAsync(
+                        selector: c => new OrderSearchResult()
+                        {
+                            Id = c.Id,
+                            CashierId = c.CashierId,
+                            TotalAmount = c.TotalAmount,
+                            CreatedDate = c.CreatedDate,
+                            OrderItemList = c.OrderItems.Select(oi => new OrderItemDetail()
+                            {
+                                Id = oi.Id,
+                                ProductId = oi.ProductId,
+                                Quantity = oi.Quantity,
+                                TotalAmount = oi.TotalAmount,
+                                CreatedDate = oi.CreatedDate
+                            })
+                        },
+                        predicate: a =>
+                        (
+                            string.IsNullOrEmpty(employeeSearchFilter.Keyword) ||
+                            (
+                                !a.OrderItems.Where(x => x.Product.Name.Contains(employeeSearchFilter.Keyword)).IsNullOrEmpty()
+                            )
+                        ),
+                        pagingParameter: employeeSearchFilter,
+                        orderBy: o => o.OrderBy(a => a.Id));
 
-        //    PagedList<OrderSearchResult> OrderSearchResults = await _RITSDBUnitOfWork.OrderRepository.GetPagedListAsync(
-        //                selector: c => new OrderSearchResult()
-        //                {
-        //                    Name = c.Name,
-        //                    Price = c.Price
-        //                },
-        //                predicate: a =>
-        //                (
-        //                    string.IsNullOrEmpty(employeeSearchFilter.Keyword) ||
-        //                    (
-        //                        a.Name.Contains(employeeSearchFilter.Keyword) ||
-        //                        a.Price.ToString().Contains(employeeSearchFilter.Keyword)
-        //                    )
-        //                ),
-        //                pagingParameter: employeeSearchFilter,
-        //                orderBy: o => o.OrderBy(a => a.Name));
+            Response.Headers.Add(PagingConstant.PagingHeaderKey, OrderSearchResults.PagingHeaderValue);
+            return Ok(OrderSearchResults);
 
-        //    Response.Headers.Add(PagingConstant.PagingHeaderKey, OrderSearchResults.PagingHeaderValue);
-        //    return Ok(OrderSearchResults);
+        }
 
-        //}
 
         [HttpGet]
         [Route("GetAllOrders")]
@@ -58,9 +70,6 @@ namespace WebAPI.Controllers
                         selector: c => new OrderDetail()
                         {
                             Id = c.Id,
-                            ProductId = c.ProductId,
-                            Quantity = c.Quantity,
-                            CashierId = c.CashierId,
                             TotalAmount = c.TotalAmount,
                             CreatedDate = c.CreatedDate,
                             ModifiedDate = c.ModifiedDate

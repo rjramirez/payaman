@@ -8,6 +8,7 @@ namespace DataAccess.DBContexts.RITSDB
 {
     public partial class RITSDBContext : DbContext
     {
+
         public RITSDBContext(DbContextOptions<RITSDBContext> options)
             : base(options)
         {
@@ -19,6 +20,7 @@ namespace DataAccess.DBContexts.RITSDB
         public virtual DbSet<AuditTrailDetail> AuditTrailDetails { get; set; }
         public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Store> Stores { get; set; }
 
@@ -52,11 +54,26 @@ namespace DataAccess.DBContexts.RITSDB
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.HasOne(d => d.Product)
+                entity.HasOne(d => d.Cashier)
                     .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.CashierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Order_AppUser");
+            });
+
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.OrderItems)
+                    .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OrderItem_Order");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Order_Product");
+                    .HasConstraintName("FK_OrderItem_Product");
             });
 
             modelBuilder.Entity<Product>(entity =>

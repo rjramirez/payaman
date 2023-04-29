@@ -1,4 +1,5 @@
-﻿
+﻿var dashboardSearchPageIndex = 1;
+
 /* Formatting function for row details - modify as you need */
 function format(d) {
     // `d` is the original data object for the row
@@ -20,11 +21,13 @@ function format(d) {
     );
 }
 
-let Order = function () {
+let Dashboard = function () {
     let ordersEndPoint = "/Order/GetAllOrders";
     let updateOrderEndPoint = "/Order/Update";
     let removeOrderEndPoint = "/Order/Remove";
     let addOrderEndPoint = "/Order/Add";
+    let searchEndPoint = "/Home/Search";
+
 
     return {
         initializeOrdersTable: function () {
@@ -184,12 +187,27 @@ let Order = function () {
                     );
                 });
             });
-        }
+        },
+        changePage: function (pageId) {
+            dashboardSearchPageIndex = pageId;
+            Dashboard.executeSearch();
+        },
+        executeSearch: function () {
+            let searchKeyword = $("#input_search_bar").val();
+
+            let url = searchEndPoint + `?PageNumber=${dashboardSearchPageIndex}`;
+            url += `&Keyword=${searchKeyword}`;
+
+            let searchurl = window.location.origin + url;
+            window.location.replace(searchurl);
+        },
     }
 }();
 
 
 
 $(document).ready(function () {
-    Order.initializeOrdersTable();
+    $("#btn_search_bar").click(function () {
+        Dashboard.executeSearch();
+    });
 });

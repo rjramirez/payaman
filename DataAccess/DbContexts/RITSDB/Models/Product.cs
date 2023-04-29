@@ -11,7 +11,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
     {
         public Product()
         {
-            Orders = new HashSet<Order>();
+            OrderItems = new HashSet<OrderItem>();
         }
 
         [Key]
@@ -41,6 +41,6 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [InverseProperty("Products")]
         public virtual Store Store { get; set; }
         [InverseProperty("Product")]
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }

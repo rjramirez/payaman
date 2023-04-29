@@ -6,17 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DBContexts.RITSDB.Models
 {
-    [Table("Order")]
-    public partial class Order
+    [Table("OrderItem")]
+    public partial class OrderItem
     {
-        public Order()
-        {
-            OrderItems = new HashSet<OrderItem>();
-        }
-
         [Key]
         public int Id { get; set; }
-        public short CashierId { get; set; }
+        public int OrderId { get; set; }
+        public short ProductId { get; set; }
+        public short Quantity { get; set; }
         [Column(TypeName = "decimal(10, 2)")]
         public decimal TotalAmount { get; set; }
         public bool Active { get; set; }
@@ -29,10 +26,11 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [StringLength(128)]
         public string ModifiedBy { get; set; }
 
-        [ForeignKey("CashierId")]
-        [InverseProperty("Orders")]
-        public virtual AppUser Cashier { get; set; }
-        [InverseProperty("Order")]
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        [ForeignKey("OrderId")]
+        [InverseProperty("OrderItems")]
+        public virtual Order Order { get; set; }
+        [ForeignKey("ProductId")]
+        [InverseProperty("OrderItems")]
+        public virtual Product Product { get; set; }
     }
 }

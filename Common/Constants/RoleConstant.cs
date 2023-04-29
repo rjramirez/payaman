@@ -4,8 +4,10 @@
     {
         public const byte Admin = 1;
         public const byte Cashier = 2;
-
         public const string Support = "Application Support";
-        public const string UserRolesCacheName = "UserRolesCacheName_{0}";
+        public const string MsGraphEmployeeCacheName = "MsGraphEmployeeCacheName_{0}";
+        public const string UserRoleCacheName = "UserRoleCacheName_{0}";
+        public const string AppUserDetailForSideBarCacheName = "AppUserDetailForSideBarCacheName_{0}";
+        public const string MsGraphIdCacheName = "MsGraphIdIdCacheName_{0}";
     }
 }

@@ -9,8 +9,13 @@ namespace DataAccess.DBContexts.RITSDB.Models
     [Table("AppUser")]
     public partial class AppUser
     {
+        public AppUser()
+        {
+            Orders = new HashSet<Order>();
+        }
+
         [Key]
-        public int Id { get; set; }
+        public short Id { get; set; }
         [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
@@ -21,11 +26,13 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }
-        public int RoleId { get; set; }
+        public short RoleId { get; set; }
         public bool Active { get; set; }
 
         [ForeignKey("RoleId")]
         [InverseProperty("AppUsers")]
         public virtual AppUserRole Role { get; set; }
+        [InverseProperty("Cashier")]
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

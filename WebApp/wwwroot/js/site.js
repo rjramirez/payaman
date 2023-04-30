@@ -32,6 +32,8 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"]
 
 var App = function () {
+    let storesEndPoint = "/Home/MenuRightBarStores";
+
     return {
 
         initialize: function () {
@@ -52,6 +54,20 @@ var App = function () {
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
+
+            //Menu Right Navbar
+            let storesUrl = window.location.origin + storesEndPoint;
+            App.ajaxGet(storesUrl
+                , "html"
+                , function (data) {
+                    $("#ul_right_navbar").html(data);
+                    App.hidePreloader();
+                }
+                , function () {
+                    App.hidePreloader();
+                }
+            );
+            
         },
         ajaxPost: function (_url, _data, _dataType, _successFn, _errorFn) {
             App.ajaxCall('POST', _url, _data, _dataType, _successFn, _errorFn);

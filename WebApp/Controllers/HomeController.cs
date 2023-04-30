@@ -14,6 +14,10 @@ using WebApp.Extensions;
 using Common.DataTransferObjects.Order;
 using Microsoft.Extensions.Caching.Memory;
 using WebApp.Models.Order;
+using Common.DataTransferObjects.Store;
+using WebApp.Models.Store;
+using Common.DataTransferObjects.AppSettings;
+using IdentityModel;
 
 namespace WebApp.Controllers
 {
@@ -23,14 +27,16 @@ namespace WebApp.Controllers
         private IMapper _mapper;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IMemoryCache _memoryCache;
+        private readonly ClientSetting _clientSetting;
 
         public HomeController(IHttpClientFactory httpClientFactory, IMapper mapper, IMemoryCache memoryCache, 
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor, ClientSetting clientSetting)
         {
             _httpClientFactory = httpClientFactory;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _memoryCache = memoryCache;
+            _clientSetting = clientSetting;
         }
 
         [Authorize(Policy="Admin")]
@@ -61,6 +67,71 @@ namespace WebApp.Controllers
         public IActionResult Dashboard()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MenuRightBarStores(int storeId)
+        {
+            MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(_clientSetting.CacheExpirationMinutes));
+            
+
+            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+            HttpResponseMessage response = await client.GetAsync($"api/Store/GetAllStores");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                IEnumerable<StoreDetail> stores = JsonConvert.DeserializeObject<IEnumerable<StoreDetail>>(await response.Content.ReadAsStringAsync());
+                IEnumerable<StoreVM> newStoreVM = stores.Select(s => new StoreVM()
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = s.Description,
+                    Image = s.Image,
+                    CreatedDate = s.CreatedDate,
+                    IsSelected =  storeId > 0 ? true : false,
+                    ModifiedDate = s.ModifiedDate
+                });
+               
+                foreach (StoreVM newStore in newStoreVM)
+                {
+                    string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
+                    bool memCacheStoreIdAvailable = _memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected);
+
+                    if (storeId > 0)
+                    {
+                        if(memCacheStoreIdAvailable)
+                            _memoryCache.Remove(storeSelectedCacheName);
+
+                        //Set MemoryCache StoreIdSelected
+                        ReferenceDataDetail storeIdSelectedForMemoryCache = new ReferenceDataDetail { Active = true, Name = "StoreIdSelected", Value = storeId };
+                        _memoryCache.Set(storeSelectedCacheName, storeIdSelectedForMemoryCache, cacheEntryOptions);
+
+                        if (storeId == newStore.Id)
+                            newStore.IsSelected = true;
+                        else
+                            newStore.IsSelected = false;
+                    }
+                    else
+                    {
+                        //Default
+                        if (newStoreVM.First().Id == newStore.Id)
+                        {
+                            //Set MemoryCache StoreIdSelected
+                            ReferenceDataDetail storeIdSelectedForMemoryCache = new ReferenceDataDetail { Active = true, Name = "StoreIdSelected", Value = newStore.Id };
+                            _memoryCache.Set(storeSelectedCacheName, storeIdSelectedForMemoryCache, cacheEntryOptions);
+
+                            newStore.IsSelected = true;
+                        }
+                        else
+                            newStore.IsSelected = false;
+                    }
+                }
+
+                return PartialView("~/Views/Shared/_LayoutRightNavBarLink.cshtml", newStoreVM);
+            }
+
+            return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
         }
 
         [HttpGet]
@@ -100,7 +171,7 @@ namespace WebApp.Controllers
 
                 //await _notificationHubContext.Clients.All.SendAsync(NotificationConstant.RefreshNotification);
 
-                return View("~/Views/Dashboard/_Dashboard_Orders.cshtml", orderSearchViewModel);
+                return PartialView("~/Views/Dashboard/_Dashboard_Orders.cshtml", orderSearchViewModel);
             }
 
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());

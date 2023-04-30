@@ -3,8 +3,8 @@
 @using Common.DataTransferObjects.CollectionPaging
 
 <div id="orders_wrapper" class="mx-auto">
-    <div class="col-12 mt-2">
-        <div class="row">
+    <div class="row">
+        <div class="mt-2">
             @if (Model == null || !Model.OrderSearchResults.Any())
             {
                 <h2>No Data Available</h2>
@@ -13,24 +13,24 @@
             {
                 @foreach (var item in Model.OrderSearchResults)
                 {
-                    <button class="btn btn-outline-success btn-block text-left mt-2 text-bold">
-                        @item.ProductName <br>
-                        ₱ @item.ProductPrice x @item.Quantity
+                    <button class="btn btn-outline-success btn-xs text-left mt-2 ml-2 text-bold">
+                        <span class="text-xs">@item.ProductName</span> <br>
+                        <span class="text-xs">₱ @item.ProductPrice x @item.Quantity</span>
                     </button>
                 }
             }
         </div>
-        @if (Model != null && Model.OrderSearchResults.Any())
-        {
-            <div class="row">
-                <div>
-                    @{
-                        await Html.RenderPartialAsync("_Paging", new PagingMetadata(Model.OrderSearchResults.CurrentPage, Model.OrderSearchResults.TotalPages, Model.OrderSearchResults.PageSize, Model.OrderSearchResults.TotalCount, Model.OrderSearchResults.PageClickEvent));
-                    }
-                </div>
-            </div>
-        }
     </div>
+    @if (Model != null && Model.OrderSearchResults.Any())
+    {
+        <div class="row">
+            <div>
+                @{
+                    await Html.RenderPartialAsync("_Paging", new PagingMetadata(Model.OrderSearchResults.CurrentPage, Model.OrderSearchResults.TotalPages, Model.OrderSearchResults.PageSize, Model.OrderSearchResults.TotalCount, Model.OrderSearchResults.PageClickEvent));
+                }
+            </div>
+        </div>
+    }
 </div>
 
 

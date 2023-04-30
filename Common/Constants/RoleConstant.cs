@@ -9,5 +9,6 @@
         public const string UserRoleCacheName = "UserRoleCacheName_{0}";
         public const string AppUserDetailForSideBarCacheName = "AppUserDetailForSideBarCacheName_{0}";
         public const string MsGraphIdCacheName = "MsGraphIdIdCacheName_{0}";
+        public const string StoreSelectedCacheName = "StoreSelected_{0}";
     }
 }

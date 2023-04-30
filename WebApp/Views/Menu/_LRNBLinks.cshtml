@@ -1,0 +1,36 @@
+﻿@model IEnumerable<WebApp.Models.Store.StoreVM>
+
+@if (Model != null && Model.Any())
+{
+    <li class="nav-item d-none d-lg-block">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+            <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge">@Model.Count()</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+            @foreach(var store in Model.OrderBy(x => x.Name))
+            {
+                <span class="dropdown-item">@store.Name</span>
+            }
+        </div>
+    </li>
+    <li class="nav-item d-none d-lg-block">
+        <a class="nav-link" href="#">
+            @if (Model.Any(x => x.IsSelected == true))
+            {
+                @Model.FirstOrDefault(x => x.IsSelected == true).Name;
+            }
+            else 
+            {
+                @Model.First().Name;
+            }
+        </a>
+    </li>
+}
+else
+{
+    <li class="nav-item d-none d-lg-block">
+        <a class="nav-link" href="#">
+            No Store Yet
+        </a>
+    </li>
+}

@@ -2,17 +2,16 @@
 @using Common.Constants
 @using Common.DataTransferObjects.CollectionPaging
 
-<div id="orders_wrapper">
-    <div class="col-2 mt-2">
+<div id="orders_wrapper" class="mx-auto">
+    <div class="col-12 mt-2">
         <div class="row">
-            @if (Model == null)
+            @if (Model == null || !Model.OrderSearchResults.Any())
             {
-                <h2>No Data Available</h2>            
+                <h2>No Data Available</h2>
             }
-
-            @foreach (var order in Model.OrderSearchResults)
+            else
             {
-                @foreach (var item in order.OrderItemList)
+                @foreach (var item in Model.OrderSearchResults)
                 {
                     <button class="btn btn-outline-success btn-block text-left mt-2 text-bold">
                         @item.ProductName <br>
@@ -21,13 +20,16 @@
                 }
             }
         </div>
-        <div class="row">
-            <div>
-                @{
-                    await Html.RenderPartialAsync("_Paging", new PagingMetadata(Model.OrderSearchResults.CurrentPage, Model.OrderSearchResults.TotalPages, Model.OrderSearchResults.PageSize, Model.OrderSearchResults.TotalCount, Model.OrderSearchResults.PageClickEvent));
-                }
+        @if (Model != null && Model.OrderSearchResults.Any())
+        {
+            <div class="row">
+                <div>
+                    @{
+                        await Html.RenderPartialAsync("_Paging", new PagingMetadata(Model.OrderSearchResults.CurrentPage, Model.OrderSearchResults.TotalPages, Model.OrderSearchResults.PageSize, Model.OrderSearchResults.TotalCount, Model.OrderSearchResults.PageClickEvent));
+                    }
+                </div>
             </div>
-        </div>
+        }
     </div>
 </div>
 

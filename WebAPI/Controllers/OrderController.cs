@@ -9,6 +9,7 @@ using Common.Constants;
 using Common.DataTransferObjects.CollectionPaging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using DataAccess.Repositories.RITSDB;
 
 namespace WebAPI.Controllers
 {
@@ -30,35 +31,43 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Search and Get Order Paged List")]
         public async Task<ActionResult<PagedList<OrderSearchResult>>> OrderSearchPagedList([FromQuery] OrderSearchFilter orderSearchFilter)
         {
-            PagedList<OrderSearchResult> orderSearchResults = await _RITSDBUnitOfWork.ProductRepository.GetPagedListAsync(
+            PagedList<OrderSearchResult> orderSearchResults = await _RITSDBUnitOfWork.ProductRepository
+                .GetPagedListAsync(
                         selector: o => new OrderSearchResult()
                         {
                             Id = o.Id,
                             ProductId = o.Id,
                             ProductName = o.Name,
                             ProductPrice = o.Price,
-                            Quantity = GetQuantityOrderItems(o.Id).Result,
+                            Quantity = 0,
                             CreatedDate = o.CreatedDate
                         },
                         predicate: o =>
                         (
-                            (string.IsNullOrEmpty(orderSearchFilter.Keyword) ||
+                            string.IsNullOrEmpty(orderSearchFilter.Keyword) ||
                             (
                                 o.Name.Contains(orderSearchFilter.Keyword)
-                            ))
-                            //Get only the orders from today
-                            && DateTime.Compare(o.CreatedDate, DateTime.Now) == 0
+                            )
                         ),
                         pagingParameter: orderSearchFilter,
-                        orderBy: o => o.OrderBy(a => a.CreatedDate)); ;
+                        orderBy: o => o.OrderBy(a => a.CreatedDate));
 
             Response.Headers.Add(PagingConstant.PagingHeaderKey, orderSearchResults.PagingHeaderValue);
+
+            //Add quantity to each product order as of today
+            foreach (var item in orderSearchResults)
+            {
+                item.Quantity = GetQuantityOrderItems(item.ProductId).Result;
+            }
+
             return Ok(orderSearchResults);
         }
 
         private async Task<int> GetQuantityOrderItems(int productId) 
         {
-            int count = await _RITSDBUnitOfWork.OrderItemRepository.CountAsync(predicate: x => x.ProductId == productId);
+            int count = await _RITSDBUnitOfWork.OrderItemRepository.CountAsync(predicate: x => x.ProductId == productId &&
+            //Get orders today only
+            DateTime.Compare(x.CreatedDate, DateTime.Now) == 0);
             return count;
         }
 

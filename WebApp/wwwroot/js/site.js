@@ -20,7 +20,8 @@
         $('.nav-sidebar .nav-item').removeClass('active');
         $(this).addClass('active');
     });
-    
+
+
 });
 
 const AppConstant = {
@@ -55,19 +56,32 @@ var App = function () {
                 "hideMethod": "fadeOut"
             }
 
+            App.menuSetup();
+            
+        },
+        menuSetup: function (storeId) {
+
+            let url = storesEndPoint + `?StoreId=${storeId}`;
+
             //Menu Right Navbar
-            let storesUrl = window.location.origin + storesEndPoint;
+            let storesUrl = window.location.origin + url;
             App.ajaxGet(storesUrl
                 , "html"
                 , function (data) {
                     $("#ul_right_navbar").html(data);
+
+                    $(".store_names").click(function () {
+                        let storeId = $(this).data("store-id");
+
+                        App.menuSetup(storeId);
+                    });
+
                     App.hidePreloader();
                 }
                 , function () {
                     App.hidePreloader();
                 }
             );
-            
         },
         ajaxPost: function (_url, _data, _dataType, _successFn, _errorFn) {
             App.ajaxCall('POST', _url, _data, _dataType, _successFn, _errorFn);

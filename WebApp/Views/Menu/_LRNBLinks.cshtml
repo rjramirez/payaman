@@ -4,12 +4,17 @@
 {
     <li class="nav-item d-none d-lg-block">
         <a class="nav-link" data-toggle="dropdown" href="#">
-            <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge">@Model.Count()</span>
+            <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge">
+                @{
+                    int storeCount = Model.Count() - 1;
+                }
+                @storeCount
+                </span>
         </a>
         <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-            @foreach(var store in Model.OrderBy(x => x.Name))
+            @foreach(var store in Model.Where(x=>x.IsSelected != true).OrderBy(x => x.Name))
             {
-                <span class="dropdown-item">@store.Name</span>
+                <button type="button" class="dropdown-item store_names btn-link" data-store-id="@store.Id">@store.Name</button>
             }
         </div>
     </li>

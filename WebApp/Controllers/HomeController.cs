@@ -82,30 +82,34 @@ namespace WebApp.Controllers
             if (response.IsSuccessStatusCode)
             {
                 IEnumerable<StoreDetail> stores = JsonConvert.DeserializeObject<IEnumerable<StoreDetail>>(await response.Content.ReadAsStringAsync());
-                IEnumerable<StoreVM> newStoreVM = stores.Select(s => new StoreVM()
+                List<StoreVM> newStoreVM = stores.Select(s => new StoreVM()
                 {
                     Id = s.Id,
                     Name = s.Name,
                     Description = s.Description,
                     Image = s.Image,
                     CreatedDate = s.CreatedDate,
-                    IsSelected =  storeId > 0 ? true : false,
                     ModifiedDate = s.ModifiedDate
-                });
-               
+                }).ToList();
+
                 foreach (StoreVM newStore in newStoreVM)
                 {
                     string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
                     bool memCacheStoreIdAvailable = _memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected);
+                    bool isStoreIdAlreadySet = false;
 
                     if (storeId > 0)
                     {
-                        if(memCacheStoreIdAvailable)
+                        if (memCacheStoreIdAvailable && !isStoreIdAlreadySet) 
+                        {
                             _memoryCache.Remove(storeSelectedCacheName);
 
-                        //Set MemoryCache StoreIdSelected
-                        ReferenceDataDetail storeIdSelectedForMemoryCache = new ReferenceDataDetail { Active = true, Name = "StoreIdSelected", Value = storeId };
-                        _memoryCache.Set(storeSelectedCacheName, storeIdSelectedForMemoryCache, cacheEntryOptions);
+                            //Set MemoryCache StoreIdSelected
+                            ReferenceDataDetail storeIdSelectedForMemoryCache = new ReferenceDataDetail { Active = true, Name = "StoreIdSelected", Value = storeId };
+                            _memoryCache.Set(storeSelectedCacheName, storeIdSelectedForMemoryCache, cacheEntryOptions);
+                            isStoreIdAlreadySet = true;
+                        }
+                            
 
                         if (storeId == newStore.Id)
                             newStore.IsSelected = true;

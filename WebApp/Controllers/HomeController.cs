@@ -109,7 +109,6 @@ namespace WebApp.Controllers
                             _memoryCache.Set(storeSelectedCacheName, storeIdSelectedForMemoryCache, cacheEntryOptions);
                             isStoreIdAlreadySet = true;
                         }
-                            
 
                         if (storeId == newStore.Id)
                             newStore.IsSelected = true;
@@ -141,20 +140,13 @@ namespace WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(OrderSearchFilter orderSearchFilter)
         {
-            //Get the role of the current user of Search
-            //string userRoleCacheName = string.Format(RoleConstant.UserRoleCacheName, User.Identity.Name);
-            //if (_memoryCache.TryGetValue(userRoleCacheName, out ReferenceDataDetail userRole))
-            //{
-            //    if (Convert.ToInt32(userRole.Value) == AppRoleConstant.OPSLV1 ||
-            //        Convert.ToInt32(userRole.Value) == AppRoleConstant.OPSLV2)
-            //    {
-            //        string msGraphEmployeeCacheName = string.Format(RoleConstant.MsGraphEmployeeCacheName, User.Identity.Name);
-            //        if (_memoryCache.TryGetValue(msGraphEmployeeCacheName, out IEnumerable<ReferenceDataDetail> msGraphEmployeeCached))
-            //        {
-            //            string loggedInEmployeeId = msGraphEmployeeCached.SingleOrDefault(r => r.Name == "MMTEmployeeId").Value.ToString();
-            //        }
-            //    }
-            //}
+            string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
+            if (_memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected)) 
+            {
+                int storeId = Convert.ToInt32(storeIdSelected.Value);
+                orderSearchFilter.StoreId =  storeId > 0 ? storeId : 0;
+            }
+
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             HttpResponseMessage response = await client.GetAsync($"api/Order/Search?{orderSearchFilter.GetQueryString()}");

@@ -34,6 +34,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 
 var App = function () {
     let storesEndPoint = "/Home/MenuRightBarStores";
+    let searchEndPoint = "/Home/Search";
 
     return {
 
@@ -58,6 +59,27 @@ var App = function () {
 
             App.menuSetup();
             
+        },
+        executeSearch: function () {
+            let searchKeyword = $("#input_search_bar").val();
+
+            let url = searchEndPoint + `?PageNumber=${dashboardSearchPageIndex}`;
+            url += `&Keyword=${searchKeyword}`;
+
+            let orderSearchUrl = window.location.origin + url;
+            //window.location.replace(searchurl);
+
+            App.ajaxGet(orderSearchUrl
+                , "html"
+                , function (data) {
+                    $("#orders_row").html(data);
+                    App.hidePreloader();
+                }
+                , function () {
+                    App.hidePreloader();
+                }
+            );
+
         },
         menuSetup: function (storeId) {
 

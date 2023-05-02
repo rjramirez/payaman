@@ -24,7 +24,7 @@
     @if (Model != null && Model.OrderSearchResults.Any())
     {
         <div class="row">
-            <div>
+            <div class="mx-auto">
                 @{
                     await Html.RenderPartialAsync("_Paging", new PagingMetadata(Model.OrderSearchResults.CurrentPage, Model.OrderSearchResults.TotalPages, Model.OrderSearchResults.PageSize, Model.OrderSearchResults.TotalCount, Model.OrderSearchResults.PageClickEvent));
                 }

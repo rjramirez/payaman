@@ -55,7 +55,6 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Get Product List")]
         public async Task<ActionResult<IEnumerable<ProductDetail>>> GetAll()
         {
-
             IEnumerable<ProductDetail> products = await _RITSDBUnitOfWork.ProductRepository.FindAsync(
                         selector: c => new ProductDetail()
                         {

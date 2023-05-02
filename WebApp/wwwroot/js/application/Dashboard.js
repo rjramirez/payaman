@@ -1,31 +1,7 @@
 ﻿var dashboardSearchPageIndex = 1;
 
-/* Formatting function for row details - modify as you need */
-function format(d) {
-    // `d` is the original data object for the row
-    return (
-        '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-        '<tr>' +
-        '<td>ID:</td>' +
-        '<td>' +
-        d.Id +
-        '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Date Created:</td>' +
-        '<td>' +
-        moment(d.CreatedDate).format('MMMM Do YYYY, h:mm:ss a') +
-        '</td>' +
-        '</tr>' +
-        '</table>'
-    );
-}
-
 let Dashboard = function () {
-    let ordersEndPoint = "/Order/GetAllOrders";
-    let updateOrderEndPoint = "/Order/Update";
-    let removeOrderEndPoint = "/Order/Remove";
-    let addOrderEndPoint = "/Order/Add";
+
     let searchEndPoint = "/Home/Search";
 
 
@@ -68,9 +44,13 @@ $(document).ready(function () {
     Dashboard.initializeDashboard();
 
     $("#input_search_bar").keyup(function () {
-        let num = $(this).length;
-        if (num > 2) {
+        let num = $(this).val().length;
+        if (num >= 2) {
             Dashboard.executeSearch();
         }
+    });
+
+    $('#input_search_bar[type=search]').on('search', function () {
+        Dashboard.executeSearch();
     });
 });

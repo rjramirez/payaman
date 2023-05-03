@@ -1,21 +1,51 @@
 ﻿@model IEnumerable<WebApp.Models.Store.StoreVM>
 
+
+
+<li class="nav-item d-none d-lg-block">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+        <em class="fa fa-shopping-cart"></em><span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
+        <span class="dropdown-item dropdown-header" id="span_count_cart_items_header">8 Items</span>
+        <div class="dropdown-divider"></div>
+        <span class="dropdown-item">
+            <i class="fas fa-mug-hot mr-2"></i> 4 Lemon Grass
+            <span class="float-right text-muted text-sm">₱140.00</span>
+        </span>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item">
+            <i class="fa-solid fa-glass-water mr-2"></i> 2 English Breakfast
+            <span class="float-right text-muted text-sm">₱302.00</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item">
+            <i class="fa-solid fa-glass-water mr-2"></i> 2 Earl Grey
+            <span class="float-right text-muted text-sm">₱192.00</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <span class="dropdown-item dropdown-footer text-bold">Total: ₱634.00</span>
+        <a href="" class="dropdown-item dropdown-footer" id="btnViewCart">View Cart</a>
+    </div>
+</li>
+
 @if (Model != null && Model.Any())
 {
+
     <li class="nav-item d-none d-lg-block">
         <a class="nav-link" data-toggle="dropdown" href="#">
             <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge">
                 @{
-                    int storeCount = Model.Count() - 1;
+                        int storeCount = Model.Count() - 1;
                 }
                 @storeCount
                 </span>
         </a>
         <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-            @foreach(var store in Model.Where(x=>x.IsSelected != true).OrderBy(x => x.Name))
-            {
-                <button type="button" class="dropdown-item store_names btn-link" data-store-id="@store.Id">@store.Name</button>
-            }
+                @foreach (var store in Model.Where(x => x.IsSelected != true).OrderBy(x => x.Name))
+                {
+                    <button type="button" class="dropdown-item store_names btn-link" data-store-id="@store.Id">@store.Name</button>
+                }
         </div>
     </li>
     <li class="nav-item d-none d-lg-block">
@@ -23,19 +53,12 @@
             @if (Model.Any(x => x.IsSelected == true))
             {
                 @Model.FirstOrDefault(x => x.IsSelected == true).Name;
+                <input type="hidden" value="@Model.FirstOrDefault(x => x.IsSelected == true).Id" id="current_storeid_selected" />
             }
             else 
             {
                 @Model.First().Name;
             }
-        </a>
-    </li>
-}
-else
-{
-    <li class="nav-item d-none d-lg-block">
-        <a class="nav-link" href="#">
-            No Store Yet
         </a>
     </li>
 }

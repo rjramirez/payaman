@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Common.DataTransferObjects.AppUserDetails;
-using Common.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +16,7 @@ using WebApp.Models.Order;
 using Common.DataTransferObjects.Store;
 using WebApp.Models.Store;
 using Common.DataTransferObjects.AppSettings;
-using IdentityModel;
+using WebApp.Models.MenuBar;
 
 namespace WebApp.Controllers
 {
@@ -75,7 +74,6 @@ namespace WebApp.Controllers
             MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(_clientSetting.CacheExpirationMinutes));
             
-
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             HttpResponseMessage response = await client.GetAsync($"api/Store/GetAllStores");
             
@@ -92,15 +90,18 @@ namespace WebApp.Controllers
                     ModifiedDate = s.ModifiedDate
                 }).ToList();
 
+                string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
+                bool memCacheStoreIdAvailable = _memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected);
+                int storeIdFromMemCache = storeIdSelected != null ? Convert.ToInt32(storeIdSelected.Value) : 0;
+                bool isStoreIdAlreadySet = false;
+
                 foreach (StoreVM newStore in newStoreVM)
                 {
-                    string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
-                    bool memCacheStoreIdAvailable = _memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected);
-                    bool isStoreIdAlreadySet = false;
-
+                    //Store ID: If there is a selected store
                     if (storeId > 0)
                     {
-                        if (memCacheStoreIdAvailable && !isStoreIdAlreadySet) 
+                        //MemoryCache StoreID is available but not yet set. Override it.
+                        if (memCacheStoreIdAvailable && !isStoreIdAlreadySet)
                         {
                             _memoryCache.Remove(storeSelectedCacheName);
 
@@ -110,7 +111,15 @@ namespace WebApp.Controllers
                             isStoreIdAlreadySet = true;
                         }
 
-                        if (storeId == newStore.Id)
+                        if (newStore.Id == storeId)
+                            newStore.IsSelected = true;
+                        else
+                            newStore.IsSelected = false;
+                    }
+                    //Store ID: MemCached StoreID is available.
+                    else if (memCacheStoreIdAvailable && storeIdFromMemCache > 0)
+                    {
+                        if (newStore.Id == storeIdFromMemCache)
                             newStore.IsSelected = true;
                         else
                             newStore.IsSelected = false;
@@ -140,12 +149,12 @@ namespace WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(OrderSearchFilter orderSearchFilter)
         {
-            string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
-            if (_memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected)) 
-            {
-                int storeId = Convert.ToInt32(storeIdSelected.Value);
-                orderSearchFilter.StoreId =  storeId > 0 ? storeId : 0;
-            }
+            //string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
+            //if (_memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected)) 
+            //{
+            //    int storeIdFromCache = Convert.ToInt32(storeIdSelected.Value);
+            //    orderSearchFilter.StoreId = storeId > 0 ? storeId : 0;
+            //}
 
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");

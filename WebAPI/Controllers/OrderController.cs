@@ -31,6 +31,15 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Search and Get Order Paged List")]
         public async Task<ActionResult<PagedList<OrderSearchResult>>> OrderSearchPagedList([FromQuery] OrderSearchFilter orderSearchFilter)
         {
+            if (orderSearchFilter.StoreId == 0)
+            {
+                int firstStoreId = Convert.ToInt32(await _RITSDBUnitOfWork.StoreRepository.FirstOrDefaultAsync(
+                        selector: x => x.Id,
+                        predicate: x => x.Active == true));
+
+                orderSearchFilter.StoreId = firstStoreId;
+            }
+
             PagedList<OrderSearchResult> orderSearchResults = await _RITSDBUnitOfWork.ProductRepository
                 .GetPagedListAsync(
                         selector: o => new OrderSearchResult()

@@ -60,11 +60,12 @@ var App = function () {
             App.menuSetup();
             
         },
-        executeSearch: function () {
+        executeSearch: function (storeId) {
             let searchKeyword = $("#input_search_bar").val();
 
             let url = searchEndPoint + `?PageNumber=${dashboardSearchPageIndex}`;
             url += `&Keyword=${searchKeyword}`;
+            url += `&StoreId=${storeId}`;
 
             let orderSearchUrl = window.location.origin + url;
             //window.location.replace(searchurl);
@@ -96,6 +97,14 @@ var App = function () {
                         let storeId = $(this).data("store-id");
 
                         App.menuSetup(storeId);
+
+
+                        //Search dashboard with the storeId selected
+                        var pathname = window.location.pathname; 
+                        var dashboardPage = "Home/Index";
+                        if (pathname.indexOf(dashboardPage) != -1) {
+                            App.executeSearch(storeId);
+                        }
                     });
 
                     App.hidePreloader();

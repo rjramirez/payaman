@@ -8,6 +8,7 @@ let Dashboard = function () {
     return {
         initializeDashboard: function () {
             Dashboard.executeSearch();
+            Dashboard.checkCart();
         },
         changePage: function (pageId) {
             dashboardSearchPageIndex = pageId;
@@ -34,7 +35,12 @@ let Dashboard = function () {
                         let productPrice = $(this).data("product-price");
 
                         Dashboard.addItemToCart(productId, productName, productPrice);
+
+                        Dashboard.checkCart();
+
                     });
+
+                    Dashboard.checkCart();
 
                     App.hidePreloader();
                 }
@@ -43,6 +49,41 @@ let Dashboard = function () {
                 }
             );
 
+        },
+        checkCart: function () {
+            let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
+            if (cartItems == null)
+                return;
+
+            $("#span_count_cart_items_header").html(cartItems.length + (cartItems.length > 1 ? " Items" : " Item"));
+            $("#span_count_cart_items").html(cartItems.length);
+
+            let cartTotalAmount = 0;
+            $.each(cartItems, function (i, item) {
+                cartTotalAmount += parseInt(item.TotalAmount);
+            });
+
+            $("#span_cart_totalamount").html("Total: ₱" + cartTotalAmount);
+
+            
+            let cartItemHtmlTemplate = ""
+
+            $.each(cartItems, function (i, item) {
+                cartItemHtmlTemplate += '<span class="dropdown-item">' +
+                    '<i class="fas fa-mug-hot mr-2"></i>' + item.Quantity + " x " + item.ProductName +
+                    '<span class="float-right text-muted text-sm">₱' + item.TotalAmount + '</span>' +
+                    '</span>' +
+                    '<div class="dropdown-divider"></div>';
+            });
+
+            $("#cart_items_container").html(cartItemHtmlTemplate);
+
+
+            $("#btnViewCart").click(function (e) {
+                e.preventDefault();
+                console.log("View cart Clicked");
+                $("#viewCartModal").modal("show");
+            });
         },
         addItemToCart: function (productId, productName, productPrice) {
 
@@ -64,14 +105,10 @@ let Dashboard = function () {
                 if (existInCartItems) {
                     //Update cartItems
                     $.each(cartItems, function (i, item) {
-                        console.log("ProductID: " + item.ProductId);
-                        console.log("Quantity: " + item.Quantity);
                         if (item.ProductId == productId) {
                             item.Quantity += 1;
                             item.TotalAmount = (item.ProductPrice * item.Quantity);
                         }
-                        console.log("ProductID: " + item.ProductId);
-                        console.log("Quantity: " + item.Quantity);
                     });
 
                     sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -131,13 +168,5 @@ $(document).ready(function () {
         Dashboard.executeSearch();
     });
 
-
-
-
-    $("#btnViewCart").click(function () {
-
-        
-        //span_count_cart_items
-        //span_count_cart_items_header
-    });
+    
 });

@@ -11,7 +11,7 @@ using Common.DataTransferObjects.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-/*CONFIGURE SERVICES CONTAINER*/
+/*CONFIGURE SERVICES CONTAINER*/    
 IdentityServerClientDefinition identityServerClientDefinition = new();
 builder.Configuration.Bind("IdentityServerClientDefinition", identityServerClientDefinition);
 builder.Services.AddSingleton(identityServerClientDefinition);

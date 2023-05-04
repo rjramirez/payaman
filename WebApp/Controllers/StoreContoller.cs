@@ -28,8 +28,8 @@ namespace WebApp.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                IEnumerable<StoreVM> Stores = JsonConvert.DeserializeObject<IEnumerable<StoreVM>>(await response.Content.ReadAsStringAsync());
-                return Ok(JsonConvert.SerializeObject(Stores));
+                IEnumerable<StoreDetail> stores = JsonConvert.DeserializeObject<IEnumerable<StoreDetail>>(await response.Content.ReadAsStringAsync());
+                return Ok(stores);
             }
 
             return new JsonResult(new { data = "" });

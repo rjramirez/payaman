@@ -58,7 +58,6 @@ var App = function () {
             }
 
             App.menuSetup();
-            
         },
         executeSearch: function (storeId) {
             let searchKeyword = $("#input_search_bar").val();
@@ -83,9 +82,13 @@ var App = function () {
 
         },
         menuSetup: function (storeId) {
+            let url = "";
 
-            let url = storesEndPoint + `?StoreId=${storeId}`;
-
+            if (storeId > 0)
+                url = storesEndPoint + `?StoreId=${storeId}`;
+            else
+                url = storesEndPoint + `?StoreId=${0}`;
+            
             //Menu Right Navbar
             let storesUrl = window.location.origin + url;
             App.ajaxGet(storesUrl
@@ -97,7 +100,6 @@ var App = function () {
                         let storeId = $(this).data("store-id");
 
                         App.menuSetup(storeId);
-
 
                         //Search dashboard with the storeId selected
                         var pathname = window.location.pathname; 

@@ -1,32 +1,11 @@
-﻿@model IEnumerable<WebApp.Models.Store.StoreVM>
-
+﻿@model List<WebApp.Models.Store.StoreVM>
 
 
 <li class="nav-item d-none d-lg-block">
-    <a class="nav-link" data-toggle="dropdown" href="#">
-        <em class="fa fa-shopping-cart"></em><span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
+    <a class="nav-link" href="#">
+        <em class="fa fa-shopping-cart"></em>
+        <span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
     </a>
-    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
-        <span class="dropdown-item dropdown-header" id="span_count_cart_items_header">8 Items</span>
-        <div class="dropdown-divider"></div>
-        <span class="dropdown-item">
-            <i class="fas fa-mug-hot mr-2"></i> 4 Lemon Grass
-            <span class="float-right text-muted text-sm">₱140.00</span>
-        </span>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
-            <i class="fa-solid fa-glass-water mr-2"></i> 2 English Breakfast
-            <span class="float-right text-muted text-sm">₱302.00</span>
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
-            <i class="fa-solid fa-glass-water mr-2"></i> 2 Earl Grey
-            <span class="float-right text-muted text-sm">₱192.00</span>
-        </a>
-        <div class="dropdown-divider"></div>
-        <span class="dropdown-item dropdown-footer text-bold">Total: ₱634.00</span>
-        <a href="" class="dropdown-item dropdown-footer" id="btnViewCart">View Cart</a>
-    </div>
 </li>
 
 @if (Model != null && Model.Any())

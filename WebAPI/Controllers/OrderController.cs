@@ -53,6 +53,7 @@ namespace WebAPI.Controllers
                         },
                         predicate: o =>
                         (
+                            o.Active == true &&
                             (string.IsNullOrEmpty(orderSearchFilter.Keyword) || o.Name.Contains(orderSearchFilter.Keyword)) &&
                             (orderSearchFilter.StoreId == 0 || o.StoreId == orderSearchFilter.StoreId)
                         ),

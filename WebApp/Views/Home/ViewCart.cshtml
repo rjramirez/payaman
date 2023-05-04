@@ -1,0 +1,75 @@
+﻿@section Styles
+{
+    @*<link href="~/lib/datatables/css/datatables.min.css" rel="stylesheet" />*@
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <button id="btnBackToDashboard" class="btn btn-md btn-success">Back to Dashboard</button>
+    </div>
+    <div class="row">
+        <div class="mx-auto">
+            <div class="col-md-12">
+                <div class="row justify-content-center"><span class="h5">Main</span></div>
+                <div class="row"><span class="">#989 Alabang-Zapote Road, Las Pinas City</span></div>
+                <div class="row">
+                    <span class="text-sm">Order ID: <span class="text-bold">9302</span></span>
+                </div>
+                <div class="row">
+                    <span class="text-sm">Cashier: <span class="text-bold">cash_rjramirez</span></span>
+                </div>
+                <div class="row">
+                    <span class="text-sm">Date: <span class="text-bold">@DateTime.UtcNow.ToString("MMMM dd, yyyy")</span></span>
+                </div>
+                <div class="row table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Qty</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Call of Duty</td>
+                                <td>₱64.50</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Need for Speed IV</td>
+                                <td>₱50.00</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Monsters DVD</td>
+                                <td>₱10.70</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Grown Ups Blue Ray</td>
+                                <td>₱25.99</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2">Total Amount:</td>
+                                <td>₱290</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><button type="button" class="btn btn-block btn-success">Print</button></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+@*    <script src="~/lib/datatables/js/datatables.min.js"></script>
+    <script src="~/js/application/Order.js"></script>*@
+}

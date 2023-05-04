@@ -16,7 +16,6 @@ using WebApp.Models.Order;
 using Common.DataTransferObjects.Store;
 using WebApp.Models.Store;
 using Common.DataTransferObjects.AppSettings;
-using WebApp.Models.MenuBar;
 
 namespace WebApp.Controllers
 {
@@ -48,29 +47,39 @@ namespace WebApp.Controllers
         [Authorize(Policy = "Admin")]
         public IActionResult Products()
         {
+            ViewBag.Title = "Products";
             return View();
         }
 
         [Authorize(Policy = "Admin")]
         public IActionResult Stores()
         {
+            ViewBag.Title = "Stores";
             return View();
         }
 
         [Authorize(Policy = "Admin")]
         public IActionResult Orders()
         {
+            ViewBag.Title = "Orders";
+            return View();
+        }
+        public IActionResult ViewCart()
+        {
+            ViewBag.Title = "Cart";
             return View();
         }
 
+        [Authorize]
         public IActionResult Dashboard()
         {
+            ViewBag.Title = "Dashboard";
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> MenuRightBarStores(int storeId)
-        {
+         {
             MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(_clientSetting.CacheExpirationMinutes));
             
@@ -79,8 +88,8 @@ namespace WebApp.Controllers
             
             if (response.IsSuccessStatusCode)
             {
-                IEnumerable<StoreDetail> stores = JsonConvert.DeserializeObject<IEnumerable<StoreDetail>>(await response.Content.ReadAsStringAsync());
-                List<StoreVM> newStoreVM = stores.Select(s => new StoreVM()
+                IEnumerable<StoreDetail> storesAvailable = JsonConvert.DeserializeObject<IEnumerable<StoreDetail>>(await response.Content.ReadAsStringAsync());
+                List<StoreVM> newStoreVM = storesAvailable.Select(s => new StoreVM()
                 {
                     Id = s.Id,
                     Name = s.Name,
@@ -140,7 +149,7 @@ namespace WebApp.Controllers
                     }
                 }
 
-                return PartialView("~/Views/Shared/_LayoutRightNavBarLink.cshtml", newStoreVM);
+                return PartialView("~/Views/Menu/_LRNBLinks.cshtml", newStoreVM);
             }
 
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
@@ -204,7 +213,7 @@ namespace WebApp.Controllers
                 var claims = new[]
                 {
                     new Claim(ClaimTypes.Name, authDetails.Username),
-                    new Claim("name", authDetails.FirstName + " " + authDetails.LastName),
+                    new Claim("UserGivenName", authDetails.FirstName + " " + authDetails.LastName),
                     new Claim(ClaimConstant.ClientId, authDetails.Username),
                     new Claim("Token", authDetails.Token),
                     new Claim(ClaimTypes.Role, authDetails.Role.ToString())

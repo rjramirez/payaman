@@ -1,4 +1,4 @@
-﻿@{ 
+﻿@{
     Layout = "~/Views/Shared/_NoMenuLayout.cshtml";
 }
 
@@ -12,9 +12,9 @@
             <div class="col-12 d-flex justify-content-center">
                 <img src="@Url.Content(Model.ImagePath)" class="img-fluid" alt="Status Page" />
             </div>
-            @if(!string.IsNullOrEmpty(Model.SubTitle))
+            @if (!string.IsNullOrEmpty(Model.SubTitle))
             {
-                 <div class="col-12 d-flex justify-content-center">
+                <div class="col-12 d-flex justify-content-center">
                     <h4>@Model.SubTitle</h4>
                 </div>
             }

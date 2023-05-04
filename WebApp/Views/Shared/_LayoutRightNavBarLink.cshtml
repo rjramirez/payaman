@@ -1,6 +1,8 @@
-﻿
+﻿@model List<WebApp.Models.Store.StoreVM>
+
+
 <ul class="navbar-nav ml-auto" id="ul_right_navbar">
     @{
-        await Html.RenderPartialAsync("~/Views/Menu/_LRNBLinks.cshtml");
+        await Html.RenderPartialAsync("~/Views/Menu/_LRNBLinks.cshtml", Model);
     }
 </ul>

@@ -64,7 +64,12 @@ namespace WebApp.Controllers
             ViewBag.Title = "Orders";
             return View();
         }
-        public IActionResult ViewCart()
+        public IActionResult ViewCart(OrderDetail orderDetail)
+        {
+            ViewBag.Title = "View Cart";
+            return View();
+        }
+        public IActionResult Cart()
         {
             ViewBag.Title = "Cart";
             return View();

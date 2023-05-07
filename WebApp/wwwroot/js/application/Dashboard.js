@@ -3,6 +3,7 @@
 let Dashboard = function () {
 
     let searchEndPoint = "/Home/Search";
+    let viewCartEndPoint = "/Home/ViewCart";
 
 
     return {
@@ -168,5 +169,87 @@ $(document).ready(function () {
         Dashboard.executeSearch();
     });
 
+    $("#span_count_cart_items").click(function () {
+
+        //public int Id { get; set; }
+        //public int CashierId { get; set; }
+        //public decimal TotalAmount { get; set; }
+        //public DateTime CreatedDate { get; set; }
+        //public DateTime ModifiedDate { get; set; }
+        //public string TransactionBy { get; set; }
+        //public bool Active { get; set; }
+        //public IEnumerable < OrderItemDetail > OrderItemList { get; set; }
+
+        //public int Id { get; set; }
+        //public int ProductId { get; set; }
+        //public string ProductName { get; set; }
+        //public decimal ProductPrice { get; set; }
+        //public int Quantity { get; set; }
+        //public decimal TotalAmount { get; set; }
+        //public DateTime CreatedDate { get; set; }
+        //public DateTime ModifiedDate { get; set; }
+        //public string TransactionBy { get; set; }
+        //public bool Active { get; set; }
+
+        //Get existing cartItems if available
+        let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
+
+
+        let orderDetails = {
+            TotalAmount: 0
+        };
+
+        let orderItemListArr = [];
+
+        for (var index = 0; index < cartItems.length; ++index) {
+            orderDetails.TotalAmount += parseInt(cartItems[index].TotalAmount);
+        }
+
+
+        //build orderItemsList
+        for (var index = 0; index < cartItems.length; ++index) {
+            var cart = cartItems[index];
+
+            let orderItem = {
+                ProductId: cart.ProductId,
+                ProductName: cart.ProductName,
+                ProductPrice: cart.ProductPrice,
+                Quantity: cart.Quantity,
+                TotalAmount: cart.TotalAmount
+            };
+
+            orderItemListArr.push(orderItem);
+        }
+
+        console.log(orderDetails);
+
+
+        App.ajaxPost(viewCartEndPoint,
+            JSON.stringify(orderDetails),
+            'text',
+            function (data) {
+                var json = JSON.parse(data);
+
+                if (json.isSuccessful) {
+                    App.removeButtonSpinner($("#btn_product_add"));
+                    $("#addProductModal").modal("hide");
+                    App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
+                }
+                else {
+                    App.alert("error", json.message, "Error", undefined);
+
+                    setTimeout(function () {
+                        App.removeButtonSpinner($("#btn_product_add"));
+                    }, 500);
+                }
+
+            },
+            function (response) {
+                console.log(response);
+            }
+        );
+
+
+    });
     
 });

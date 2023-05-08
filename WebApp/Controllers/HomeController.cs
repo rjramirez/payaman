@@ -16,6 +16,7 @@ using WebApp.Models.Order;
 using Common.DataTransferObjects.Store;
 using WebApp.Models.Store;
 using Common.DataTransferObjects.AppSettings;
+using WebApp.Models.Cart;
 
 namespace WebApp.Controllers
 {
@@ -67,7 +68,19 @@ namespace WebApp.Controllers
         public IActionResult ViewCart(OrderDetail orderDetail)
         {
             ViewBag.Title = "View Cart";
-            return View();
+
+            string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
+            CartVM cartVM = new();
+
+            if (_memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected)) 
+            {
+                cartVM.StoreName = storeIdSelected.Name;
+                cartVM.CashierName = User.Identity.Name;
+                //Get the next temporary orderId, storename, storeaddress
+
+            }
+
+            return View(cartVM);
         }
         public IActionResult Cart()
         {

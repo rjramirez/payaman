@@ -98,8 +98,16 @@ var App = function () {
 
                     $(".store_names").click(function () {
                         let storeId = $(this).data("store-id");
+                        let storeName = $(this).data("store-name");
+                        let storeAddress = $(this).data("store-address");
 
-                        App.menuSetup(storeId);
+                        let storeVM = {
+                            Id: storeId,
+                            Name: storeName,
+                            Address: storeAddress
+                        };
+
+                        App.menuSetup(storeVM);
 
                         //Search dashboard with the storeId selected
                         var pathname = window.location.pathname; 

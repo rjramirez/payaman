@@ -65,19 +65,32 @@ namespace WebApp.Controllers
             ViewBag.Title = "Orders";
             return View();
         }
-        public IActionResult ViewCart(OrderDetail orderDetail)
+        public async Task<IActionResult> ViewCart(OrderDetail orderDetail)
         {
             ViewBag.Title = "View Cart";
 
-            string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
+            string storeSelectedCacheName = string.Format(CacheConstant.StoreSelectedCacheName, User.Identity.Name);
             CartVM cartVM = new();
 
-            if (_memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected)) 
+            if (_memoryCache.TryGetValue(storeSelectedCacheName, out IEnumerable<ReferenceDataDetail> storeSelectedCached)) 
             {
-                cartVM.StoreName = storeIdSelected.Name;
+                string storeName = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreNameCacheName).Value.ToString();
+                string storeAddress = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreAddressCacheName).Value.ToString();
+                
+                cartVM.StoreName = storeName;
+                cartVM.StoreAddress = storeAddress;
                 cartVM.CashierName = User.Identity.Name;
-                //Get the next temporary orderId, storename, storeaddress
+                
+                //Save the order
+                HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+                HttpResponseMessage response = await client.GetAsync($"api/Order/NextOrderId");
 
+                if (response.IsSuccessStatusCode)
+                {
+                    cartVM.OrderId = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
+                }
+
+                cartVM.OrderItemList = orderDetail.OrderItemList;
             }
 
             return View(cartVM);
@@ -96,7 +109,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MenuRightBarStores(int storeId)
+        public async Task<IActionResult> MenuRightBarStores(StoreVM storeVM)
          {
             MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(_clientSetting.CacheExpirationMinutes));
@@ -117,7 +130,7 @@ namespace WebApp.Controllers
                     ModifiedDate = s.ModifiedDate
                 }).ToList();
 
-                string storeSelectedCacheName = string.Format(RoleConstant.StoreSelectedCacheName, User.Identity.Name);
+                string storeSelectedCacheName = string.Format(CacheConstant.StoreSelectedCacheName, User.Identity.Name);
                 bool memCacheStoreIdAvailable = _memoryCache.TryGetValue(storeSelectedCacheName, out ReferenceDataDetail storeIdSelected);
                 int storeIdFromMemCache = storeIdSelected != null ? Convert.ToInt32(storeIdSelected.Value) : 0;
                 bool isStoreIdAlreadySet = false;
@@ -125,7 +138,7 @@ namespace WebApp.Controllers
                 foreach (StoreVM newStore in newStoreVM)
                 {
                     //Store ID: If there is a selected store
-                    if (storeId > 0)
+                    if (storeVM.Id > 0)
                     {
                         //MemoryCache StoreID is available but not yet set. Override it.
                         if (memCacheStoreIdAvailable && !isStoreIdAlreadySet)
@@ -133,12 +146,17 @@ namespace WebApp.Controllers
                             _memoryCache.Remove(storeSelectedCacheName);
 
                             //Set MemoryCache StoreIdSelected
-                            ReferenceDataDetail storeIdSelectedForMemoryCache = new ReferenceDataDetail { Active = true, Name = "StoreIdSelected", Value = storeId };
-                            _memoryCache.Set(storeSelectedCacheName, storeIdSelectedForMemoryCache, cacheEntryOptions);
+                            List<ReferenceDataDetail> storeForMemoryCache = new List<ReferenceDataDetail> {
+                                new ReferenceDataDetail { Active = true, Name = "StoreId", Value = storeVM.Id },
+                                new ReferenceDataDetail { Active = true, Name = "StoreName", Value = storeVM.Name },
+                                new ReferenceDataDetail { Active = true, Name = "StoreAddress", Value = storeVM.Address }
+                            };
+
+                            _memoryCache.Set(storeSelectedCacheName, storeForMemoryCache, cacheEntryOptions);
                             isStoreIdAlreadySet = true;
                         }
 
-                        if (newStore.Id == storeId)
+                        if (newStore.Id == storeVM.Id)
                             newStore.IsSelected = true;
                         else
                             newStore.IsSelected = false;
@@ -157,8 +175,13 @@ namespace WebApp.Controllers
                         if (newStoreVM.First().Id == newStore.Id)
                         {
                             //Set MemoryCache StoreIdSelected
-                            ReferenceDataDetail storeIdSelectedForMemoryCache = new ReferenceDataDetail { Active = true, Name = "StoreIdSelected", Value = newStore.Id };
-                            _memoryCache.Set(storeSelectedCacheName, storeIdSelectedForMemoryCache, cacheEntryOptions);
+                            List<ReferenceDataDetail> storeForMemoryCache = new List<ReferenceDataDetail> {
+                                new ReferenceDataDetail { Active = true, Name = "StoreId", Value = newStoreVM.First().Id },
+                                new ReferenceDataDetail { Active = true, Name = "StoreName", Value = newStoreVM.First().Name },
+                                new ReferenceDataDetail { Active = true, Name = "StoreAddress", Value = newStoreVM.First().Address }
+                            };
+
+                            _memoryCache.Set(storeSelectedCacheName, storeForMemoryCache, cacheEntryOptions);
 
                             newStore.IsSelected = true;
                         }

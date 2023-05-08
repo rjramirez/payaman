@@ -19,7 +19,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [Required]
         [StringLength(30)]
         public string Name { get; set; }
-        [StringLength(20)]
+        [StringLength(100)]
         public string Description { get; set; }
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }

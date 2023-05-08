@@ -23,7 +23,10 @@
         <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
                 @foreach (var store in Model.Where(x => x.IsSelected != true).OrderBy(x => x.Name))
                 {
-                    <button type="button" class="dropdown-item store_names btn-link" data-store-id="@store.Id">@store.Name</button>
+                    <button type="button" class="dropdown-item store_names btn-link" 
+                    data-store-id="@store.Id"
+                    data-store-name="@store.Name"
+                    data-store-price="@store.Address">@store.Name</button>
                 }
         </div>
     </li>

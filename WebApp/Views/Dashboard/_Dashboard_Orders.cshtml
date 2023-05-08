@@ -20,7 +20,7 @@
                     <button type="button" class="btn btn-outline-success btn-xs text-left mt-2 ml-2 text-bold btn_order_items" 
                     data-product-id="@item.ProductId" data-product-name="@item.ProductName" data-product-price="@item.ProductPrice">
                         <span class="text-xs">@item.ProductName</span> <br>
-                        <span class="text-xs">₱@item.ProductPrice x @item.Quantity</span>
+                        <span class="text-xs">₱@item.ProductPrice x <span id="item_@{ @item.ProductId }_quantity">@item.Quantity</span></span>
                     </button>
                 }
             }

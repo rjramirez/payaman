@@ -63,6 +63,7 @@ namespace WebAPI.Controllers
                             Name = c.Name,
                             Description = c.Description,
                             Image = c.Image,
+                            Address = c.Address,
                             CreatedDate = c.CreatedDate
                         },
                         predicate: a => a.Active == true,

@@ -1,4 +1,6 @@
-﻿@section Styles
+﻿@model WebApp.Models.Cart.CartVM
+
+@section Styles
 {
     @*<link href="~/lib/datatables/css/datatables.min.css" rel="stylesheet" />*@
 }
@@ -9,13 +11,64 @@
     </div>
     <div class="row">
         <div class="mx-auto">
-            <div class="col-md-12">
-                <span class="dropdown-item dropdown-header" id="span_count_cart_items_header"></span>
-                <div class="dropdown-divider"></div>
-                <div id="cart_items_container"></div>
-                <span class="dropdown-item dropdown-footer text-bold" id="span_cart_totalamount"></span>
-                <button type="button" class="dropdown-item dropdown-footer" id="btnViewCart">View Cart</button>
+            <div class="w-75">
+                <div class="table-responsive" id="table_cart">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th colspan="2">Sum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <p>Iced Matcha Latte Rg</p>
+                                </td>
+                                <td>
+                                    <input type="number" value="2" class="form-control">
+                                </td>
+                                <td>₱12.00</td>
+                                <td>₱24.00</td>
+                                <td>
+                                    <a href="#"><i class="fa-solid fa-trash" style="color: #9e9e9e;"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4">Total</th>
+                                <th colspan="2">€26.50</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
+            
+@*
+            <div class="col-md-12">
+                <span class="dropdown-item dropdown-header" id="span_count_cart_items_header">5</span>
+                <div class="dropdown-divider"></div>
+                <div id="cart_items_container">
+                
+
+                    <span class="dropdown-item">
+                        Iced Matcha Latte Sm x 32
+                        <span class="float-right text-muted text-sm">₱ 89</span>
+                    </span>
+                    <div class="dropdown-divider"></div>
+
+                    <span class="dropdown-item">
+                        Iced Spanish Latte Rg x 1
+                        <span class="float-right text-muted text-sm">₱ 99</span>
+                    </span>
+                    <div class="dropdown-divider"></div>
+                </div>
+                <span class="dropdown-item dropdown-footer text-bold" id="span_cart_totalamount">33</span>
+                <button type="button" class="dropdown-item dropdown-footer" id="btnViewCart">View Cart</button>
+            </div>*@
         </div>
     </div>
 </div>
@@ -25,3 +78,12 @@
 @*    <script src="~/lib/datatables/js/datatables.min.js"></script>
     <script src="~/js/application/Order.js"></script>*@
 }
+
+@*@foreach(var item in Model.OrderItemList)
+                    {
+                        <span class="dropdown-item">
+                            <i class="fas fa-mug-hot mr-2"></i>@String.Format("{0} x {1}", item.ProductName, item.Quantity)
+                            <span class="float-right text-muted text-sm">₱ @item.ProductPrice</span>
+                        </span>
+                        <div class="dropdown-divider"></div>
+                    }*@

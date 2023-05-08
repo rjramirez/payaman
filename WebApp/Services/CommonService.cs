@@ -95,7 +95,7 @@ namespace WebApp.Services
         public async Task<ReferenceDataDetail> GetUserRole(IPrincipal principal)
         {
             HttpClient ritsHttpClient = _httpClientFactory.CreateClient("RITSApiClient");
-            string userRolesCacheName = string.Format(RoleConstant.UserRoleCacheName, principal.Identity.Name);
+            string userRolesCacheName = string.Format(CacheConstant.UserRoleCacheName, principal.Identity.Name);
             if (!_memoryCache.TryGetValue(userRolesCacheName, out ReferenceDataDetail userRole))
             {
                 var response = await ritsHttpClient.GetAsync($"api/User/UserRole/{principal.Identity.Name}");

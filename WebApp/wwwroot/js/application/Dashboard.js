@@ -56,28 +56,18 @@ let Dashboard = function () {
             if (cartItems == null)
                 return;
 
-            $("#span_count_cart_items_header").html(cartItems.length + (cartItems.length > 1 ? " Items" : " Item"));
-            $("#span_count_cart_items").html(cartItems.length);
+            if (sessionStorage.cartItems) {
+                let cartItemCount = 0;
+                for (var index = 0; index < cartItems.length; ++index) {
+                    var product = cartItems[index];
+                    if (product.Quantity > 0) {
+                        $("#item_" + product.ProductId + "_quantity").html(product.Quantity);
+                        cartItemCount += parseInt(product.Quantity);
+                    }
 
-            let cartTotalAmount = 0;
-            $.each(cartItems, function (i, item) {
-                cartTotalAmount += parseInt(item.TotalAmount);
-            });
-
-            $("#span_cart_totalamount").html("Total: ₱" + cartTotalAmount);
-
-            
-            let cartItemHtmlTemplate = ""
-
-            $.each(cartItems, function (i, item) {
-                cartItemHtmlTemplate += '<span class="dropdown-item">' +
-                    '<i class="fas fa-mug-hot mr-2"></i>' + item.Quantity + " x " + item.ProductName +
-                    '<span class="float-right text-muted text-sm">₱' + item.TotalAmount + '</span>' +
-                    '</span>' +
-                    '<div class="dropdown-divider"></div>';
-            });
-
-            $("#cart_items_container").html(cartItemHtmlTemplate);
+                }
+                $("#span_count_cart_items").html(cartItemCount);
+            }
 
 
             $("#btnViewCart").click(function (e) {
@@ -146,6 +136,9 @@ let Dashboard = function () {
 
                 sessionStorage.setItem("cartItems", JSON.stringify(cartObj));
             }
+
+            let existingQuant = parseInt($("#item_" + productId + "_quantity").html()) ? parseInt($("#item_" + productId + "_quantity").html()) : 0;
+            $("#item_" + productId + "_quantity").html(existingQuant + 1);
         }
     }
 }();

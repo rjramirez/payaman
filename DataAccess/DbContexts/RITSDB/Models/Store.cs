@@ -23,6 +23,8 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public string Description { get; set; }
         [StringLength(10)]
         public string Image { get; set; }
+        [StringLength(100)]
+        public string Address { get; set; }
         public bool Active { get; set; }
         [Precision(4)]
         public DateTime CreatedDate { get; set; }

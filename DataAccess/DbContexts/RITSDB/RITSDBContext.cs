@@ -8,7 +8,6 @@ namespace DataAccess.DBContexts.RITSDB
 {
     public partial class RITSDBContext : DbContext
     {
-
         public RITSDBContext(DbContextOptions<RITSDBContext> options)
             : base(options)
         {

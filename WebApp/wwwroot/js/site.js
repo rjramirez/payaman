@@ -33,8 +33,6 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"]
 
 var App = function () {
-    let storesEndPoint = "/Home/MenuRightBarStores";
-    let searchEndPoint = "/Home/Search";
 
     return {
 
@@ -56,73 +54,6 @@ var App = function () {
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-
-            //App.menuSetup();
-        },
-        executeSearch: function (storeId) {
-            let searchKeyword = $("#input_search_bar").val();
-
-            let url = searchEndPoint + `?PageNumber=${dashboardSearchPageIndex}`;
-            url += `&Keyword=${searchKeyword}`;
-            url += `&StoreId=${storeId}`;
-
-            let orderSearchUrl = window.location.origin + url;
-            //window.location.replace(searchurl);
-
-            App.ajaxGet(orderSearchUrl
-                , "html"
-                , function (data) {
-                    $("#orders_row").html(data);
-                    App.hidePreloader();
-                }
-                , function () {
-                    App.hidePreloader();
-                }
-            );
-
-        },
-        menuSetup: function (storeId) {
-            let url = "";
-
-            if (storeId > 0)
-                url = storesEndPoint + `?StoreId=${storeId}`;
-            else
-                url = storesEndPoint + `?StoreId=${0}`;
-            
-            //Menu Right Navbar
-            let storesUrl = window.location.origin + url;
-            App.ajaxGet(storesUrl
-                , "html"
-                , function (data) {
-                    $("#ul_right_navbar").html(data);
-
-                    $(".store_names").click(function () {
-                        let storeId = $(this).data("store-id");
-                        let storeName = $(this).data("store-name");
-                        let storeAddress = $(this).data("store-address");
-
-                        let storeVM = {
-                            Id: storeId,
-                            Name: storeName,
-                            Address: storeAddress
-                        };
-
-                        App.menuSetup(storeVM);
-
-                        //Search dashboard with the storeId selected
-                        var pathname = window.location.pathname; 
-                        var dashboardPage = "Home/Index";
-                        if (pathname.indexOf(dashboardPage) != -1) {
-                            App.executeSearch(storeId);
-                        }
-                    });
-
-                    App.hidePreloader();
-                }
-                , function () {
-                    App.hidePreloader();
-                }
-            );
         },
         ajaxPost: function (_url, _data, _dataType, _successFn, _errorFn) {
             App.ajaxCall('POST', _url, _data, _dataType, _successFn, _errorFn);

@@ -17,6 +17,7 @@ using Common.DataTransferObjects.Store;
 using WebApp.Models.Store;
 using Common.DataTransferObjects.AppSettings;
 using WebApp.Models.Cart;
+using Azure;
 
 namespace WebApp.Controllers
 {
@@ -96,20 +97,44 @@ namespace WebApp.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
+                    cartVM.OrderItemList = orderDetail.OrderItemList;
                     cartVM.OrderId = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
+
+                    //Save to memorycache
+                    MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(_clientSetting.CacheExpirationMinutes));
+
+                    string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
+                    _memoryCache.Remove(cartDetailsCacheName);
+
+                    _memoryCache.Set(cartDetailsCacheName, cartVM, cacheEntryOptions);
                 }
 
-                cartVM.OrderItemList = orderDetail.OrderItemList;
             }
 
-            return View("~/Views/Home/Cart.cshtml", cartVM);
+            ClientResponse clientResponse = new ClientResponse()
+            {
+                Message = "",
+                IsSuccessful = cartVM.OrderItemList.Any() ? true : false,
+                Data = cartVM
+            };
+
+            return Ok(clientResponse);
         }
 
         [Authorize]
-        public IActionResult Cart(CartVM cartVM)
+        public IActionResult Cart()
         {
             ViewBag.Title = "Cart";
-            return View(cartVM);
+
+            string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
+
+            if (_memoryCache.TryGetValue(cartDetailsCacheName, out CartVM cartVMInMemoryCache))
+            {
+                return View("~/Views/Home/Cart.cshtml",cartVMInMemoryCache);
+            }
+
+            return RedirectToAction("StatusPage", "Error", "No items in the Cart!");
         }
 
         public IActionResult Receipt()
@@ -208,7 +233,7 @@ namespace WebApp.Controllers
                     }
                 }
 
-                return PartialView("~/Views/Menu/_LRNBLinks.cshtml", newStoreVM);
+                return PartialView("~/Views/Shared/_LayoutRightNavBarLink.cshtml", newStoreVM);
             }
 
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());

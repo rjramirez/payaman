@@ -3,10 +3,11 @@
 let Dashboard = function () {
 
     let searchEndPoint = "/Home/Search";
-
+    let storesEndPoint = "/Home/MenuRightBarStores";
 
     return {
         initializeDashboard: function () {
+            Dashboard.menuSetup();
             Dashboard.executeSearch();
             //Dashboard.checkCart();
         },
@@ -49,6 +50,49 @@ let Dashboard = function () {
                 }
             );
 
+        },
+        menuSetup: function (storeId) {
+            let url = "";
+
+            if (storeId > 0)
+                url = storesEndPoint + `?StoreId=${storeId}`;
+            else
+                url = storesEndPoint + `?StoreId=${0}`;
+
+            //Menu Right Navbar
+            let storesUrl = window.location.origin + url;
+            App.ajaxGet(storesUrl
+                , "html"
+                , function (data) {
+                    $("#ul_right_navbar").html(data);
+
+                    $(".store_names").click(function () {
+                        let storeId = $(this).data("store-id");
+                        let storeName = $(this).data("store-name");
+                        let storeAddress = $(this).data("store-address");
+
+                        let storeVM = {
+                            Id: storeId,
+                            Name: storeName,
+                            Address: storeAddress
+                        };
+
+                        App.menuSetup(storeVM);
+
+                        //Search dashboard with the storeId selected
+                        var pathname = window.location.pathname;
+                        var dashboardPage = "Home/Index";
+                        if (pathname.indexOf(dashboardPage) != -1) {
+                            App.executeSearch(storeId);
+                        }
+                    });
+
+                    App.hidePreloader();
+                }
+                , function () {
+                    App.hidePreloader();
+                }
+            );
         },
         checkCart: function () {
             let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
@@ -113,8 +157,8 @@ let Dashboard = function () {
                     function (data) {
                         var json = JSON.parse(data);
 
-                        if (json.IsSuccessful) {
-                            App.alert("success", json.message, "Success", window.location.origin + "/Home/Cart");
+                        if (json.isSuccessful && json.data != null) {
+                            window.location.replace(window.location.origin + "/Home/Cart");
                         }
                         else {
                             App.alert("error", json.message, "Error", undefined);

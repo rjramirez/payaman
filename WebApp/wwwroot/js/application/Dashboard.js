@@ -3,13 +3,12 @@
 let Dashboard = function () {
 
     let searchEndPoint = "/Home/Search";
-    let viewCartEndPoint = "/Home/ViewCart";
 
 
     return {
         initializeDashboard: function () {
             Dashboard.executeSearch();
-            Dashboard.checkCart();
+            //Dashboard.checkCart();
         },
         changePage: function (pageId) {
             dashboardSearchPageIndex = pageId;
@@ -69,11 +68,66 @@ let Dashboard = function () {
                 $("#span_count_cart_items").html(cartItemCount);
             }
 
+            $("#icon_cart").prop("onclick", null).off("click");
 
-            $("#btnViewCart").click(function (e) {
+            $("#icon_cart").click(function (e) {
                 e.preventDefault();
-                console.log("View cart Clicked");
-                $("#viewCartModal").modal("show");
+
+                //Get existing cartItems if available
+                let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
+
+                let orderItemListArr = [];
+
+                //build orderItemsList
+                for (var index = 0; index < cartItems.length; ++index) {
+                    var cart = cartItems[index];
+
+                    let orderItem = {
+                        ProductId: cart.ProductId,
+                        ProductName: cart.ProductName,
+                        ProductPrice: cart.ProductPrice,
+                        Quantity: cart.Quantity,
+                        TotalAmount: (parseFloat(cart.TotalAmount).toFixed(2))
+                    };
+
+                    orderItemListArr.push(orderItem);
+                }
+
+                let cartTotalAmount = 0.00;
+
+                for (var index = 0; index < cartItems.length; ++index) {
+                    cartTotalAmount += parseFloat(cartItems[index].TotalAmount);
+                }
+
+
+                let orderDetails = {
+                    TotalAmount: cartTotalAmount,
+                    OrderItemList: orderItemListArr
+                };
+
+                let viewCartEndPoint = window.location.origin + "/Home/ViewCart";
+
+                App.ajaxPost(viewCartEndPoint,
+                    JSON.stringify(orderDetails),
+                    'text',
+                    function (data) {
+                        var json = JSON.parse(data);
+
+                        if (json.IsSuccessful) {
+                            App.alert("success", json.message, "Success", window.location.origin + "/Home/Cart");
+                        }
+                        else {
+                            App.alert("error", json.message, "Error", undefined);
+
+                            setTimeout(function () {
+                            }, 500);
+                        }
+
+                    },
+                    function (response) {
+                        console.log(response);
+                    }
+                );
             });
         },
         addItemToCart: function (productId, productName, productPrice) {
@@ -162,87 +216,6 @@ $(document).ready(function () {
         Dashboard.executeSearch();
     });
 
-    $("#span_count_cart_items").click(function () {
 
-        //public int Id { get; set; }
-        //public int CashierId { get; set; }
-        //public decimal TotalAmount { get; set; }
-        //public DateTime CreatedDate { get; set; }
-        //public DateTime ModifiedDate { get; set; }
-        //public string TransactionBy { get; set; }
-        //public bool Active { get; set; }
-        //public IEnumerable < OrderItemDetail > OrderItemList { get; set; }
-
-        //public int Id { get; set; }
-        //public int ProductId { get; set; }
-        //public string ProductName { get; set; }
-        //public decimal ProductPrice { get; set; }
-        //public int Quantity { get; set; }
-        //public decimal TotalAmount { get; set; }
-        //public DateTime CreatedDate { get; set; }
-        //public DateTime ModifiedDate { get; set; }
-        //public string TransactionBy { get; set; }
-        //public bool Active { get; set; }
-
-        //Get existing cartItems if available
-        let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
-
-
-        let orderDetails = {
-            TotalAmount: 0
-        };
-
-        let orderItemListArr = [];
-
-        for (var index = 0; index < cartItems.length; ++index) {
-            orderDetails.TotalAmount += parseInt(cartItems[index].TotalAmount);
-        }
-
-
-        //build orderItemsList
-        for (var index = 0; index < cartItems.length; ++index) {
-            var cart = cartItems[index];
-
-            let orderItem = {
-                ProductId: cart.ProductId,
-                ProductName: cart.ProductName,
-                ProductPrice: cart.ProductPrice,
-                Quantity: cart.Quantity,
-                TotalAmount: cart.TotalAmount
-            };
-
-            orderItemListArr.push(orderItem);
-        }
-
-        console.log(orderDetails);
-
-
-        App.ajaxPost(viewCartEndPoint,
-            JSON.stringify(orderDetails),
-            'text',
-            function (data) {
-                var json = JSON.parse(data);
-
-                if (json.isSuccessful) {
-                    App.removeButtonSpinner($("#btn_product_add"));
-                    $("#addProductModal").modal("hide");
-                    App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
-                }
-                else {
-                    App.alert("error", json.message, "Error", undefined);
-
-                    setTimeout(function () {
-                        App.removeButtonSpinner($("#btn_product_add"));
-                    }, 500);
-                }
-
-            },
-            function (response) {
-                console.log(response);
-            }
-        );
-
-
-    });
     
 });

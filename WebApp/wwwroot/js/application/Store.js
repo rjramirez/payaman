@@ -7,7 +7,13 @@ function format(d) {
         '<tr>' +
         '<td>ID:</td>' +
         '<td>' +
-        d.Id +
+        d.id +
+        '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Address:</td>' +
+        '<td>' +
+        d.address +
         '</td>' +
         '</tr>' +
         '<tr>' +
@@ -104,12 +110,13 @@ let Store = function () {
                         data: null,
                         defaultContent: '',
                     },
-                    { data: 'Name' },
+                    { data: 'name' },
                     {
-                        data: 'Id',
+                        data: 'id',
                         render: function (data, type, row) {
                             return '<button type="button" class="btn btn-success btn-xs btn-store-edit" data-id="' + data + '"'
-                                + 'data-name="' + row.Name + '"'
+                                + 'data-name="' + row.name + '"'
+                                + 'data-address="' + row.address + '"'
                                 + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btn-store-remove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
@@ -139,9 +146,11 @@ let Store = function () {
                 $(".btn-store-edit").click(function () {
                     let storeId = $(this).data("id");
                     let storeName = $(this).data("name");
+                    let storeAddress = $(this).data("address");
 
                     $("#input_edit_storename").val(storeName);
                     $("#input_edit_storeid").val(storeId);
+                    $("#text_edit_storeaddress").val(storeAddress);
 
                     $("#editStoreModal").modal("show");
                 });
@@ -153,8 +162,10 @@ let Store = function () {
 
                     let storeId = $("#input_edit_storeid").val();
                     let storeNameUpdate = $("#input_edit_storename").val();
+                    let storeAddressUpdate = $("#text_edit_storeaddress").val();
 
                     App.requiredTextValidator($('#input_edit_storename').val(), $('#input_edit_storename'));
+                    App.requiredTextValidator($('#text_edit_storeaddress').val(), $('#text_edit_storeaddress'));
 
                     if (storeNameUpdate == "") {
                         App.alert("error", "Name and Price is required", "Error", undefined);
@@ -165,6 +176,7 @@ let Store = function () {
                     let model = {
                         Id: storeId,
                         Name: storeNameUpdate,
+                        Address: storeAddressUpdate
                     }
 
                     App.ajaxPut(updateStoreEndPoint,

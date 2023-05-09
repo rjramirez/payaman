@@ -36,13 +36,13 @@ namespace WebApp.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] StoreDetail StoreDetail)
+        public async Task<IActionResult> Update([FromBody] StoreDetail storeDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            StoreDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-            HttpResponseMessage response = await client.PutAsync($"api/Store/Update", StoreDetail.GetStringContent());
+            HttpResponseMessage response = await client.PutAsync($"api/Store/Update", storeDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
 
@@ -53,13 +53,13 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Remove([FromBody] StoreDetail StoreDetail)
+        public async Task<IActionResult> Remove([FromBody] StoreDetail storeDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            StoreDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-            HttpResponseMessage response = await client.PostAsync($"api/Store/Remove", StoreDetail.GetStringContent());
+            HttpResponseMessage response = await client.PostAsync($"api/Store/Remove", storeDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
 
@@ -70,13 +70,13 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] StoreDetail StoreDetail)
+        public async Task<IActionResult> Add([FromBody] StoreDetail storeDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            StoreDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-            HttpResponseMessage response = await client.PostAsync($"api/Store/Add", StoreDetail.GetStringContent());
+            HttpResponseMessage response = await client.PostAsync($"api/Store/Add", storeDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
 

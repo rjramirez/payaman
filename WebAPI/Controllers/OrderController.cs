@@ -90,7 +90,7 @@ namespace WebAPI.Controllers
                             Id = c.Id,
                             TotalAmount = c.TotalAmount,
                             CreatedDate = c.CreatedDate,
-                            ModifiedDate = c.ModifiedDate
+                            ModifiedDate = c.ModifiedDate.Value
                         },
                         predicate: a => a.Active == true,
                         orderBy: o => o.OrderBy(a => a.Id));
@@ -101,13 +101,13 @@ namespace WebAPI.Controllers
         [HttpPut]
         [Route("Update")]
         [SwaggerOperation(Summary = "Update Order")]
-        public async Task<ActionResult<ClientResponse>> UpdateOrder(OrderDetail OrderDetail)
+        public async Task<ActionResult<ClientResponse>> UpdateOrder(OrderDetail orderDetail)
         {
-            var OrderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.Id == OrderDetail.Id);
+            var orderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.Id == orderDetail.Id);
 
-            var Order = _mapper.Map(OrderDetail, OrderFromDB);
+            var order = _mapper.Map(orderDetail, orderFromDB);
 
-            var result = await _RITSDBUnitOfWork.SaveChangesAsync(OrderDetail.TransactionBy);
+            var result = await _RITSDBUnitOfWork.SaveChangesAsync(orderDetail.TransactionBy);
 
             if (result == 0 || result == -1)
                 throw new Exception("Updating Order failed");
@@ -125,15 +125,15 @@ namespace WebAPI.Controllers
         [HttpPost]
         [Route("Remove")]
         [SwaggerOperation(Summary = "Remove Order")]
-        public async Task<ActionResult<ClientResponse>> Remove(OrderDetail OrderDetail)
+        public async Task<ActionResult<ClientResponse>> Remove(OrderDetail orderDetail)
         {
-            var OrderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.Id == OrderDetail.Id);
+            var orderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.Id == orderDetail.Id);
 
-            OrderFromDB.ModifiedBy = OrderDetail.TransactionBy;
+            orderFromDB.ModifiedBy = orderDetail.TransactionBy;
 
-            _RITSDBUnitOfWork.OrderRepository.Remove(OrderFromDB);
+            _RITSDBUnitOfWork.OrderRepository.Remove(orderFromDB);
 
-            var result = await _RITSDBUnitOfWork.SaveChangesAsync(OrderDetail.TransactionBy);
+            var result = await _RITSDBUnitOfWork.SaveChangesAsync(orderDetail.TransactionBy);
 
             if (result == 0 || result == -1)
                 throw new Exception("Removing Order failed");
@@ -151,11 +151,13 @@ namespace WebAPI.Controllers
         [HttpPost]
         [Route("Add")]
         [SwaggerOperation(Summary = "Add Order")]
-        public async Task<ActionResult<ClientResponse>> Add(OrderDetail orderDetail)
+        public async Task<ActionResult<int>> Add(OrderDetail orderDetail)
         {
             var order = _mapper.Map(orderDetail, new Order());
 
-            order.ModifiedBy = orderDetail.TransactionBy;
+            order.CashierId = Convert.ToInt16(orderDetail.TransactionBy);
+            order.CreatedBy = orderDetail.TransactionBy;
+            order.CreatedDate = DateTime.UtcNow;
 
             await _RITSDBUnitOfWork.OrderRepository.AddAsync(order);
 
@@ -164,14 +166,8 @@ namespace WebAPI.Controllers
             if (result == 0 || result == -1)
                 throw new Exception("Adding Order failed");
 
-            ClientResponse clientResponse = new()
-            {
-                Message = "Order added Successfully",
-                IsSuccessful = true,
-            };
 
-
-            return Ok(clientResponse);
+            return Ok(order.Id);
         }
 
     }

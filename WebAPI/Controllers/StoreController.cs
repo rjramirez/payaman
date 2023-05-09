@@ -75,17 +75,17 @@ namespace WebAPI.Controllers
         [HttpPut]
         [Route("Update")]
         [SwaggerOperation(Summary = "Update Store")]
-        public async Task<ActionResult<ClientResponse>> UpdateStore(StoreDetail StoreDetail)
+        public async Task<ActionResult<ClientResponse>> UpdateStore(StoreDetail storeDetail)
         {
-            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == StoreDetail.Id);
+            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == storeDetail.Id);
+
+            _mapper.Map(storeDetail, storeFromDB);
 
             var today = DateTime.UtcNow;
             storeFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-            storeFromDB.ModifiedBy = StoreDetail.TransactionBy;
+            storeFromDB.ModifiedBy = storeDetail.TransactionBy;
 
-            var Store = _mapper.Map(StoreDetail, storeFromDB);
-
-            var result = await _RITSDBUnitOfWork.SaveChangesAsync(StoreDetail.TransactionBy);
+            var result = await _RITSDBUnitOfWork.SaveChangesAsync(storeDetail.TransactionBy);
 
             if (result == 0 || result == -1)
                 throw new Exception("Updating Store failed");

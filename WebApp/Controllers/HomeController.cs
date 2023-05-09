@@ -65,15 +65,24 @@ namespace WebApp.Controllers
             ViewBag.Title = "Orders";
             return View();
         }
-        public async Task<IActionResult> ViewCart(OrderDetail orderDetail)
+
+        [HttpPost]
+        public async Task<IActionResult> ViewCart([FromBody] OrderDetail orderDetail)
         {
             ViewBag.Title = "View Cart";
+
+            if (orderDetail.OrderItemList == null)
+                return View();
 
             string storeSelectedCacheName = string.Format(CacheConstant.StoreSelectedCacheName, User.Identity.Name);
             CartVM cartVM = new();
 
             if (_memoryCache.TryGetValue(storeSelectedCacheName, out IEnumerable<ReferenceDataDetail> storeSelectedCached)) 
             {
+
+                var ident = User.Identity as ClaimsIdentity;
+                orderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+
                 string storeName = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreNameCacheName).Value.ToString();
                 string storeAddress = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreAddressCacheName).Value.ToString();
                 
@@ -83,7 +92,7 @@ namespace WebApp.Controllers
                 
                 //Save the order
                 HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-                HttpResponseMessage response = await client.GetAsync($"api/Order/NextOrderId");
+                HttpResponseMessage response = await client.PostAsync($"api/Order/Add", orderDetail.GetStringContent());
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -93,11 +102,19 @@ namespace WebApp.Controllers
                 cartVM.OrderItemList = orderDetail.OrderItemList;
             }
 
-            return View(cartVM);
+            return View("~/Views/Home/Cart.cshtml", cartVM);
         }
-        public IActionResult Cart()
+
+        [Authorize]
+        public IActionResult Cart(CartVM cartVM)
         {
             ViewBag.Title = "Cart";
+            return View(cartVM);
+        }
+
+        public IActionResult Receipt()
+        {
+            ViewBag.Title = "Receipt";
             return View();
         }
 
@@ -126,6 +143,7 @@ namespace WebApp.Controllers
                     Name = s.Name,
                     Description = s.Description,
                     Image = s.Image,
+                    Address = s.Address,
                     CreatedDate = s.CreatedDate,
                     ModifiedDate = s.ModifiedDate
                 }).ToList();
@@ -147,9 +165,9 @@ namespace WebApp.Controllers
 
                             //Set MemoryCache StoreIdSelected
                             List<ReferenceDataDetail> storeForMemoryCache = new List<ReferenceDataDetail> {
-                                new ReferenceDataDetail { Active = true, Name = "StoreId", Value = storeVM.Id },
-                                new ReferenceDataDetail { Active = true, Name = "StoreName", Value = storeVM.Name },
-                                new ReferenceDataDetail { Active = true, Name = "StoreAddress", Value = storeVM.Address }
+                                new ReferenceDataDetail { Active = true, Name = CacheConstant.StoreIdCacheName, Value = newStoreVM.First().Id },
+                                new ReferenceDataDetail { Active = true, Name = CacheConstant.StoreNameCacheName, Value = newStoreVM.First().Name },
+                                new ReferenceDataDetail { Active = true, Name = CacheConstant.StoreAddressCacheName, Value = newStoreVM.First().Address }
                             };
 
                             _memoryCache.Set(storeSelectedCacheName, storeForMemoryCache, cacheEntryOptions);
@@ -176,9 +194,9 @@ namespace WebApp.Controllers
                         {
                             //Set MemoryCache StoreIdSelected
                             List<ReferenceDataDetail> storeForMemoryCache = new List<ReferenceDataDetail> {
-                                new ReferenceDataDetail { Active = true, Name = "StoreId", Value = newStoreVM.First().Id },
-                                new ReferenceDataDetail { Active = true, Name = "StoreName", Value = newStoreVM.First().Name },
-                                new ReferenceDataDetail { Active = true, Name = "StoreAddress", Value = newStoreVM.First().Address }
+                                new ReferenceDataDetail { Active = true, Name = CacheConstant.StoreIdCacheName, Value = newStoreVM.First().Id },
+                                new ReferenceDataDetail { Active = true, Name = CacheConstant.StoreNameCacheName, Value = newStoreVM.First().Name },
+                                new ReferenceDataDetail { Active = true, Name = CacheConstant.StoreAddressCacheName, Value = newStoreVM.First().Address }
                             };
 
                             _memoryCache.Set(storeSelectedCacheName, storeForMemoryCache, cacheEntryOptions);
@@ -253,6 +271,7 @@ namespace WebApp.Controllers
                 // Create a new ClaimsIdentity with the desired claims
                 var claims = new[]
                 {
+                    new Claim(ClaimConstant.EmployeeId, authDetails.Id.ToString()),
                     new Claim(ClaimTypes.Name, authDetails.Username),
                     new Claim("UserGivenName", authDetails.FirstName + " " + authDetails.LastName),
                     new Claim(ClaimConstant.ClientId, authDetails.Username),

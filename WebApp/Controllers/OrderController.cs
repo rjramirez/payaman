@@ -39,7 +39,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Update([FromBody] OrderDetail OrderDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            OrderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+            OrderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             HttpResponseMessage response = await client.PutAsync($"api/Order/Update", OrderDetail.GetStringContent());
@@ -56,7 +56,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Remove([FromBody] OrderDetail OrderDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            OrderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+            OrderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             HttpResponseMessage response = await client.PostAsync($"api/Order/Remove", OrderDetail.GetStringContent());
@@ -73,7 +73,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Add([FromBody] OrderDetail OrderDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            OrderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.ClientId).Value;
+            OrderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
             HttpResponseMessage response = await client.PostAsync($"api/Order/Add", OrderDetail.GetStringContent());

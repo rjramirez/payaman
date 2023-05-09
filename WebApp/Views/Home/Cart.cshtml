@@ -7,7 +7,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <button id="btnBackToDashboard" class="btn btn-md btn-success">Back to Dashboard</button>
+        <button id="btnBackToDashboard" href="@Url.Action("Index", "Home")" class="btn btn-md btn-success">Back to Dashboard</button>
     </div>
     <div class="row">
         <div class="mx-auto">
@@ -79,11 +79,3 @@
     <script src="~/js/application/Order.js"></script>*@
 }
 
-@*@foreach(var item in Model.OrderItemList)
-                    {
-                        <span class="dropdown-item">
-                            <i class="fas fa-mug-hot mr-2"></i>@String.Format("{0} x {1}", item.ProductName, item.Quantity)
-                            <span class="float-right text-muted text-sm">₱ @item.ProductPrice</span>
-                        </span>
-                        <div class="dropdown-divider"></div>
-                    }*@

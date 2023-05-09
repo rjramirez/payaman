@@ -21,8 +21,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [Required]
         [StringLength(128)]
         public string CreatedBy { get; set; }
-        public DateTime ModifiedDate { get; set; }
-        [Required]
+        public DateTime? ModifiedDate { get; set; }
         [StringLength(128)]
         public string ModifiedBy { get; set; }
 

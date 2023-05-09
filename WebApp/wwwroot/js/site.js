@@ -57,7 +57,7 @@ var App = function () {
                 "hideMethod": "fadeOut"
             }
 
-            App.menuSetup();
+            //App.menuSetup();
         },
         executeSearch: function (storeId) {
             let searchKeyword = $("#input_search_bar").val();

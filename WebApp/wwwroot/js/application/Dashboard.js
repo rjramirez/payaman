@@ -143,61 +143,7 @@ let Dashboard = function () {
             $("#icon_cart").click(function (e) {
                 e.preventDefault();
 
-                //Get existing cartItems if available
-                let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
-
-                let orderItemListArr = [];
-
-                //build orderItemsList
-                for (var index = 0; index < cartItems.length; ++index) {
-                    var cart = cartItems[index];
-
-                    let orderItem = {
-                        ProductId: cart.ProductId,
-                        ProductName: cart.ProductName,
-                        ProductPrice: cart.ProductPrice,
-                        Quantity: cart.Quantity,
-                        TotalAmount: (parseFloat(cart.TotalAmount).toFixed(2))
-                    };
-
-                    orderItemListArr.push(orderItem);
-                }
-
-                let cartTotalAmount = 0.00;
-
-                for (var index = 0; index < cartItems.length; ++index) {
-                    cartTotalAmount += parseFloat(cartItems[index].TotalAmount);
-                }
-
-
-                let orderDetails = {
-                    TotalAmount: cartTotalAmount,
-                    OrderItemList: orderItemListArr
-                };
-
-                let viewCartEndPoint = window.location.origin + "/Home/ViewCart";
-
-                App.ajaxPost(viewCartEndPoint,
-                    JSON.stringify(orderDetails),
-                    'text',
-                    function (data) {
-                        var json = JSON.parse(data);
-
-                        if (json.isSuccessful && json.data != null) {
-                            window.location.replace(window.location.origin + "/Home/Cart");
-                        }
-                        else {
-                            App.alert("error", json.message, "Error", undefined);
-
-                            setTimeout(function () {
-                            }, 500);
-                        }
-
-                    },
-                    function (response) {
-                        console.log(response);
-                    }
-                );
+                window.location.replace(window.location.origin + "/Home/Cart");
             });
         },
         addItemToCart: function (productId, productName, productPrice) {

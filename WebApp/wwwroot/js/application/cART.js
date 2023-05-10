@@ -1,129 +1,63 @@
 ﻿
 let Cart = function () {
     return {
-        addItemToCart: function (productId, productName, productPrice) {
-
+        initializeCart: function () {
             //Get existing cartItems if available
             let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
 
-            if (sessionStorage.cartItems) {
-                //Check if product is existing in the cartItems
-                var existInCartItems = false;
+            let orderItemListArr = [];
 
-                for (var index = 0; index < cartItems.length; ++index) {
-                    var product = cartItems[index];
-                    if (product.ProductId == productId) {
-                        existInCartItems = true;
-                        break;
-                    }
-                }
+            //build orderItemsList
+            for (var index = 0; index < cartItems.length; ++index) {
+                var cart = cartItems[index];
 
-                if (existInCartItems) {
-                    //Update cartItems
-                    $.each(cartItems, function (i, item) {
-                        if (item.ProductId == productId) {
-                            item.Quantity += 1;
-                            item.TotalAmount = (item.ProductPrice * item.Quantity);
-                        }
-                    });
-
-                    sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
-                }
-                else {
-                    //Add new product in the cart
-                    let cartDetail = {
-                        ProductId: productId,
-                        ProductName: productName,
-                        ProductPrice: productPrice,
-                        TotalAmount: productPrice,
-                        Quantity: 1
-                    };
-
-                    cartItems.push(cartDetail);
-
-                    sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
-                }
-            }
-            else {
-                //Create cartItems for the first time
-                let cartObj = [];
-                let cartDetail = {
-                    ProductId: productId,
-                    ProductName: productName,
-                    ProductPrice: productPrice,
-                    TotalAmount: productPrice,
-                    Quantity: 1
+                let orderItem = {
+                    ProductId: cart.ProductId,
+                    ProductName: cart.ProductName,
+                    ProductPrice: cart.ProductPrice,
+                    Quantity: cart.Quantity,
+                    TotalAmount: (parseFloat(cart.TotalAmount).toFixed(2))
                 };
 
-                cartObj.push(cartDetail);
-
-                sessionStorage.setItem("cartItems", JSON.stringify(cartObj));
+                orderItemListArr.push(orderItem);
             }
 
-            let existingQuant = parseInt($("#item_" + productId + "_quantity").html()) ? parseInt($("#item_" + productId + "_quantity").html()) : 0;
-            $("#item_" + productId + "_quantity").html(existingQuant + 1);
-        },
-        removeItemToCart: function (productId, productName, productPrice) {
+            let cartTotalAmount = 0.00;
 
-            //Get existing cartItems if available
-            let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
-
-            if (sessionStorage.cartItems) {
-                //Check if product is existing in the cartItems
-                var existInCartItems = false;
-
-                for (var index = 0; index < cartItems.length; ++index) {
-                    var product = cartItems[index];
-                    if (product.ProductId == productId) {
-                        existInCartItems = true;
-                        break;
-                    }
-                }
-
-                if (existInCartItems) {
-                    //Update cartItems
-                    $.each(cartItems, function (i, item) {
-                        if (item.ProductId == productId) {
-                            item.Quantity += 1;
-                            item.TotalAmount = (item.ProductPrice * item.Quantity);
-                        }
-                    });
-
-                    sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
-                }
-                else {
-                    //Add new product in the cart
-                    let cartDetail = {
-                        ProductId: productId,
-                        ProductName: productName,
-                        ProductPrice: productPrice,
-                        TotalAmount: productPrice,
-                        Quantity: 1
-                    };
-
-                    cartItems.push(cartDetail);
-
-                    sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
-                }
-            }
-            else {
-                //Create cartItems for the first time
-                let cartObj = [];
-                let cartDetail = {
-                    ProductId: productId,
-                    ProductName: productName,
-                    ProductPrice: productPrice,
-                    TotalAmount: productPrice,
-                    Quantity: 1
-                };
-
-                cartObj.push(cartDetail);
-
-                sessionStorage.setItem("cartItems", JSON.stringify(cartObj));
+            for (var index = 0; index < cartItems.length; ++index) {
+                cartTotalAmount += parseFloat(cartItems[index].TotalAmount);
             }
 
-            let existingQuant = parseInt($("#item_" + productId + "_quantity").html()) ? parseInt($("#item_" + productId + "_quantity").html()) : 0;
-            $("#item_" + productId + "_quantity").html(existingQuant + 1);
+            let tbodyTemplate = "";
+
+            for (var x = 0; x < cartItems.length; ++x) {
+                tbodyTemplate += '<tr class="tr_' + cartItems[x].ProductId + '">' +
+                    '<td colspan="2">' +
+                    '<p>' + cartItems[x].ProductName + '</p>' +
+                    '</td>' +
+                    '<td>' +
+                    '<input type="number" value="' + cartItems[x].Quantity + '" class="form-control item_quantity" data-product-id="' + cartItems[x].ProductId + '">' +
+                    '</td>' +
+                    '<td>₱' + cartItems[x].ProductPrice + '</td>' +
+                    '<td><span class="spanProductSum_' + cartItems[x].ProductId + '">₱' + cartItems[x].TotalAmount+ '</span></td>' +
+                    '<td>' +
+                    '<a href="" class="btnRemoveProduct" data-product-id="' + cartItems[x].ProductId + '"><i class="fa-solid fa-trash" style="color: #9e9e9e;"></i></a>' +
+                    '</td>' +
+                    '</tr>';
+            }
+
+            if (tbodyTemplate == "")
+            {
+                tbodyTemplate = '<tr>' +
+                    '<td colspan="6">' +
+                    '<p>No Data Available</p>' +
+                    '</td>' + 
+                    '</tr>';
+            }
+
+            $("#tbodyOrderItemList").html(tbodyTemplate);
+            $("#spanCartTotalAmount").html("₱" + parseFloat(cartTotalAmount).toFixed(2));
+
         },
         checkOutCart: function () {
             //Get existing cartItems if available
@@ -158,16 +92,16 @@ let Cart = function () {
                 OrderItemList: orderItemListArr
             };
 
-            let viewCartEndPoint = window.location.origin + "/Home/ViewCart";
+            let checkoutCartEndPoint = window.location.origin + "/Home/Checkout";
 
-            App.ajaxPost(viewCartEndPoint,
+            App.ajaxPost(checkoutCartEndPoint,
                 JSON.stringify(orderDetails),
                 'text',
                 function (data) {
                     var json = JSON.parse(data);
 
                     if (json.isSuccessful && json.data != null) {
-                        window.location.replace(window.location.origin + "/Home/Cart");
+                        window.location.replace(window.location.origin + "/Home/Receipt");
                     }
                     else {
                         App.alert("error", json.message, "Error", undefined);
@@ -194,17 +128,49 @@ let Cart = function () {
                     if (product.ProductId == productId) {
                         product.Quantity = parseInt(quantity);
                         product.TotalAmount = parseFloat(parseFloat(product.ProductPrice) * parseFloat(product.Quantity)).toFixed(2);
-                        sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
                         $(".spanProductSum_" + productId).html("₱" + product.TotalAmount);
                     }
                     cartTotalAmount += parseFloat(product.TotalAmount);
-                    console.log(product.TotalAmount)
                 }
 
                 $("#spanCartTotalAmount").html("₱" + parseFloat(cartTotalAmount).toFixed(2));
+                sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
             }
+        },
+        removeItem: function (productId) {
+
+            //Get existing cartItems if available
+            let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
+
+            if (sessionStorage.cartItems) {
+                let cartTotalAmount = 0.00;
+                for (var index = 0; index < cartItems.length; ++index) {
+                    var product = cartItems[index];
+                    if (product.ProductId == productId) {
+                        cartItems.splice(index, 1);
+                    }
+                    cartTotalAmount += parseFloat(product.TotalAmount);
+                }
 
 
+                $("#spanCartTotalAmount").html("₱" + parseFloat(cartTotalAmount).toFixed(2));
+
+                sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+                $(".tr_" + productId).remove();
+
+                let tbodyTemplate = $("#tbodyOrderItemList").html();
+                if (tbodyTemplate == "") {
+                    tbodyTemplate = '<tr>' +
+                        '<td colspan="6">' +
+                        '<p>No Data Available</p>' +
+                        '</td>' +
+                        '</tr>';
+                    $("#tbodyOrderItemList").html(tbodyTemplate);
+                }
+
+                
+            }
         }
     }
 }();
@@ -212,6 +178,9 @@ let Cart = function () {
 
 
 $(document).ready(function () {
+    Cart.initializeCart();
+
+
     $(".item_quantity").change(function () {
         let productId = $(this).data("product-id");
         let oldVal = $(this).data("old-value");
@@ -219,6 +188,13 @@ $(document).ready(function () {
 
         Cart.changeQuantityItem(productId, newVal);
          
+    });
+
+
+    $(".btnRemoveProduct").click(function (e) {
+        e.preventDefault();
+        let productId = $(this).data("product-id");
+        Cart.removeItem(productId);
     });
 
     $("#btnCartCheckout").click(function () {

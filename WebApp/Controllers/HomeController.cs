@@ -68,10 +68,8 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ViewCart([FromBody] OrderDetail orderDetail)
+        public async Task<IActionResult> Checkout([FromBody] OrderDetail orderDetail)
         {
-            ViewBag.Title = "View Cart";
-
             if (orderDetail.OrderItemList == null)
                 return View();
 
@@ -127,15 +125,7 @@ namespace WebApp.Controllers
         public IActionResult Cart()
         {
             ViewBag.Title = "Cart";
-
-            string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
-
-            if (_memoryCache.TryGetValue(cartDetailsCacheName, out CartVM cartVMInMemoryCache))
-            {
-                return View(cartVMInMemoryCache);
-            }
-
-            return RedirectToAction("StatusPage", "Error", "No items in the Cart!");
+            return View();
         }
 
         public IActionResult Receipt()

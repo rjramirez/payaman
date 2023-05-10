@@ -1,62 +1,41 @@
-﻿@model WebApp.Models.Cart.CartVM
-
-
-@if (Model != null && Model.OrderItemList.Any())
-{
-    <div class="container-fluid">
-        <div class="row">
-            <button type="button" id="btnBackToDashboard" href="@Url.Action("Index", "Home")" class="btn btn-md btn-success">Back to Dashboard</button>
-        </div>
-        <div class="row">
-            <div class="mx-auto">
-                <div class="w-75">
-                    <div class="table-responsive table-sm" id="table_cart">
-                        <table class="table text-xs">
-                            <thead>
-                                <tr>
-                                    <th colspan="2">Product</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th colspan="2">Sum</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.OrderItemList)
-                                {
-                                    <tr>
-                                        <td colspan="2">
-                                            <p>@item.ProductName</p>
-                                        </td>
-                                        <td>
-                                            <input type="number" value="@item.Quantity" class="form-control item_quantity" data-old-value="@item.Quantity" data-product-id="@item.ProductId">
-                                        </td>
-                                        <td>₱@item.ProductPrice</td>
-                                        <td><span class="spanProductSum_@item.ProductId">₱@item.TotalAmount</span></td>
-                                        <td>
-                                            <a href="#"><i class="fa-solid fa-trash" style="color: #9e9e9e;"></i></a>
-                                        </td>
-                                    </tr>
-                                }
-
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="4">Total</th>
-                                    <th colspan="2"><span id="spanCartTotalAmount">₱@Model.TotalAmount</span></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="6">
-                                        <button type="button" class="btn btn-success btn-block btn-xs" id="btnCartCheckout">Checkout</button>
-                                    </th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+﻿
+<div class="container-fluid">
+    <div class="row">
+        <a id="btnBackToDashboard" href="@Url.ActionLink("Index", "Home")" class="btn btn-link btn-md btn-success text-white">Back to Dashboard</a>
+    </div>
+    <div class="row">
+        <div class="mx-auto">
+            <div class="w-75">
+                <div class="table-responsive table-sm" id="table_cart">
+                    <table class="table text-xs">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th colspan="2">Sum</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyOrderItemList">
+                            
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4">Total</th>
+                                <th colspan="2"><span id="spanCartTotalAmount"></span></th>
+                            </tr>
+                            <tr>
+                                <th colspan="6">
+                                    <button type="button" class="btn btn-success btn-block btn-xs" id="btnCartCheckout">Checkout</button>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-}
+</div>
 
 
 @section Scripts

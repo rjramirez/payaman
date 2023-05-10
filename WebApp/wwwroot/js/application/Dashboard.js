@@ -15,11 +15,13 @@ let Dashboard = function () {
             dashboardSearchPageIndex = pageId;
             Dashboard.executeSearch();
         },
-        executeSearch: function () {
-            let searchKeyword = $("#input_search_bar").val();
+        executeSearch: function (storeId) {
+            let searchKeyword = $("#input_search_bar").val() ? $("#input_search_bar").val() : "";
 
             let url = searchEndPoint + `?PageNumber=${dashboardSearchPageIndex}`;
             url += `&Keyword=${searchKeyword}`;
+            if (storeId > 0)
+                url += `&StoreId=${storeId}`;
 
             let orderSearchUrl = window.location.origin + url;
             //window.location.replace(searchurl);
@@ -29,7 +31,7 @@ let Dashboard = function () {
                 , function (data) {
                     $("#orders_row").html(data);
 
-
+                    $(".btn_order_items").prop("onclick", null).off("click");
                     $(".btn_order_items").click(function () {
                         let productId = $(this).data("product-id");
                         let productName = $(this).data("product-name");
@@ -55,36 +57,61 @@ let Dashboard = function () {
             let url = "";
 
             if (storeId > 0)
-                url = storesEndPoint + `?StoreId=${storeId}`;
+                url = storesEndPoint + `?Id=${storeId}`;
             else
-                url = storesEndPoint + `?StoreId=${0}`;
+                url = storesEndPoint + `?Id=${0}`;
 
             //Menu Right Navbar
             let storesUrl = window.location.origin + url;
             App.ajaxGet(storesUrl
                 , "html"
                 , function (data) {
-                    $("#ul_right_navbar").html(data);
+                    var jsonStore = JSON.parse(data);
+                    $("#spanStoreCount").html(jsonStore.length);
 
+                    let btnStoreTemplate = "";
+
+                    for (var x = 0; x < jsonStore.length; x++)
+                    {
+                        if (jsonStore[x].isSelected == true)
+                            continue;
+
+                        btnStoreTemplate += '<button type="button" class="dropdown-item store_names btn-link"' +
+                            'data-store-id="' + jsonStore[x].id + '"' +
+                            'data-store-name="' + jsonStore[x].name + '"' +
+                            'data-store-address="' + jsonStore[x].address + '">' +
+                            jsonStore[x].name +
+                            '</button>';
+                    }
+
+                    $("#divBtnStoreContainer").html(btnStoreTemplate);
+
+                    let storeNameSelected = "";
+                    jsonStore.forEach(function (i, d) {
+                        if (i.isSelected == true)
+                        {
+                            storeNameSelected = i.name;
+                            return;
+                        }
+                    });
+
+                    $("#spanStoreNameSelected").html(storeNameSelected);
+
+                    $(".store_names").prop("onclick", null).off("click");
                     $(".store_names").click(function () {
                         let storeId = $(this).data("store-id");
                         let storeName = $(this).data("store-name");
                         let storeAddress = $(this).data("store-address");
 
-                        let storeVM = {
-                            Id: storeId,
-                            Name: storeName,
-                            Address: storeAddress
-                        };
+                        //let storeVM = {
+                        //    Id: storeId,
+                        //    Name: storeName,
+                        //    Address: storeAddress
+                        //};
 
-                        App.menuSetup(storeVM);
+                        Dashboard.menuSetup(storeId);
 
-                        //Search dashboard with the storeId selected
-                        var pathname = window.location.pathname;
-                        var dashboardPage = "Home/Index";
-                        if (pathname.indexOf(dashboardPage) != -1) {
-                            App.executeSearch(storeId);
-                        }
+                        Dashboard.executeSearch(storeId);
                     });
 
                     App.hidePreloader();
@@ -113,7 +140,6 @@ let Dashboard = function () {
             }
 
             $("#icon_cart").prop("onclick", null).off("click");
-
             $("#icon_cart").click(function (e) {
                 e.preventDefault();
 

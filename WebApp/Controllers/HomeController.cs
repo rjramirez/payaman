@@ -90,6 +90,7 @@ namespace WebApp.Controllers
                 cartVM.StoreName = storeName;
                 cartVM.StoreAddress = storeAddress;
                 cartVM.CashierName = User.Identity.Name;
+                cartVM.TotalAmount = orderDetail.TotalAmount;
                 
                 //Save the order
                 HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
@@ -131,7 +132,7 @@ namespace WebApp.Controllers
 
             if (_memoryCache.TryGetValue(cartDetailsCacheName, out CartVM cartVMInMemoryCache))
             {
-                return View("~/Views/Home/Cart.cshtml",cartVMInMemoryCache);
+                return View(cartVMInMemoryCache);
             }
 
             return RedirectToAction("StatusPage", "Error", "No items in the Cart!");
@@ -233,7 +234,7 @@ namespace WebApp.Controllers
                     }
                 }
 
-                return PartialView("~/Views/Shared/_LayoutRightNavBarLink.cshtml", newStoreVM);
+                return Ok(newStoreVM);
             }
 
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());

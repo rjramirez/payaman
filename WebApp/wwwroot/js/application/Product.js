@@ -50,8 +50,9 @@ let Product = function () {
                         action: function (e, dt, node, config) {
                             $('#addProductModal').modal('show');
 
-                            $("#btn_product_add").click(function () {
-                                App.addButtonSpinner($("#btn_product_add"));
+                            $("#btnProductAdd").prop("onclick", null).off("click");
+                            $("#btnProductAdd").click(function () {
+                                App.addButtonSpinner($("#btnProductAdd"));
 
                                 let productNameAdd = $("#input_add_productname").val();
                                 let productPriceAdd = $("#input_add_productprice").val();
@@ -61,7 +62,7 @@ let Product = function () {
 
                                 if (productNameAdd == "" || productPriceAdd == "" || productPriceAdd == 0) {
                                     App.alert("error", "Name and Price is required", "Error", undefined);
-                                    App.removeButtonSpinner($("#btn_product_add"));
+                                    App.removeButtonSpinner($("#btnProductAdd"));
                                     return;
                                 }
 
@@ -77,7 +78,7 @@ let Product = function () {
                                         var json = JSON.parse(data);
 
                                         if (json.isSuccessful) {
-                                            App.removeButtonSpinner($("#btn_product_add"));
+                                            App.removeButtonSpinner($("#btnProductAdd"));
                                             $("#addProductModal").modal("hide");
                                             App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
                                         }
@@ -85,7 +86,7 @@ let Product = function () {
                                             App.alert("error", json.message, "Error", undefined);
 
                                             setTimeout(function () {
-                                                App.removeButtonSpinner($("#btn_product_add"));
+                                                App.removeButtonSpinner($("#btnProductAdd"));
                                             }, 500);
                                         }
 
@@ -117,10 +118,10 @@ let Product = function () {
                     {
                         data: 'Id',
                         render: function (data, type, row) {
-                            return '<button type="button" class="btn btn-success btn-xs btn-product-edit" data-id="' + data + '"'
+                            return '<button type="button" class="btn btn-success btn-xs btnProductEdit" data-id="' + data + '"'
                                 + 'data-name="' + row.Name + '"'
                                 + 'data-price="' + row.Price + '"'
-                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btn-product-remove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
+                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnProductRemove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
@@ -146,7 +147,8 @@ let Product = function () {
 
             $('#products_table').on('init.dt', function () {
 
-                $(".btn-product-edit").click(function () {
+                $(".btnProductEdit").prop("onclick", null).off("click");
+                $(".btnProductEdit").click(function () {
                     let productId = $(this).data("id");
                     let productName = $(this).data("name");
                     let productPrice = $(this).data("price");
@@ -159,9 +161,9 @@ let Product = function () {
                 });
 
 
-
-                $("#btn_product_update").click(function () {
-                    App.addButtonSpinner($("#btn_product_update"));
+                $("#btnProductUpdate").prop("onclick", null).off("click");
+                $("#btnProductUpdate").click(function () {
+                    App.addButtonSpinner($("#btnProductUpdate"));
 
                     let productId = $("#input_edit_productid").val();
                     let productNameUpdate = $("#input_edit_productname").val();
@@ -172,7 +174,7 @@ let Product = function () {
 
                     if (productNameUpdate == "" || productPriceUpdate == "" || productPriceUpdate == 0) {
                         App.alert("error", "Name and Price is required", "Error", undefined);
-                        App.removeButtonSpinner($("#btn_product_update"));
+                        App.removeButtonSpinner($("#btnProductUpdate"));
                         return;
                     }
 
@@ -189,7 +191,7 @@ let Product = function () {
                             var json = JSON.parse(data);
 
                             if (json.isSuccessful) {
-                                App.removeButtonSpinner($("#btn_product_update"));
+                                App.removeButtonSpinner($("#btnProductUpdate"));
                                 $("#editProductModal").modal("hide");
                                 App.alert("success", json.message, "Success", window.location.origin + "/Home/Products");
                             }
@@ -197,7 +199,7 @@ let Product = function () {
                                 App.alert("error", json.message, "Error", undefined);
 
                                 setTimeout(function () {
-                                    App.removeButtonSpinner($("#btn_product_update"));
+                                    App.removeButtonSpinner($("#btnProductUpdate"));
                                 }, 500);
                             }
 
@@ -211,8 +213,8 @@ let Product = function () {
                 });
 
 
-
-                $(".btn-product-remove").click(function () {
+                $(".btnProductRemove").prop("onclick", null).off("click");
+                $(".btnProductRemove").click(function () {
                     let productId = $(this).data("id");
 
                     let param = {

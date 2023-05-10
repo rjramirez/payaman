@@ -58,10 +58,10 @@ let Order = function () {
                     {
                         data: 'Id',
                         render: function (data, type, row) {
-                            return '<button type="button" class="btn btn-success btn-xs btn-order-edit" data-id="' + data + '"'
+                            return '<button type="button" class="btn btn-success btn-xs btnOrderEdit" data-id="' + data + '"'
                                 + 'data-name="' + row.Name + '"'
                                 + 'data-price="' + row.Price + '"'
-                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btn-order-remove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
+                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnOrderRemove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
@@ -86,8 +86,8 @@ let Order = function () {
 
 
             $('#orders_table').on('init.dt', function () {
-
-                $(".btn-order-edit").click(function () {
+                $(".btnOrderEdit").prop("onclick", null).off("click");
+                $(".btnOrderEdit").click(function () {
                     let orderId = $(this).data("id");
                     let orderName = $(this).data("name");
                     let orderPrice = $(this).data("price");
@@ -100,7 +100,7 @@ let Order = function () {
                 });
 
 
-
+                $("#btn_order_update").prop("onclick", null).off("click");
                 $("#btn_order_update").click(function () {
                     App.addButtonSpinner($("#btn_order_update"));
 
@@ -152,8 +152,8 @@ let Order = function () {
                 });
 
 
-
-                $(".btn-order-remove").click(function () {
+                $(".btnOrderRemove").prop("onclick", null).off("click");
+                $(".btnOrderRemove").click(function () {
                     let orderId = $(this).data("id");
 
                     let param = {

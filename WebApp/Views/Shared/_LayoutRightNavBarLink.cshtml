@@ -1,54 +1,31 @@
-﻿@model List<WebApp.Models.Store.StoreVM>
-
+﻿@{
+    var controller = ViewContext.RouteData.Values["Controller"];
+    var action = ViewContext.RouteData.Values["Action"];
+}
 <ul class="navbar-nav ml-auto" id="ul_right_navbar">
-@*    @{
-        await Html.RenderPartialAsync("~/Views/Menu/_LRNBLinks.cshtml");
-    }*@
-    <li class="nav-item d-none d-lg-block">
-        <a class="nav-link btn-link" href="" id="icon_cart">
-            <em class="fa fa-shopping-cart"></em>
-            <span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
-        </a>
-    </li>
 
-    @if (Model != null && Model.Any())
+    @if (controller.ToString() == "Home" && action.ToString() == "Index")
     {
+        <li class="nav-item d-none d-lg-block">
+            <a class="nav-link btn-link" href="" id="icon_cart">
+                <em class="fa fa-shopping-cart"></em>
+                <span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
+            </a>
+        </li>
 
         <li class="nav-item d-none d-lg-block">
-            <a class="nav-link">
-                <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge">
-                    @{
-                        int storeCount = Model.Count() - 1;
-                    }
-                    @storeCount
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge" id="spanStoreCount">
                 </span>
             </a>
-            <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                @foreach (var store in Model.Where(x => x.IsSelected != true).OrderBy(x => x.Name))
-                {
-                    <button type="button" class="dropdown-item store_names btn-link"
-                            data-store-id="@store.Id"
-                            data-store-name="@store.Name"
-                            data-store-price="@store.Address">
-                        @store.Name
-                    </button>
-                }
+            <div class="dropdown-menu dropdown-menu-md dropdown-menu-right" id="divBtnStoreContainer">
             </div>
         </li>
         <li class="nav-item d-none d-lg-block">
             <a class="nav-link" href="#">
-                @if (Model.Any(x => x.IsSelected == true))
-                {
-                    @Model.FirstOrDefault(x => x.IsSelected == true).Name
-                    ;
-                    <input type="hidden" value="@Model.FirstOrDefault(x => x.IsSelected == true).Id" id="current_storeid_selected" />
-                }
-                else
-                {
-                    @Model.First().Name
-                    ;
-                }
+                <span id="spanStoreNameSelected"></span>
             </a>
         </li>
     }
+    
 </ul>

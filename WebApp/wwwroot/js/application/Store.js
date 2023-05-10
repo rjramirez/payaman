@@ -56,8 +56,9 @@ let Store = function () {
                         action: function (e, dt, node, config) {
                             $('#addStoreModal').modal('show');
 
-                            $("#btn_store_add").click(function () {
-                                App.addButtonSpinner($("#btn_store_add"));
+                            $("#btnStoreAdd").prop("onclick", null).off("click");
+                            $("#btnStoreAdd").click(function () {
+                                App.addButtonSpinner($("#btnStoreAdd"));
 
                                 let storeNameAdd = $("#input_add_storename").val();
 
@@ -65,7 +66,7 @@ let Store = function () {
 
                                 if (storeNameAdd == "") {
                                     App.alert("error", "Name is required", "Error", undefined);
-                                    App.removeButtonSpinner($("#btn_store_add"));
+                                    App.removeButtonSpinner($("#btnStoreAdd"));
                                     return;
                                 }
 
@@ -80,7 +81,7 @@ let Store = function () {
                                         var json = JSON.parse(data);
 
                                         if (json.isSuccessful) {
-                                            App.removeButtonSpinner($("#btn_store_add"));
+                                            App.removeButtonSpinner($("#btnStoreAdd"));
                                             $("#addStoreModal").modal("hide");
                                             App.alert("success", json.message, "Success", window.location.origin + "/Home/Stores");
                                         }
@@ -88,7 +89,7 @@ let Store = function () {
                                             App.alert("error", json.message, "Error", undefined);
 
                                             setTimeout(function () {
-                                                App.removeButtonSpinner($("#btn_store_add"));
+                                                App.removeButtonSpinner($("#btnStoreAdd"));
                                             }, 500);
                                         }
 
@@ -114,10 +115,10 @@ let Store = function () {
                     {
                         data: 'id',
                         render: function (data, type, row) {
-                            return '<button type="button" class="btn btn-success btn-xs btn-store-edit" data-id="' + data + '"'
+                            return '<button type="button" class="btn btn-success btn-xs btnStoreEdit" data-id="' + data + '"'
                                 + 'data-name="' + row.name + '"'
                                 + 'data-address="' + row.address + '"'
-                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btn-store-remove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
+                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnStoreRemove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
@@ -143,7 +144,8 @@ let Store = function () {
 
             $('#stores_table').on('init.dt', function () {
 
-                $(".btn-store-edit").click(function () {
+                $(".btnStoreEdit").prop("onclick", null).off("click");
+                $(".btnStoreEdit").click(function () {
                     let storeId = $(this).data("id");
                     let storeName = $(this).data("name");
                     let storeAddress = $(this).data("address");
@@ -156,9 +158,9 @@ let Store = function () {
                 });
 
 
-
-                $("#btn_store_update").click(function () {
-                    App.addButtonSpinner($("#btn_store_update"));
+                $("#btnStoreUpdate").prop("onclick", null).off("click");
+                $("#btnStoreUpdate").click(function () {
+                    App.addButtonSpinner($("#btnStoreUpdate"));
 
                     let storeId = $("#input_edit_storeid").val();
                     let storeNameUpdate = $("#input_edit_storename").val();
@@ -169,7 +171,7 @@ let Store = function () {
 
                     if (storeNameUpdate == "") {
                         App.alert("error", "Name and Price is required", "Error", undefined);
-                        App.removeButtonSpinner($("#btn_store_update"));
+                        App.removeButtonSpinner($("#btnStoreUpdate"));
                         return;
                     }
 
@@ -186,7 +188,7 @@ let Store = function () {
                             var json = JSON.parse(data);
 
                             if (json.isSuccessful) {
-                                App.removeButtonSpinner($("#btn_store_update"));
+                                App.removeButtonSpinner($("#btnStoreUpdate"));
                                 $("#editStoreModal").modal("hide");
                                 App.alert("success", json.message, "Success", window.location.origin + "/Home/Stores");
                             }
@@ -194,7 +196,7 @@ let Store = function () {
                                 App.alert("error", json.message, "Error", undefined);
 
                                 setTimeout(function () {
-                                    App.removeButtonSpinner($("#btn_store_update"));
+                                    App.removeButtonSpinner($("#btnStoreUpdate"));
                                 }, 500);
                             }
 
@@ -208,8 +210,8 @@ let Store = function () {
                 });
 
 
-
-                $(".btn-store-remove").click(function () {
+                $(".btnStoreRemove").prop("onclick", null).off("click");
+                $(".btnStoreRemove").click(function () {
                     let storeId = $(this).data("id");
 
                     let param = {

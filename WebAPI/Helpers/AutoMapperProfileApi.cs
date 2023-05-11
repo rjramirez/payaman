@@ -48,6 +48,20 @@ public class AutoMapperProfileApi : Profile
                 }
             ));
 
+        // OrderItemDetail -> OrderItem
+        CreateMap<OrderItemDetail, OrderItem>()
+            .ForMember(dest => dest.CreatedBy, act => act.MapFrom(src => src.TransactionBy))
+            .ForAllMembers(x => x.Condition(
+                (src, dest, prop) =>
+                {
+                    // ignore null & empty string properties
+                    if (prop == null) return false;
+                    if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
+
+                    return true;
+                }
+            ));
+
         // StoreDetail -> Store
         CreateMap<StoreDetail, Store>()
             .ForMember(dest => dest.CreatedBy, act => act.MapFrom(src => src.TransactionBy))

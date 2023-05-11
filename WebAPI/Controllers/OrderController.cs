@@ -160,8 +160,20 @@ namespace WebAPI.Controllers
             order.CreatedDate = DateTime.UtcNow;
 
             await _RITSDBUnitOfWork.OrderRepository.AddAsync(order);
+            await _RITSDBUnitOfWork.SaveChangesAsync(orderDetail.TransactionBy);
+
+            foreach (var orderItem in orderDetail.OrderItemList)
+            {
+                var orderItemForInsert = _mapper.Map(orderItem, new OrderItem());
+                orderItemForInsert.OrderId = order.Id;
+                orderItemForInsert.CreatedBy = orderDetail.TransactionBy;
+                orderItemForInsert.CreatedDate = DateTime.UtcNow;
+
+                await _RITSDBUnitOfWork.OrderItemRepository.AddAsync(orderItemForInsert);
+            }
 
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(orderDetail.TransactionBy);
+
 
             if (result == 0 || result == -1)
                 throw new Exception("Adding Order failed");

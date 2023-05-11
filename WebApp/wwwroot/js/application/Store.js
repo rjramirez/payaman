@@ -1,32 +1,6 @@
 ﻿
-/* Formatting function for row details - modify as you need */
-function format(d) {
-    // `d` is the original data object for the row
-    return (
-        '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-        '<tr>' +
-        '<td>ID:</td>' +
-        '<td>' +
-        d.id +
-        '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Address:</td>' +
-        '<td>' +
-        d.address +
-        '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Date Created:</td>' +
-        '<td>' +
-        moment(d.CreatedDate).format('MMMM Do YYYY, h:mm:ss a') +
-        '</td>' +
-        '</tr>' +
-        '</table>'
-    );
-}
 
-let Store = function () {
+let RightMenuBar = function () {
     let storesEndPoint = "/Store/GetAllStores";
     let updateStoreEndPoint = "/Store/Update";
     let removeStoreEndPoint = "/Store/Remove";
@@ -48,7 +22,7 @@ let Store = function () {
                 },
                 dom: "<'top'<'row'<'col-sm-2'B><'col-sm-4'l><'col-sm-4'f>>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-4'l><'col-sm-8'p>>",
+                    "<'row'<'col-sm-9'p>>",
                 buttons: [
                     {
                         className: 'btn-xs btn-success mt-1',

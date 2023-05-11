@@ -1,28 +1,17 @@
-﻿@model WebApp.Models.Cart.CartVM
-
-@section Styles
-{
-    @*<link href="~/lib/datatables/css/datatables.min.css" rel="stylesheet" />*@
-}
-
-@if (Model == null || !Model.OrderItemList.Any())
-    return;
-
-
-<div class="container-fluid">
+﻿<div class="container-fluid">
     <div class="row">
-        <button id="btnBackToDashboard" class="btn btn-md btn-success">Back to Dashboard</button>
+        <a id="btnBackToDashboard" href="@Url.ActionLink("Index", "Home")" class="btn btn-link btn-md btn-success text-white">Back to Dashboard</a>
     </div>
     <div class="row">
         <div class="mx-auto">
             <div class="col-md-12">
-                <div class="row justify-content-center"><span class="h5">@Model.StoreName</span></div>
-                <div class="row"><span class="">@Model.StoreAddress</span></div>
+                <div class="row justify-content-center"><span class="h5" id="spanStoreName"></span></div>
+                <div class="row"><span class="" id="spanStoreAddress">@Model.StoreAddress</span></div>
                 <div class="row">
-                    <span class="text-sm">Order ID: <span class="text-bold">@Model.OrderId</span></span>
+                    <span class="text-sm">Order ID: <span class="text-bold" id="spanOrderId">@Model.OrderId</span></span>
                 </div>
                 <div class="row">
-                    <span class="text-sm">Cashier: <span class="text-bold">@Model.CashierName</span></span>
+                    <span class="text-sm">Cashier: <span class="text-bold" id="spanCashierName">@Model.CashierName</span></span>
                 </div>
                 <div class="row">
                     <span class="text-sm">Date: <span class="text-bold">@DateTime.UtcNow.ToString("MMMM dd, yyyy H:m")</span></span>
@@ -36,20 +25,17 @@
                                 <th>Price</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach (var item in Model.OrderItemList)
-                            {
-                                <tr>
-                                    <td>@item.Quantity</td>
-                                    <td>@item.ProductName</td>
-                                    <td>₱@item.ProductPrice</td>
-                                </tr>
-                            }
+                        <tbody id="tbodyOrderItemList">
+                            @*<tr>
+                                <td>@item.Quantity</td>
+                                <td>@item.ProductName</td>
+                                <td>₱@item.ProductPrice</td>
+                            </tr>*@
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colspan="2">Total Amount:</td>
-                                <td>₱ @Model.TotalAmount</td>
+                                <td id="tdTotalAmount">₱ @Model.TotalAmount</td>
                             </tr>
                             <tr>
                                 <td colspan="3"><button type="button" class="btn btn-block btn-success">Print</button></td>

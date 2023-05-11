@@ -168,8 +168,6 @@ let Cart = function () {
                         '</tr>';
                     $("#tbodyOrderItemList").html(tbodyTemplate);
                 }
-
-                
             }
         }
     }
@@ -198,6 +196,6 @@ $(document).ready(function () {
     });
 
     $("#btnCartCheckout").click(function () {
-
+        Cart.checkOutCart();
     });
 });

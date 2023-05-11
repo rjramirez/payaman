@@ -4,14 +4,18 @@
 }
 <ul class="navbar-nav ml-auto" id="ul_right_navbar">
 
-    @if (controller.ToString() == "Home" && action.ToString() == "Index")
+    @if (controller.ToString() == "Home")
     {
-        <li class="nav-item d-none d-lg-block">
-            <a class="nav-link btn-link" href="" id="icon_cart">
-                <em class="fa fa-shopping-cart"></em>
-                <span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
-            </a>
-        </li>
+        @if (action.ToString() == "Index")
+        {
+            <li class="nav-item d-none d-lg-block">
+                <a class="nav-link btn-link" href="" id="icon_cart">
+                    <em class="fa fa-shopping-cart"></em>
+                    <span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
+                </a>
+            </li>
+        }
+
 
         <li class="nav-item d-none d-lg-block">
             <a class="nav-link" data-toggle="dropdown" href="#">
@@ -26,6 +30,11 @@
                 <span id="spanStoreNameSelected"></span>
             </a>
         </li>
+
     }
-    
 </ul>
+
+@section Scripts
+{
+    <script src="~/js/application/RightMenuBar.js"></script>
+}

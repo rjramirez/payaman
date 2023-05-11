@@ -1,17 +1,14 @@
 ﻿var dashboardSearchPageIndex = 1;
 
-let Dashboard = function () {
+let RightMenuBar = function () {
 
     let searchEndPoint = "/Home/Search";
+    let storesEndPoint = "/Home/MenuRightBarStores";
 
     return {
-        initializeDashboard: function () {
-            Dashboard.executeSearch();
-            //Dashboard.checkCart();
-        },
-        changePage: function (pageId) {
-            dashboardSearchPageIndex = pageId;
-            Dashboard.executeSearch();
+        initializeRightMenuBar: function () {
+            RightMenuBar.menuSetup();
+            RightMenuBar.executeSearch();
         },
         executeSearch: function (storeId) {
             let searchKeyword = $("#input_search_bar").val() ? $("#input_search_bar").val() : "";
@@ -35,13 +32,13 @@ let Dashboard = function () {
                         let productName = $(this).data("product-name");
                         let productPrice = $(this).data("product-price");
 
-                        Dashboard.addItemToCart(productId, productName, productPrice);
+                        RightMenuBar.addItemToCart(productId, productName, productPrice);
 
-                        Dashboard.checkCart();
+                        RightMenuBar.checkCart();
 
                     });
 
-                    Dashboard.checkCart();
+                    RightMenuBar.checkCart();
 
                     App.hidePreloader();
                 }
@@ -50,6 +47,82 @@ let Dashboard = function () {
                 }
             );
 
+        },
+        menuSetup: function (storeId) {
+            let url = "";
+
+            if (storeId > 0)
+                url = storesEndPoint + `?Id=${storeId}`;
+            else
+                url = storesEndPoint + `?Id=${0}`;
+
+            //Menu Right Navbar
+            let storesUrl = window.location.origin + url;
+            App.ajaxGet(storesUrl
+                , "html"
+                , function (data) {
+                    var jsonStore = JSON.parse(data);
+                    $("#spanStoreCount").html(jsonStore.length);
+
+                    let btnStoreTemplate = "";
+
+                    for (var x = 0; x < jsonStore.length; x++)
+                    {
+                        if (jsonStore[x].isSelected == true) {
+                            btnStoreTemplate += '<button type="button" class="d-none dropdown-item store_names btn-link"' +
+                                'data-store-id="' + jsonStore[x].id + '"' +
+                                'data-store-name="' + jsonStore[x].name + '"' +
+                                'data-store-address="' + jsonStore[x].address + '">' +
+                                jsonStore[x].name +
+                                '</button>';
+                        }
+                        else
+                        {
+                            btnStoreTemplate += '<button type="button" class="dropdown-item store_names btn-link"' +
+                                'data-store-id="' + jsonStore[x].id + '"' +
+                                'data-store-name="' + jsonStore[x].name + '"' +
+                                'data-store-address="' + jsonStore[x].address + '">' +
+                                jsonStore[x].name +
+                                '</button>';
+                        }
+                    }
+
+                    $("#divBtnStoreContainer").html(btnStoreTemplate);
+
+                    let storeNameSelected = "";
+                    jsonStore.forEach(function (i, d) {
+                        if (i.isSelected == true)
+                        {
+                            storeNameSelected = i.name;
+                            return;
+                        }
+                    });
+
+                    $("#spanStoreNameSelected").html(storeNameSelected);
+
+                    $(".store_names").prop("onclick", null).off("click");
+                    $(".store_names").click(function () {
+                        let storeId = $(this).data("store-id");
+                        let storeName = $(this).data("store-name");
+                        let storeAddress = $(this).data("store-address");
+
+                        //let storeVM = {
+                        //    Id: storeId,
+                        //    Name: storeName,
+                        //    Address: storeAddress
+                        //};
+
+                        RightMenuBar.menuSetup(storeId);
+
+                        RightMenuBar.executeSearch(storeId);
+                    });
+
+                    App.hidePreloader();
+                }
+                , function () {
+                    App.hidePreloader();
+                }
+            );
         },
         checkCart: function () {
             let cartItems = JSON.parse(sessionStorage.getItem('cartItems'));
@@ -146,22 +219,5 @@ let Dashboard = function () {
 
 
 $(document).ready(function () {
-
-    Dashboard.initializeDashboard();
-
-    $("#input_search_bar").keyup(function () {
-        let num = $(this).val().length;
-        if (num >= 2) {
-            Dashboard.executeSearch();
-        } else if (num == 0) {
-            Dashboard.executeSearch();
-        }
-    });
-
-    $('#input_search_bar[type=search]').on('search', function () {
-        Dashboard.executeSearch();
-    });
-
-
-    
+    RightMenuBar.initializeRightMenuBar();
 });

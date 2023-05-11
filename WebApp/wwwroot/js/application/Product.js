@@ -27,6 +27,37 @@ let Product = function () {
     let addProductEndPoint = "/Product/Add";
 
     return {
+        resetTable: function () {
+            // Quickly and simply clear a table
+            $('#products_table').dataTable().fnClearTable();
+
+            // Restore the table to it's original state in the DOM by removing all of DataTables enhancements, alterations to the DOM structure of the table and event listeners
+            $('#products_table').dataTable().fnDestroy();
+        },
+        initializeStoreSelect: function () {
+
+            let storesUrl = window.location.origin + "/Store/GetAllStores";
+            App.ajaxGet(storesUrl
+                , "text"
+                , function (data) {
+                    var jsonStore = JSON.parse(data);
+
+                    let storeOptionsHTML = "";
+                    for (var x = 0; x < jsonStore.length; x++) {
+                        if ($("#spanStoreNameSelected").html() == jsonStore[x].name) {
+                            storeOptionsHTML += '<option value="' + jsonStore[x].id + '" selected="selected">' + jsonStore[x].name + '</option>';
+                        }
+                        storeOptionsHTML += '<option value="' + jsonStore[x].id + '">' + jsonStore[x].name + '</option>';
+                    }
+                    $("#selectStoreName").html(storeOptionsHTML);
+
+                    App.hidePreloader();
+                }
+                , function () {
+                    App.hidePreloader();
+                }
+            );
+        },
         initializeProductsTable: function () {
 
             var tableProducts = $('#products_table').DataTable({
@@ -42,7 +73,7 @@ let Product = function () {
                 },
                 dom: "<'top'<'row'<'col-sm-2'B><'col-sm-4'l><'col-sm-4'f>>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-4'l><'col-sm-8'p>>",
+                    "<'row'<'col-sm-9'p>>",
                 buttons: [
                     {
                         className: 'btn-xs btn-success mt-1',
@@ -168,12 +199,15 @@ let Product = function () {
                     let productId = $("#input_edit_productid").val();
                     let productNameUpdate = $("#input_edit_productname").val();
                     let productPriceUpdate = $("#input_edit_productprice").val();
+                    let productStoreId = $("#selectStoreName").val();
 
                     App.requiredTextValidator($('#input_edit_productname').val(), $('#input_edit_productname'));
                     App.requiredTextValidator($('#input_edit_productprice').val(), $('#input_edit_productprice'));
+                    App.requiredTextValidator($('#productStoreSelected').val(), $('#productStoreSelected'));
+                    
 
-                    if (productNameUpdate == "" || productPriceUpdate == "" || productPriceUpdate == 0) {
-                        App.alert("error", "Name and Price is required", "Error", undefined);
+                    if (productNameUpdate == "" || productPriceUpdate == "" || productPriceUpdate == 0 || productStoreId == "") {
+                        App.alert("error", "Name, Price, and Store is required", "Error", undefined);
                         App.removeButtonSpinner($("#btnProductUpdate"));
                         return;
                     }
@@ -181,7 +215,8 @@ let Product = function () {
                     let model = {
                         Id: productId,
                         Name: productNameUpdate,
-                        Price: productPriceUpdate
+                        Price: productPriceUpdate,
+                        StoreId: pro
                     }
 
                     App.ajaxPut(updateProductEndPoint,
@@ -245,6 +280,11 @@ let Product = function () {
                     );
                 });
             });
+
+
+
+            //Populate Store names in Modal
+            $("#selectStoreName").html();
         }
     }
 }();
@@ -253,4 +293,5 @@ let Product = function () {
 
 $(document).ready(function () {
     Product.initializeProductsTable();
+    Product.initializeStoreSelect();
 });

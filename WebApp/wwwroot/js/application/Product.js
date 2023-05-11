@@ -216,7 +216,7 @@ let Product = function () {
                         Id: productId,
                         Name: productNameUpdate,
                         Price: productPriceUpdate,
-                        StoreId: pro
+                        StoreId: productStoreId
                     }
 
                     App.ajaxPut(updateProductEndPoint,

@@ -4,7 +4,7 @@
 }
 
 <div class="row">
-    <div class="col-md-5 mx-auto mt-2">
+    <div class="col-md-5 mx-auto mt-2" id="div_products_container">
         <table id="products_table" class="display compact stripe mt-3" style="width:100%">
             <thead>
                 <tr>
@@ -51,6 +51,11 @@
                             <input type="number" class="form-control form-control-sm" id="input_add_productprice">
                         </div>
                     </div>
+                    <div class="form-group form-group-xs">
+                        <label for="selectStoreNameAdd">Store</label>
+                        <select class="form-control form-control-sm" id="selectStoreNameAdd">
+                        </select>
+                    </div>
                 </form>
                 <div class="text-right">
                     <button type="button" class="btn btn-secondary btn-xs btn-block" data-dismiss="modal">Close</button>
@@ -87,8 +92,8 @@
                         </div>
                     </div>
                     <div class="form-group form-group-xs">
-                        <label for="selectStoreName">Store</label>
-                        <select class="form-control form-control-sm" id="selectStoreName">
+                        <label for="selectStoreNameEdit">Store</label>
+                        <select class="form-control form-control-sm" id="selectStoreNameEdit">
                         </select>
                     </div>
                 </form>
@@ -100,6 +105,24 @@
         </div>
     </div>
 </div>
+
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmRemoveProductModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="confirmRemoveProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div>Are you sure you want to delete <span id="productNameToDelete" class="text-xs text-bold"></span>?</div>
+                <div class="text-right">
+                    <button type="button" class="btn btn-secondary btn-xs btn-block" data-dismiss="modal">Dismiss</button>
+                    <button type="button" id="btnConfirmRemoveProduct" class="btn btn-primary btn-xs btn-block">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 @section Scripts
 {

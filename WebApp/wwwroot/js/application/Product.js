@@ -27,13 +27,6 @@ let Product = function () {
     let addProductEndPoint = "/Product/Add";
 
     return {
-        resetTable: function () {
-            // Quickly and simply clear a table
-            $('#products_table').dataTable().fnClearTable();
-
-            // Restore the table to it's original state in the DOM by removing all of DataTables enhancements, alterations to the DOM structure of the table and event listeners
-            $('#products_table').dataTable().fnDestroy();
-        },
         initializeStoreSelect: function () {
 
             let storesUrl = window.location.origin + "/Store/GetAllStores";
@@ -47,9 +40,14 @@ let Product = function () {
                         if ($("#spanStoreNameSelected").html() == jsonStore[x].name) {
                             storeOptionsHTML += '<option value="' + jsonStore[x].id + '" selected="selected">' + jsonStore[x].name + '</option>';
                         }
-                        storeOptionsHTML += '<option value="' + jsonStore[x].id + '">' + jsonStore[x].name + '</option>';
+                        else
+                        {
+                            storeOptionsHTML += '<option value="' + jsonStore[x].id + '">' + jsonStore[x].name + '</option>';
+                        }
+                        
                     }
-                    $("#selectStoreName").html(storeOptionsHTML);
+                    $("#selectStoreNameEdit").html(storeOptionsHTML);
+                    $("#selectStoreNameAdd").html(storeOptionsHTML);
 
                     App.hidePreloader();
                 }
@@ -58,12 +56,44 @@ let Product = function () {
                 }
             );
         },
-        initializeProductsTable: function () {
+        initialProductsTableTemplate: function () {
+           return '<div class="row">' +
+                '<div class="col-md-5 mx-auto mt-2">' +
+                '<table id="products_table" class="display compact stripe mt-3" style="width:100%">' +
+                '<thead>' +
+                '<tr>' +
+                '<th></th>' +
+                '<th>Name</th>' +
+                '<th>Price</th>' +
+                '<th>Actions</th>' +
+                '</tr>' +
+                '</thead>' +
+                '<tfoot>' +
+                '<tr>' +
+                '<th></th>' +
+                '<th>Name</th>' +
+                '<th>Price</th>' +
+                '<th>Actions</th>' +
+                '</tr>' +
+                '</tfoot>' +
+                '</table>' +
+                '</div' +
+                '</div';
+        },
+        initializeProductsTable: function (storeId) {
+            if (storeId == "undefined")
+                storeId = 0;
 
+            //Clear table
+            $("#products_table").empty();
+
+
+            let url = window.location.origin + productsEndPoint + "\\" + storeId
             var tableProducts = $('#products_table').DataTable({
+                destroy: true,
                 ajax:
                 {
-                    url: window.location.origin + productsEndPoint,
+                    url: url,
                     type: 'GET',
                     contentType: 'application/json; charset=utf-8',
                     dataSrc: function (receivedData) {
@@ -81,25 +111,31 @@ let Product = function () {
                         action: function (e, dt, node, config) {
                             $('#addProductModal').modal('show');
 
+                            let currentSelectedStoreId = $(".d-none.store_names").data("store-id");
+                            $('#selectStoreNameAdd option[value="' + currentSelectedStoreId + '"]').attr("selected", "selected");
+
                             $("#btnProductAdd").prop("onclick", null).off("click");
                             $("#btnProductAdd").click(function () {
                                 App.addButtonSpinner($("#btnProductAdd"));
-
+                                
                                 let productNameAdd = $("#input_add_productname").val();
                                 let productPriceAdd = $("#input_add_productprice").val();
+                                let productStoreIdAdd = $("#selectStoreNameAdd").val();
 
                                 App.requiredTextValidator($('#input_add_productname').val(), $('#input_add_productname'));
                                 App.requiredTextValidator($('#input_add_productprice').val(), $('#input_add_productprice'));
+                                App.requiredTextValidator($('#selectStoreNameAdd').val(), $('#selectStoreNameAdd'));
 
                                 if (productNameAdd == "" || productPriceAdd == "" || productPriceAdd == 0) {
-                                    App.alert("error", "Name and Price is required", "Error", undefined);
+                                    App.alert("error", "Name, Price, and Store is required", "Error", undefined);
                                     App.removeButtonSpinner($("#btnProductAdd"));
                                     return;
                                 }
 
                                 let model = {
                                     Name: productNameAdd,
-                                    Price: productPriceAdd
+                                    Price: productPriceAdd,
+                                    StoreId: productStoreIdAdd
                                 }
 
                                 App.ajaxPost(addProductEndPoint,
@@ -152,7 +188,8 @@ let Product = function () {
                             return '<button type="button" class="btn btn-success btn-xs btnProductEdit" data-id="' + data + '"'
                                 + 'data-name="' + row.Name + '"'
                                 + 'data-price="' + row.Price + '"'
-                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnProductRemove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
+                                + 'data-store-id="' + row.StoreId + '"'
+                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnProductRemove" data-id=' + data + ' data-product-name="' + row.Name + '""><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
@@ -183,10 +220,13 @@ let Product = function () {
                     let productId = $(this).data("id");
                     let productName = $(this).data("name");
                     let productPrice = $(this).data("price");
+                    let productStoreId = $(this).data("store-id");
 
                     $("#input_edit_productname").val(productName);
                     $("#input_edit_productprice").val(productPrice);
                     $("#input_edit_productid").val(productId);
+                    $('#selectStoreNameEdit option[value="' + productStoreId + '"]').attr("selected", "selected");
+                    $('#selectStoreNameAdd option[value="' + productStoreId + '"]').attr("selected", "selected");
 
                     $("#editProductModal").modal("show");
                 });
@@ -199,7 +239,7 @@ let Product = function () {
                     let productId = $("#input_edit_productid").val();
                     let productNameUpdate = $("#input_edit_productname").val();
                     let productPriceUpdate = $("#input_edit_productprice").val();
-                    let productStoreId = $("#selectStoreName").val();
+                    let productStoreId = $("#selectStoreNameEdit").val();
 
                     App.requiredTextValidator($('#input_edit_productname').val(), $('#input_edit_productname'));
                     App.requiredTextValidator($('#input_edit_productprice').val(), $('#input_edit_productprice'));
@@ -247,10 +287,9 @@ let Product = function () {
 
                 });
 
-
-                $(".btnProductRemove").prop("onclick", null).off("click");
-                $(".btnProductRemove").click(function () {
-                    let productId = $(this).data("id");
+                $("#btnConfirmRemoveProduct").prop("onclick", null).off("click");
+                $("#btnConfirmRemoveProduct").click(function () {
+                    let productId = $(this).data("product-id");
 
                     let param = {
                         Id: productId
@@ -279,12 +318,23 @@ let Product = function () {
                         }
                     );
                 });
+
+                $(".btnProductRemove").prop("onclick", null).off("click");
+                $(".btnProductRemove").click(function () {
+
+                    let productId = $(this).data("id");
+                    let productName = $(this).data("product-name");
+                    $("#btnConfirmRemoveProduct").attr("data-product-id", productId);
+                    $("#btnConfirmRemoveProduct").attr("data-product-name", productName);
+
+                    $("#productNameToDelete").html(productName);
+                    $("#confirmRemoveProductModal").modal("show");
+                });
             });
 
-
-
             //Populate Store names in Modal
-            $("#selectStoreName").html();
+            $("#selectStoreNameEdit").html();
+            $("#selectStoreNameAdd").html();
         }
     }
 }();

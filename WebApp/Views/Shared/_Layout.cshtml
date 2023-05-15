@@ -38,15 +38,24 @@
                     <a class="nav-link sidebar-toggle-btn" data-widget="pushmenu" data-enable-remember="true" href="#" role="button"><em class="fas fa-bars"></em></a>
                 </li>
             </ul>
-            <div class="mx-auto">
-                <!-- SEARCH FORM -->
-                <form class="form-inline ml-0 ml-md-3">
-                    <div class="input-group input-group-sm">
-                        <input class="form-control form-control-navbar" type="search" placeholder="Search" id="input_search_bar" aria-label="Search">
-                        <span class="input-group-text form-control-navbar"><i class="fas fa-search"></i></span>
+            @{
+                var controller = ViewContext.RouteData.Values["Controller"];
+                var action = ViewContext.RouteData.Values["Action"];
+
+                if (controller.ToString() == "Home" && action.ToString() == "index")
+                {
+                    <div class="mx-auto">
+                        <!-- SEARCH FORM -->
+                        <form class="form-inline ml-0 ml-md-3">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-navbar" type="search" placeholder="Search" id="input_search_bar" aria-label="Search">
+                                <span class="input-group-text form-control-navbar"><i class="fas fa-search"></i></span>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
+
+                }
+            }
             
 
             <!-- Right navbar links -->

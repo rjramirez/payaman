@@ -230,6 +230,11 @@ namespace WebApp.Controllers
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
         }
 
+        public IActionResult AuthenticationCallback()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpGet]
         public async Task<IActionResult> Search(OrderSearchFilter orderSearchFilter)
         {
@@ -264,11 +269,6 @@ namespace WebApp.Controllers
             }
 
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
-        }
-
-        public IActionResult AuthenticationCallback()
-        {
-            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

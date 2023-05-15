@@ -5,6 +5,7 @@ using DataAccess.DBContexts.RITSDB.Models;
 using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using WebAPI.Authorization;
 
 namespace WebAPI.Controllers
 {
@@ -51,10 +52,12 @@ namespace WebAPI.Controllers
         //}
 
         [HttpGet]
-        [Route("GetAllProducts")]
+        [Route("GetAllProductsByStoreId/{storeId}")]
         [SwaggerOperation(Summary = "Get Product List")]
-        public async Task<ActionResult<IEnumerable<ProductDetail>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ProductDetail>>> GetAllProducts([FromRoute] string storeId)
         {
+            int storeIdSelected = Convert.ToInt32(storeId);
+
             IEnumerable<ProductDetail> products = await _RITSDBUnitOfWork.ProductRepository.FindAsync(
                         selector: c => new ProductDetail()
                         {
@@ -62,9 +65,10 @@ namespace WebAPI.Controllers
                             Name = c.Name,
                             Price = c.Price.ToString(),
                             Description = c.Description,
+                            StoreId = c.StoreId,
                             CreatedDate = c.CreatedDate
                         },
-                        predicate: a => a.Active == true,
+                        predicate: a => a.Active == true && (storeIdSelected > 0 && storeIdSelected == a.StoreId),
                         orderBy: o => o.OrderBy(a => a.Name));
 
             return Ok(products);
@@ -102,8 +106,10 @@ namespace WebAPI.Controllers
             var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.Id == productDetail.Id);
 
             productFromDB.ModifiedBy = productDetail.TransactionBy;
+            productFromDB.ModifiedDate = Convert.ToDateTime(DateTime.UtcNow.ToString("MMMM dd, yyyy H:m"));
+            productFromDB.Active = false;
 
-            _RITSDBUnitOfWork.ProductRepository.Remove(productFromDB);
+            //_RITSDBUnitOfWork.ProductRepository.Remove(productFromDB);
 
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
 

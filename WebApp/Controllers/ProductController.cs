@@ -1,11 +1,17 @@
 ﻿using Common.Constants;
+using Common.DataTransferObjects.CollectionPaging;
+using Common.DataTransferObjects.Order;
 using Common.DataTransferObjects.Product;
 using Common.DataTransferObjects.ReferenceData;
 using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using WebApp.Extensions;
+using WebApp.Models.Cart;
+using WebApp.Models.Order;
 using WebApp.Models.Product;
 
 namespace WebApp.Controllers
@@ -14,25 +20,39 @@ namespace WebApp.Controllers
     public class ProductController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IMemoryCache _memoryCache;
 
-        public ProductController(IHttpClientFactory httpClientFactory)
+        public ProductController(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache)
         {
             _httpClientFactory = httpClientFactory;
+            _memoryCache = memoryCache;
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        [Route("Product/GetAllProducts/{storeId}")]
+        public async Task<IActionResult> GetAllProducts([FromRoute] string storeId)
         {
-            HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-            HttpResponseMessage response = await client.GetAsync($"api/Product/GetAllProducts");
+            string storeSelectedCacheName = string.Format(CacheConstant.StoreSelectedCacheName, User.Identity.Name);
 
-            if (response.IsSuccessStatusCode)
+            if (_memoryCache.TryGetValue(storeSelectedCacheName, out IEnumerable<ReferenceDataDetail> storeSelectedCached) || (storeId != "undefined" || Convert.ToInt32(storeId) > 0))
             {
-                IEnumerable<ProductVM> products = JsonConvert.DeserializeObject<IEnumerable<ProductVM>>(await response.Content.ReadAsStringAsync());
-                
-                //var productList = new JsonResult(new { data = JsonConvert.SerializeObject(products) });
-                return Ok(JsonConvert.SerializeObject(products));
+                string storeIdSelected = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreIdCacheName).Value.ToString();
+                HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+                //Overwrite if storeId is defined
+                if (storeId != "undefined" && Convert.ToInt32(storeId) > 0)
+                    storeIdSelected = storeId;
+
+                HttpResponseMessage response = await client.GetAsync($"api/Product/GetAllProductsByStoreId/{storeIdSelected}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    IEnumerable<ProductVM> products = JsonConvert.DeserializeObject<IEnumerable<ProductVM>>(await response.Content.ReadAsStringAsync());
+
+                    //var productList = new JsonResult(new { data = JsonConvert.SerializeObject(products) });
+                    return Ok(JsonConvert.SerializeObject(products));
+                }
             }
 
             return new JsonResult(new { data = "" });
@@ -88,41 +108,6 @@ namespace WebApp.Controllers
             else
                 return BadRequest(clientResponse);
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> ProductSearch(ProductSearchFilter ProductSearchFilter)
-        //{
-        //    ProductVM productVM;
-
-        //    HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-        //    HttpResponseMessage response = await client.GetAsync($"api/Product/GetPagedList?{ProductSearchFilter.GetQueryString()}");
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        IEnumerable<ProductSearchResult> ProductSearchResults = JsonConvert.DeserializeObject<IEnumerable<ProductSearchResult>>(await response.Content.ReadAsStringAsync());
-        //        PagingMetadata pagingMetadata = JsonConvert.DeserializeObject<PagingMetadata>(response.Headers.GetValues(PagingConstant.PagingHeaderKey).FirstOrDefault());
-        //        PagedList<ProductSearchResult> result = new(ProductSearchResults.ToList(), pagingMetadata)
-        //        {
-        //            PageClickEvent = "ControlCenter.ProductChangePage({0})"
-        //        };
-
-        //        productVM = new()
-        //        {
-        //            ProductSearchFilter = ProductSearchFilter,
-        //            ProductSearchResults = result
-        //        };
-
-        //        return PartialView("_ProductSearchResult", productVM);
-        //    }
-
-        //    productVM = new()
-        //    {
-        //        ProductSearchFilter = ProductSearchFilter,
-        //        ProductSearchResults = new PagedList<ProductSearchResult>()
-        //    };
-
-        //    return PartialView("_ProductSearchResult", productVM);
-        //}
 
     }
 }

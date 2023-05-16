@@ -5,11 +5,7 @@
 <div id="orders_wrapper" class="mx-auto">
     <div class="row">
         <div class="mt-2">
-            @if (Model == null || !Model.OrderSearchResults.Any())
-            {
-                <h2>No Data Available</h2>
-            }
-            else
+            @if (Model != null && Model.OrderSearchResults.Any())
             {
                 @foreach (var item in Model.OrderSearchResults)
                 {

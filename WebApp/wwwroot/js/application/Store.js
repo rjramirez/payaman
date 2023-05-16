@@ -1,6 +1,26 @@
 ﻿
+/* Formatting function for row details - modify as you need */
+function format(d) {
+    // `d` is the original data object for the row
+    return (
+        '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+        '<tr>' +
+        '<td>ID:</td>' +
+        '<td>' +
+        d.id +
+        '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Date Created:</td>' +
+        '<td>' +
+        moment(d.createdDate).format('MMMM Do YYYY, h:mm:ss a') +
+        '</td>' +
+        '</tr>' +
+        '</table>'
+    );
+}
 
-let RightMenuBar = function () {
+let Store = function () {
     let storesEndPoint = "/Store/GetAllStores";
     let updateStoreEndPoint = "/Store/Update";
     let removeStoreEndPoint = "/Store/Remove";
@@ -35,17 +55,20 @@ let RightMenuBar = function () {
                                 App.addButtonSpinner($("#btnStoreAdd"));
 
                                 let storeNameAdd = $("#input_add_storename").val();
+                                let storeAddressAdd = $("#text_add_storeaddress").val();
 
                                 App.requiredTextValidator($('#input_add_storename').val(), $('#input_add_storename'));
+                                App.requiredTextValidator($('#text_add_storeaddress').val(), $('#text_add_storeaddress'));
 
-                                if (storeNameAdd == "") {
-                                    App.alert("error", "Name is required", "Error", undefined);
+                                if (storeNameAdd == "" || storeAddressAdd == "") {
+                                    App.alert("error", "Name and Address is required", "Error", undefined);
                                     App.removeButtonSpinner($("#btnStoreAdd"));
                                     return;
                                 }
 
                                 let model = {
                                     Name: storeNameAdd,
+                                    Address: storeAddressAdd
                                 }
 
                                 App.ajaxPost(addStoreEndPoint,

@@ -84,6 +84,7 @@ namespace WebAPI.Controllers
             var today = DateTime.UtcNow;
             storeFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
             storeFromDB.ModifiedBy = storeDetail.TransactionBy;
+            
 
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(storeDetail.TransactionBy);
 
@@ -110,8 +111,7 @@ namespace WebAPI.Controllers
             var today = DateTime.UtcNow;
             storeFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
             storeFromDB.ModifiedBy = StoreDetail.TransactionBy;
-
-            _RITSDBUnitOfWork.StoreRepository.Remove(storeFromDB);
+            storeFromDB.Active = false;
 
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(StoreDetail.TransactionBy);
 
@@ -131,13 +131,18 @@ namespace WebAPI.Controllers
         [HttpPost]
         [Route("Add")]
         [SwaggerOperation(Summary = "Add Store")]
-        public async Task<ActionResult<ClientResponse>> Add(StoreDetail StoreDetail)
+        public async Task<ActionResult<ClientResponse>> Add(StoreDetail storeDetail)
         {
-            var store = _mapper.Map(StoreDetail, new Store());
+            var store = _mapper.Map(storeDetail, new Store());
+
+            var today = DateTime.UtcNow;
+            store.CreatedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            store.CreatedBy = storeDetail.TransactionBy;
+            store.Active = true;
 
             await _RITSDBUnitOfWork.StoreRepository.AddAsync(store);
 
-            var result = await _RITSDBUnitOfWork.SaveChangesAsync(StoreDetail.TransactionBy);
+            var result = await _RITSDBUnitOfWork.SaveChangesAsync(storeDetail.TransactionBy);
 
             if (result == 0 || result == -1)
                 throw new Exception("Adding Store failed");

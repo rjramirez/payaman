@@ -128,8 +128,11 @@ namespace WebAPI.Controllers
         public async Task<ActionResult<ClientResponse>> Remove(OrderDetail orderDetail)
         {
             var orderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.Id == orderDetail.Id);
-
+            
+            var today = DateTime.UtcNow;
             orderFromDB.ModifiedBy = orderDetail.TransactionBy;
+            orderFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            orderFromDB.Active = false;
 
             _RITSDBUnitOfWork.OrderRepository.Remove(orderFromDB);
 
@@ -155,9 +158,12 @@ namespace WebAPI.Controllers
         {
             var order = _mapper.Map(orderDetail, new Order());
 
+            var today = DateTime.UtcNow;
+
             order.CashierId = Convert.ToInt16(orderDetail.TransactionBy);
             order.CreatedBy = orderDetail.TransactionBy;
-            order.CreatedDate = DateTime.UtcNow;
+            order.CreatedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            order.Active = true;
 
             await _RITSDBUnitOfWork.OrderRepository.AddAsync(order);
             await _RITSDBUnitOfWork.SaveChangesAsync(orderDetail.TransactionBy);
@@ -167,7 +173,8 @@ namespace WebAPI.Controllers
                 var orderItemForInsert = _mapper.Map(orderItem, new OrderItem());
                 orderItemForInsert.OrderId = order.Id;
                 orderItemForInsert.CreatedBy = orderDetail.TransactionBy;
-                orderItemForInsert.CreatedDate = DateTime.UtcNow;
+                orderItemForInsert.CreatedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                orderItemForInsert.Active = true;
 
                 await _RITSDBUnitOfWork.OrderItemRepository.AddAsync(orderItemForInsert);
             }

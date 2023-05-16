@@ -55,10 +55,10 @@ let Store = function () {
                                 App.addButtonSpinner($("#btnStoreAdd"));
 
                                 let storeNameAdd = $("#input_add_storename").val();
-                                let storeAddressAdd = $("#text_add_storeaddress").val();
+                                let storeAddressAdd = $("#input_add_storeaddress").val();
 
                                 App.requiredTextValidator($('#input_add_storename').val(), $('#input_add_storename'));
-                                App.requiredTextValidator($('#text_add_storeaddress').val(), $('#text_add_storeaddress'));
+                                App.requiredTextValidator($('#input_add_storeaddress').val(), $('#input_add_storeaddress'));
 
                                 if (storeNameAdd == "" || storeAddressAdd == "") {
                                     App.alert("error", "Name and Address is required", "Error", undefined);
@@ -149,7 +149,7 @@ let Store = function () {
 
                     $("#input_edit_storename").val(storeName);
                     $("#input_edit_storeid").val(storeId);
-                    $("#text_edit_storeaddress").val(storeAddress);
+                    $("#input_edit_storeaddress").val(storeAddress);
 
                     $("#editStoreModal").modal("show");
                 });
@@ -161,10 +161,10 @@ let Store = function () {
 
                     let storeId = $("#input_edit_storeid").val();
                     let storeNameUpdate = $("#input_edit_storename").val();
-                    let storeAddressUpdate = $("#text_edit_storeaddress").val();
+                    let storeAddressUpdate = $("#input_edit_storeaddress").val();
 
                     App.requiredTextValidator($('#input_edit_storename').val(), $('#input_edit_storename'));
-                    App.requiredTextValidator($('#text_edit_storeaddress').val(), $('#text_edit_storeaddress'));
+                    App.requiredTextValidator($('#input_edit_storeaddress').val(), $('#input_edit_storeaddress'));
 
                     if (storeNameUpdate == "") {
                         App.alert("error", "Name and Price is required", "Error", undefined);

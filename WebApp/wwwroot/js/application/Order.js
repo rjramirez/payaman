@@ -40,7 +40,9 @@ let Order = function () {
                         return receivedData;
                     },
                 },
-                dom: "Bfrtip",
+                dom: "<'top'<'row'<'col-sm-2'B><'col-sm-4'l><'col-sm-4'f>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-9'p>>",
                 columns: [
                     {
                         className: 'dt-control',

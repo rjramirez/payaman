@@ -134,6 +134,9 @@ namespace WebAPI.Controllers
             var product = _mapper.Map(productDetail, new Product());
 
             product.ModifiedBy = productDetail.TransactionBy;
+            product.Active = true;
+
+
 
             await _RITSDBUnitOfWork.ProductRepository.AddAsync(product);
 

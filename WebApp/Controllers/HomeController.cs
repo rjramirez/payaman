@@ -18,6 +18,7 @@ using WebApp.Models.Store;
 using Common.DataTransferObjects.AppSettings;
 using WebApp.Models.Cart;
 using Azure;
+using WebApp.Models.Receipt;
 
 namespace WebApp.Controllers
 {
@@ -74,7 +75,7 @@ namespace WebApp.Controllers
                 return View();
 
             string storeSelectedCacheName = string.Format(CacheConstant.StoreSelectedCacheName, User.Identity.Name);
-            CartVM cartVM = new();
+            ReceiptVM receiptVM = new();
 
             if (_memoryCache.TryGetValue(storeSelectedCacheName, out IEnumerable<ReferenceDataDetail> storeSelectedCached)) 
             {
@@ -85,10 +86,10 @@ namespace WebApp.Controllers
                 string storeName = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreNameCacheName).Value.ToString();
                 string storeAddress = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreAddressCacheName).Value.ToString();
                 
-                cartVM.StoreName = storeName;
-                cartVM.StoreAddress = storeAddress;
-                cartVM.CashierName = User.Identity.Name;
-                cartVM.TotalAmount = orderDetail.TotalAmount;
+                receiptVM.StoreName = storeName;
+                receiptVM.StoreAddress = storeAddress;
+                receiptVM.CashierName = User.Identity.Name;
+                receiptVM.TotalAmount = orderDetail.TotalAmount;
                 
                 //Save the order
                 HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
@@ -96,8 +97,8 @@ namespace WebApp.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    cartVM.OrderItemList = orderDetail.OrderItemList;
-                    cartVM.OrderId = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
+                    receiptVM.OrderItemList = orderDetail.OrderItemList;
+                    receiptVM.OrderId = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
 
                     //Save to memorycache
                     MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -106,7 +107,7 @@ namespace WebApp.Controllers
                     string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
                     _memoryCache.Remove(cartDetailsCacheName);
 
-                    _memoryCache.Set(cartDetailsCacheName, cartVM, cacheEntryOptions);
+                    _memoryCache.Set(cartDetailsCacheName, receiptVM, cacheEntryOptions);
                 }
 
             }
@@ -114,8 +115,8 @@ namespace WebApp.Controllers
             ClientResponse clientResponse = new ClientResponse()
             {
                 Message = "",
-                IsSuccessful = cartVM.OrderItemList.Any() ? true : false,
-                Data = cartVM
+                IsSuccessful = receiptVM.OrderItemList.Any() ? true : false,
+                Data = receiptVM
             };
 
             return Ok(clientResponse);
@@ -131,7 +132,16 @@ namespace WebApp.Controllers
         public IActionResult Receipt()
         {
             ViewBag.Title = "Receipt";
-            return View();
+
+            string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
+            if (_memoryCache.TryGetValue(cartDetailsCacheName, out CartVM cartVMCached))
+            {
+                return View(cartVMCached);
+            }
+
+            CartVM cartVM = new CartVM();
+
+            return View(cartVM);
         }
 
         [Authorize]

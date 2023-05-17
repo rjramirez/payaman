@@ -1,23 +1,20 @@
 ﻿
 /* Formatting function for row details - modify as you need */
 function format(d) {
-    // `d` is the original data object for the row
-    return (
-        '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-        '<tr>' +
-        '<td>ID:</td>' +
-        '<td>' +
-        d.Id +
-        '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Date Created:</td>' +
-        '<td>' +
-        moment(d.CreatedDate).format('MMMM Do YYYY, h:mm:ss a') +
-        '</td>' +
-        '</tr>' +
-        '</table>'
-    );
+
+    let templateDropdown =
+        '<table class="table-xs text-xs" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+        '<tr colspan="2">' +
+        '<td>Order Id: ' + d.Id + '</td>' +
+        '</tr>';
+
+    for (var x = 0; x < d.OrderItemList.length; x++) {
+        templateDropdown += '<tr><td>ID: ' + d.OrderItemList[x].ProductId + '</td><td>Name: ' + d.OrderItemList[x].ProductName + '</td></tr><tr><td>Quantity x Price: ' + d.OrderItemList[x].Quantity + " x ₱" + d.OrderItemList[x].ProductPrice + '</td>' + '<td>Sum: ₱' + d.OrderItemList[x].TotalAmount + '</td></tr>';
+    }
+
+    templateDropdown += '</table>';
+
+    return templateDropdown;
 }
 
 let Order = function () {
@@ -50,20 +47,23 @@ let Order = function () {
                         data: null,
                         defaultContent: '',
                     },
-                    { data: 'Name' },
                     {
-                        data: 'Price',
+                        data: 'CreatedDate',
+                        render: function (data) {
+                            return moment(data).format('MMMM Do YYYY, h:mm:ss a');
+                        } 
+
+                    },
+                    { data: 'CashierName' },
+                    {
+                        data: 'TotalAmount',
                         render: function (data) {
                             return '₱' + data;
-                        }
-                    },
+                        }                    },
                     {
                         data: 'Id',
                         render: function (data, type, row) {
-                            return '<button type="button" class="btn btn-success btn-xs btnOrderEdit" data-id="' + data + '"'
-                                + 'data-name="' + row.Name + '"'
-                                + 'data-price="' + row.Price + '"'
-                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnOrderRemove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
+                            return '<button type="button" class="btn btn-danger btn-xs btnOrderRemove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
@@ -88,74 +88,74 @@ let Order = function () {
 
 
             $('#orders_table').on('init.dt', function () {
-                $(".btnOrderEdit").prop("onclick", null).off("click");
-                $(".btnOrderEdit").click(function () {
-                    let orderId = $(this).data("id");
-                    let orderName = $(this).data("name");
-                    let orderPrice = $(this).data("price");
+                //$(".btnOrderEdit").prop("onclick", null).off("click");
+                //$(".btnOrderEdit").on("click", function () {
+                //    let orderId = $(this).data("id");
+                //    let orderName = $(this).data("name");
+                //    let orderPrice = $(this).data("price");
 
-                    $("#input_edit_ordername").val(orderName);
-                    $("#input_edit_orderprice").val(orderPrice);
-                    $("#input_edit_orderid").val(orderId);
+                //    $("#input_edit_ordername").val(orderName);
+                //    $("#input_edit_orderprice").val(orderPrice);
+                //    $("#input_edit_orderid").val(orderId);
 
-                    $("#editOrderModal").modal("show");
-                });
-
-
-                $("#btn_order_update").prop("onclick", null).off("click");
-                $("#btn_order_update").click(function () {
-                    App.addButtonSpinner($("#btn_order_update"));
-
-                    let orderId = $("#input_edit_orderid").val();
-                    let orderNameUpdate = $("#input_edit_ordername").val();
-                    let orderPriceUpdate = $("#input_edit_orderprice").val();
-
-                    App.requiredTextValidator($('#input_edit_ordername').val(), $('#input_edit_ordername'));
-                    App.requiredTextValidator($('#input_edit_orderprice').val(), $('#input_edit_orderprice'));
-
-                    if (orderNameUpdate == "" || orderPriceUpdate == "" || orderPriceUpdate == 0) {
-                        App.alert("error", "Name and Price is required", "Error", undefined);
-                        App.removeButtonSpinner($("#btn_order_update"));
-                        return;
-                    }
-
-                    let model = {
-                        Id: orderId,
-                        Name: orderNameUpdate,
-                        Price: orderPriceUpdate
-                    }
-
-                    App.ajaxPut(updateOrderEndPoint,
-                        JSON.stringify(model),
-                        'text',
-                        function (data) {
-                            var json = JSON.parse(data);
-
-                            if (json.isSuccessful) {
-                                App.removeButtonSpinner($("#btn_order_update"));
-                                $("#editOrderModal").modal("hide");
-                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Orders");
-                            }
-                            else {
-                                App.alert("error", json.message, "Error", undefined);
-
-                                setTimeout(function () {
-                                    App.removeButtonSpinner($("#btn_order_update"));
-                                }, 500);
-                            }
-
-                        },
-                        function (response) {
-                            console.log(response);
-                        }
-                    );
+                //    $("#editOrderModal").modal("show");
+                //});
 
 
-                });
+                //$("#btn_order_update").prop("onclick", null).off("click");
+                //$("#btn_order_update").click(function () {
+                //    App.addButtonSpinner($("#btn_order_update"));
+
+                //    let orderId = $("#input_edit_orderid").val();
+                //    let orderNameUpdate = $("#input_edit_ordername").val();
+                //    let orderPriceUpdate = $("#input_edit_orderprice").val();
+
+                //    App.requiredTextValidator($('#input_edit_ordername').val(), $('#input_edit_ordername'));
+                //    App.requiredTextValidator($('#input_edit_orderprice').val(), $('#input_edit_orderprice'));
+
+                //    if (orderNameUpdate == "" || orderPriceUpdate == "" || orderPriceUpdate == 0) {
+                //        App.alert("error", "Name and Price is required", "Error", undefined);
+                //        App.removeButtonSpinner($("#btn_order_update"));
+                //        return;
+                //    }
+
+                //    let model = {
+                //        Id: orderId,
+                //        Name: orderNameUpdate,
+                //        Price: orderPriceUpdate
+                //    }
+
+                //    App.ajaxPut(updateOrderEndPoint,
+                //        JSON.stringify(model),
+                //        'text',
+                //        function (data) {
+                //            var json = JSON.parse(data);
+
+                //            if (json.isSuccessful) {
+                //                App.removeButtonSpinner($("#btn_order_update"));
+                //                $("#editOrderModal").modal("hide");
+                //                App.alert("success", json.message, "Success", window.location.origin + "/Home/Orders");
+                //            }
+                //            else {
+                //                App.alert("error", json.message, "Error", undefined);
+
+                //                setTimeout(function () {
+                //                    App.removeButtonSpinner($("#btn_order_update"));
+                //                }, 500);
+                //            }
+
+                //        },
+                //        function (response) {
+                //            console.log(response);
+                //        }
+                //    );
+
+
+                //});
 
 
                 $(".btnOrderRemove").prop("onclick", null).off("click");
-                $(".btnOrderRemove").click(function () {
+                $(".btnOrderRemove").on("click", function () {
                     let orderId = $(this).data("id");
 
                     let param = {

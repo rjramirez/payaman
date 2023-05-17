@@ -28,8 +28,21 @@ namespace WebApp.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                IEnumerable<OrderVM> Orders = JsonConvert.DeserializeObject<IEnumerable<OrderVM>>(await response.Content.ReadAsStringAsync());
-                return Ok(JsonConvert.SerializeObject(Orders));
+                IEnumerable<OrderDetail> orders = JsonConvert.DeserializeObject<IEnumerable<OrderDetail>>(await response.Content.ReadAsStringAsync());
+
+                List<OrderVM> orderVM = orders.Select(o => new OrderVM()
+                {
+                    Id = o.Id,
+                    CashierId = o.CashierId,
+                    CashierName = o.CashierName,
+                    TotalAmount = o.TotalAmount,
+                    CreatedDate = o.CreatedDate,
+                    ModifiedDate = o.ModifiedDate,
+                    OrderItemList = o.OrderItemList,
+                    Active = o.Active
+                }).ToList();
+
+                return Ok(JsonConvert.SerializeObject(orders));
             }
 
             return new JsonResult(new { data = "" });

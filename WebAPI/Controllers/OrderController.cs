@@ -84,18 +84,46 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Get Order List")]
         public async Task<ActionResult<IEnumerable<OrderDetail>>> GetAll()
         {
-            IEnumerable<OrderDetail> Orders = await _RITSDBUnitOfWork.OrderRepository.FindAsync(
+            IEnumerable<OrderDetail> orders = await _RITSDBUnitOfWork.OrderRepository.FindAsync(
                         selector: c => new OrderDetail()
                         {
                             Id = c.Id,
+                            CashierId = c.CashierId,
+                            CashierName = c.Cashier.Username,
                             TotalAmount = c.TotalAmount,
                             CreatedDate = c.CreatedDate,
-                            ModifiedDate = c.ModifiedDate.Value
+                            ModifiedDate = c.ModifiedDate.Value,
+                            Active = c.Active
                         },
                         predicate: a => a.Active == true,
                         orderBy: o => o.OrderBy(a => a.Id));
 
-            return Ok(Orders);
+            List<OrderDetail> ordersList = orders.ToList();
+
+            //Order Item list
+            foreach (var orderDetail in ordersList)
+            {
+                IEnumerable<OrderItemDetail> orderItemList = await _RITSDBUnitOfWork.OrderItemRepository.FindAsync(
+                        selector: oi => new OrderItemDetail()
+                        {
+                            Id = oi.Id,
+                            OrderId = oi.OrderId,
+                            ProductId = oi.ProductId,
+                            Quantity = oi.Quantity,
+                            TotalAmount = oi.TotalAmount,
+                            ProductName = oi.Product.Name,
+                            ProductPrice = oi.Product.Price,
+                            CreatedDate = oi.CreatedDate,
+                            Active = oi.Active
+                        },
+                        predicate: a => a.Active == true && a.OrderId == orderDetail.Id,
+                        orderBy: o => o.OrderBy(a => a.Product.Name));
+
+                orderDetail.OrderItemList = orderItemList;
+            }
+
+
+            return Ok(ordersList);
         }
 
         [HttpPut]

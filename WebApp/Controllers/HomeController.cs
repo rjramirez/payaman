@@ -134,14 +134,14 @@ namespace WebApp.Controllers
             ViewBag.Title = "Receipt";
 
             string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
-            if (_memoryCache.TryGetValue(cartDetailsCacheName, out CartVM cartVMCached))
+            if (_memoryCache.TryGetValue(cartDetailsCacheName, out ReceiptVM receiptVMCached))
             {
-                return View(cartVMCached);
+                return View(receiptVMCached);
             }
 
-            CartVM cartVM = new CartVM();
+            ReceiptVM receiptVM = new ReceiptVM();
 
-            return View(cartVM);
+            return View(receiptVM);
         }
 
         [Authorize]

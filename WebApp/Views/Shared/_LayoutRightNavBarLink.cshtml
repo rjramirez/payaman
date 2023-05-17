@@ -8,7 +8,7 @@
     {
         @if (action.ToString() == "Index")
         {
-            <li class="nav-item d-none d-lg-block">
+            <li class="nav-item d-none d-sm-block">
                 <a class="nav-link btn-link" href="" id="icon_cart">
                     <em class="fa fa-shopping-cart"></em>
                     <span class="badge badge-danger navbar-badge" id="span_count_cart_items"></span>
@@ -16,20 +16,22 @@
             </li>
         }
 
-
-        <li class="nav-item d-none d-lg-block">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge" id="spanStoreCount">
-                </span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-md dropdown-menu-right" id="divBtnStoreContainer">
-            </div>
-        </li>
-        <li class="nav-item d-none d-lg-block">
-            <a class="nav-link" href="#">
+        @if (action.ToString() != "Cart")
+        {
+            <li class="nav-item d-none d-sm-block">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <em class="fa fa-store"></em><span class="badge badge-danger navbar-badge" id="spanStoreCount">
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right" id="divBtnStoreContainer">
+                </div>
+            </li>
+            <li class="nav-item d-none d-sm-block">
+                <a class="nav-link" href="#">
                 <span id="spanStoreNameSelected"></span>
-            </a>
-        </li>
+                </a>
+            </li>
+        }
 
     }
 </ul>

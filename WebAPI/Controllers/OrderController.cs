@@ -7,14 +7,13 @@ using Swashbuckle.AspNetCore.Annotations;
 using DataAccess.DBContexts.RITSDB.Models;
 using Common.Constants;
 using Common.DataTransferObjects.CollectionPaging;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using DataAccess.Repositories.RITSDB;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrderController : ControllerBase
     {
         private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;

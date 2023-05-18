@@ -1,17 +1,15 @@
 ﻿namespace WebAPI.Controllers;
 
+using Common.Constants;
 using Common.DataTransferObjects.AppUserDetails;
 using Common.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using WebAPI.Authorization;
 using WebAPI.Services.Interfaces;
-using Common.Constants;
 
 [Authorize]
 [ApiController]
@@ -32,6 +30,26 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest model)
     {
         AuthenticateResponse authDetails = await _userService.Authenticate(model);
+
+        // Create a new ClaimsIdentity with the desired claims
+        var claims = new[]
+        {
+                    new Claim(ClaimConstant.EmployeeId, authDetails.Id.ToString()),
+                    new Claim(ClaimTypes.Name, authDetails.Username),
+                    new Claim("UserGivenName", authDetails.FirstName + " " + authDetails.LastName),
+                    new Claim(ClaimConstant.ClientId, authDetails.Username),
+                    new Claim("Token", authDetails.Token),
+                    new Claim(ClaimTypes.Role, authDetails.Role.ToString())
+                };
+        var claimsIdentity = new ClaimsIdentity(
+            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var authProperties = new AuthenticationProperties { IsPersistent = true };
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity),
+            authProperties);
+
 
         return Ok(authDetails);
     }

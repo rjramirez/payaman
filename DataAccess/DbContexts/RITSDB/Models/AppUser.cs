@@ -19,6 +19,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
+        [Required]
         [StringLength(50)]
         public string LastName { get; set; }
         [Required]
@@ -28,6 +29,15 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public string Password { get; set; }
         public short RoleId { get; set; }
         public bool Active { get; set; }
+        [Precision(4)]
+        public DateTime CreatedDate { get; set; }
+        [Required]
+        [StringLength(128)]
+        public string CreatedBy { get; set; }
+        [Precision(4)]
+        public DateTime? ModifiedDate { get; set; }
+        [StringLength(128)]
+        public string ModifiedBy { get; set; }
 
         [ForeignKey("RoleId")]
         [InverseProperty("AppUsers")]

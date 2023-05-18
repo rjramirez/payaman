@@ -58,13 +58,12 @@ public class UserService : IUserService
 
         // Create a new ClaimsPrincipal with the custom identity
         var principal = new ClaimsPrincipal(identity);
-        response.Role = (Common.Entities.Role)role.Id;
+        response.Role = (Role)role.Id;
 
 
         // Set the HttpContext.User property to the custom principal
         _httpContextAccessor.HttpContext.User = principal;
         _httpContextAccessor.HttpContext.Items["User"] = user.Id;
-        
 
         return response;
     }
@@ -81,7 +80,12 @@ public class UserService : IUserService
 
         // hash password
         user.Password = BCrypt.HashPassword(model.Password);
+
+        user.CreatedDate = DateTime.UtcNow;
+        user.CreatedBy = model.Username;
         user.Active = true;
+
+        user.RoleId = 2; //Cashier by Default
 
         // save user
         await _RITSDBUnitOfWork.AppUserRepository.AddAsync(user);

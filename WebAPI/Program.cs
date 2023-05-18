@@ -16,6 +16,7 @@ using WebAPI.Services;
 using WebAPI.Services.Interfaces;
 using WebApi.Helpers;
 using DataAccess.UnitOfWorks.RITSDB;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 /*SERVICES CONTAINER*/
@@ -41,6 +42,14 @@ ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 //        builder.RequireScope("RITSApi.SystemLog");
 //    });
 //});
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = new PathString(clientSetting.AccessDeniedPath);
+    });
 
 //DBContext Registration
 builder.Services.AddDbContextPool<RITSDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB")));

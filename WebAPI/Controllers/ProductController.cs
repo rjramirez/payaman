@@ -3,15 +3,15 @@ using Common.DataTransferObjects.Product;
 using Common.DataTransferObjects.ReferenceData;
 using DataAccess.DBContexts.RITSDB.Models;
 using DataAccess.UnitOfWorks.RITSDB;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using WebAPI.Authorization;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Policy = "SystemData")]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;

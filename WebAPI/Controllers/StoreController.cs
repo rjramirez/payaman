@@ -5,12 +5,13 @@ using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using AutoMapper;
-using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StoreController : ControllerBase
     {
         private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;

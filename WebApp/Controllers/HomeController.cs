@@ -22,6 +22,7 @@ using WebApp.Models.Receipt;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
@@ -40,31 +41,33 @@ namespace WebApp.Controllers
             _clientSetting = clientSetting;
         }
 
-        [Authorize(Policy="Admin")]
         public IActionResult Index()
         {
             ViewBag.Title = "Dashboard";
             return View();
         }
 
-        [Authorize(Policy = "Admin")]
         public IActionResult Products()
         {
             ViewBag.Title = "Products";
             return View();
         }
 
-        [Authorize(Policy = "Admin")]
         public IActionResult Stores()
         {
             ViewBag.Title = "Stores";
             return View();
         }
 
-        [Authorize(Policy = "Admin")]
         public IActionResult Orders()
         {
             ViewBag.Title = "Orders";
+            return View();
+        }
+
+        public IActionResult Users()
+        {
+            ViewBag.Title = "Users";
             return View();
         }
 
@@ -122,7 +125,6 @@ namespace WebApp.Controllers
             return Ok(clientResponse);
         }
 
-        [Authorize]
         public IActionResult Cart()
         {
             ViewBag.Title = "Cart";
@@ -136,6 +138,8 @@ namespace WebApp.Controllers
             string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
             if (_memoryCache.TryGetValue(cartDetailsCacheName, out ReceiptVM receiptVMCached))
             {
+                _memoryCache.Remove(cartDetailsCacheName);
+
                 return View(receiptVMCached);
             }
 
@@ -144,7 +148,6 @@ namespace WebApp.Controllers
             return View(receiptVM);
         }
 
-        [Authorize]
         public IActionResult Dashboard()
         {
             ViewBag.Title = "Dashboard";
@@ -281,6 +284,7 @@ namespace WebApp.Controllers
             return RedirectToAction("StatusPage", "Error", await response.GetErrorMessage());
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] AppUserDetail appUserDetail)
         {
@@ -333,7 +337,7 @@ namespace WebApp.Controllers
 
         }
 
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] AppUserDetail appUserDetail)
         {
@@ -367,7 +371,7 @@ namespace WebApp.Controllers
         }
 
 
-
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();

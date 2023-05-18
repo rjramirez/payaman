@@ -1,1 +1,119 @@
-﻿
+﻿@section Styles
+    {
+    <link href="~/lib/datatables/css/datatables.min.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-md-5 mx-auto mt-2">
+        <table id="Users_table" class="display compact stripe mt-3" style="width:100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>FirstName</th>
+                    <th>LastName</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th>FirstName</th>
+                    <th>LastName</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+
+<!-- Add User Modal -->
+<div class="modal fade" id="userModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Sign Up</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="input_user_firstname">FirstName</label>
+                        <input type="text" class="form-control" id="input_user_firstname" placeholder="Juan">
+                    </div>
+                    <div class="form-group">
+                        <label for="input_user_lastname">LastName</label>
+                        <input type="text" class="form-control" id="input_user_lastname" placeholder="Dela Cruz">
+                    </div>
+                    <div class="form-group">
+                        <label for="input_user_username">Username</label>
+                        <input type="text" class="form-control" id="input_user_username" placeholder="cashierjuan">
+                    </div>
+                    <div class="form-group">
+                        <label for="input_user_password">Password</label>
+                        <input type="password" class="form-control" id="input_user_password">
+                    </div>
+                    <div class="form-group form-group-xs">
+                        <label for="selectRole">Role</label>
+                        <select class="form-control form-control-sm" id="selectRole">
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btn_user" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="inputEditUserFirstname">FirstName</label>
+                        <input type="text" class="form-control" id="inputEditUserFirstname" placeholder="Juan">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEditUserLastname">LastName</label>
+                        <input type="text" class="form-control" id="inputEditUserLastname" placeholder="Dela Cruz">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEditUsername">Username</label>
+                        <input type="text" class="form-control" id="inputEditUsername" placeholder="cash_juan">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEditUserPassword">Password</label>
+                        <input type="password" class="form-control" id="inputEditUserPassword">
+                    </div>
+                    <div class="form-group form-group-xs">
+                        <label for="selectRole">Role</label>
+                        <select class="form-control form-control-sm" id="selectRole">
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnUserUpdate" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script src="~/lib/datatables/js/datatables.min.js"></script>
+    <script src="~/js/application/User.js"></script>
+}

@@ -42,18 +42,17 @@
                 var controller = ViewContext.RouteData.Values["Controller"];
                 var action = ViewContext.RouteData.Values["Action"];
 
-                if (controller.ToString() == "Home" && action.ToString() == "index")
+                if (controller.ToString() == "Home" && action.ToString() == "Index")
                 {
                     <div class="mx-auto">
                         <!-- SEARCH FORM -->
-                        <form class="form-inline ml-0 ml-md-3">
+                        <form class="form-inline ml-0 ml-sm-3">
                             <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" type="search" placeholder="Search" id="input_search_bar" aria-label="Search">
+                                <input class="form-control form-control-navbar text-xs" type="search" placeholder="Search" id="input_search_bar" aria-label="Search">
                                 <span class="input-group-text form-control-navbar"><i class="fas fa-search"></i></span>
                             </div>
                         </form>
                     </div>
-
                 }
             }
             

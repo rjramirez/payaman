@@ -29,6 +29,10 @@ let User = function () {
     return {
         initializeUsersTable: function () {
 
+            App.singleSelect2("#selectUserAddRole");
+            App.singleSelect2("#selectEditUserRole");
+
+
             var tableUsers = $('#users_table').DataTable({
                 ajax:
                 {
@@ -54,21 +58,34 @@ let User = function () {
                             $("#btnUserAdd").click(function () {
                                 App.addButtonSpinner($("#btnUserAdd"));
 
-                                let userNameAdd = $("#input_add_username").val();
-                                let userAddressAdd = $("#input_add_useraddress").val();
 
-                                App.requiredTextValidator($('#input_add_username').val(), $('#input_add_username'));
-                                App.requiredTextValidator($('#input_add_useraddress').val(), $('#input_add_useraddress'));
+                                let userFirstnameAdd = $("#inputAddUserFirstname").val();
+                                let userLastnameAdd = $("#inputAddUserLastname").val();
+                                let userUsernameAdd = $("#inputAddUserUsername").val();
+                                let userPasswordAdd = $("#inputAddUserPassword").val();
+                                let userRoleAdd = $("#selectUserAddRole").val();
 
-                                if (userNameAdd == "" || userAddressAdd == "") {
-                                    App.alert("error", "Name and Address is required", "Error", undefined);
+                                
+                                App.requiredTextValidator(userFirstnameAdd, $('#inputAddUserFirstname'));
+                                App.requiredTextValidator(userLastnameAdd, $('#inputAddUserLastname'));
+                                App.requiredTextValidator(userUsernameAdd, $('#inputAddUserUsername'));
+                                App.requiredTextValidator(userPasswordAdd, $('#inputAddUserPassword'));
+                                App.requiredSingleSelectValidator(userRoleAdd, $("#selectUserAddRole"));
+
+
+                                if (userFirstnameAdd == "" || userLastnameAdd == "" || userUsernameAdd == "" ||
+                                    userPasswordAdd == "" || userRoleAdd == "") {
+                                    App.alert("error", "All fields are required", "Error", undefined);
                                     App.removeButtonSpinner($("#btnUserAdd"));
                                     return;
                                 }
 
                                 let model = {
-                                    Name: userNameAdd,
-                                    Address: userAddressAdd
+                                    FirstName: userFirstnameAdd,
+                                    LastName: userLastnameAdd,
+                                    Username: userFirstnameAdd,
+                                    Password: userPasswordAdd,
+                                    Role: userRoleAdd
                                 }
 
                                 App.ajaxPost(addUserEndPoint,
@@ -112,10 +129,12 @@ let User = function () {
                     {
                         data: 'id',
                         render: function (data, type, row) {
-                            return '<button type="button" class="btn btn-success btn-xs btnUserEdit" data-id="' + data + '"'
-                                + 'data-name="' + row.name + '"'
-                                + 'data-address="' + row.address + '"'
-                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnUserRemove" data-id=' + data + '><i class="fa-solid fa-trash"></i></button>'
+                            return '<button type="button" class="btn btn-success btn-xs btnUserEdit" data-userid="' + data + '"'
+                                + 'data-roleid="' + row.roleId + '"'
+                                + 'data-firstname="' + row.firstName + '"'
+                                + 'data-lastname="' + row.lastName + '"'
+                                + 'data-username="' + row.userName + '"'
+                                + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnUserRemove" data-appuserid=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
@@ -143,13 +162,18 @@ let User = function () {
 
                 $(".btnUserEdit").prop("onclick", null).off("click");
                 $(".btnUserEdit").click(function () {
-                    let userId = $(this).data("id");
-                    let userName = $(this).data("name");
-                    let userAddress = $(this).data("address");
+                    let userId = $(this).data("userid");
+                    let firstName = $(this).data("firstname");
+                    let lastName = $(this).data("lastname");
+                    let userName = $(this).data("username");
+                    let roleId = $(this).data("roleid");
 
-                    $("#input_edit_username").val(userName);
-                    $("#input_edit_userid").val(userId);
-                    $("#input_edit_useraddress").val(userAddress);
+
+                    $("#inputEditUserId").val(userId);
+                    $("#inputEditRoleId").val(roleId);
+                    $("#inputEditUserFirstname").val(firstName);
+                    $("#inputEditUserLastname").val(lastName);
+                    $("#inputEditUsername").val(userName);
 
                     $("#editUserModal").modal("show");
                 });
@@ -159,23 +183,34 @@ let User = function () {
                 $("#btnUserUpdate").click(function () {
                     App.addButtonSpinner($("#btnUserUpdate"));
 
-                    let userId = $("#input_edit_userid").val();
-                    let userNameUpdate = $("#input_edit_username").val();
-                    let userAddressUpdate = $("#input_edit_useraddress").val();
+                    let userId = $("#inputEditUserId").val();
+                    let userFirstnameUpdate = $("#inputEditUserFirstname").val();
+                    let userLastnameUpdate = $("#inputEditUserLastname").val();
+                    let userUsernameUpdate = $("#inputEditUsername").val();
+                    let userPasswordUpdate = $("#inputEditUserPassword").val();
+                    let userRoleUpdate = $("#selectEditUserRole").val();
 
-                    App.requiredTextValidator($('#input_edit_username').val(), $('#input_edit_username'));
-                    App.requiredTextValidator($('#input_edit_useraddress').val(), $('#input_edit_useraddress'));
 
-                    if (userNameUpdate == "") {
-                        App.alert("error", "Name and Price is required", "Error", undefined);
+                    App.requiredTextValidator(userFirstnameUpdate, $('#inputEditUserFirstname'));
+                    App.requiredTextValidator(userLastnameUpdate, $('#inputEditUserLastname'));
+                    App.requiredTextValidator(userUsernameUpdate, $('#inputEditUsername'));
+                    App.requiredTextValidator(userPasswordUpdate, $('#inputEditUserPassword'));
+                    App.requiredSingleSelectValidator(userRoleUpdate, $("#selectEditUserRole"));
+
+                    if (userFirstnameUpdate == "" || userLastnameUpdate == "" || userUsernameUpdate == "" ||
+                        userPasswordUpdate == "" || userRoleUpdate == "") {
+                        App.alert("error", "All fields are required", "Error", undefined);
                         App.removeButtonSpinner($("#btnUserUpdate"));
                         return;
                     }
 
                     let model = {
-                        Id: userId,
-                        Name: userNameUpdate,
-                        Address: userAddressUpdate
+                        AppUserId: userId,
+                        FirstName: userFirstnameUpdate,
+                        LastName: userLastnameUpdate,
+                        Username: userFirstnameUpdate,
+                        Password: userPasswordUpdate,
+                        Role: userRoleUpdate
                     }
 
                     App.ajaxPut(updateUserEndPoint,
@@ -209,36 +244,49 @@ let User = function () {
 
                 $(".btnUserRemove").prop("onclick", null).off("click");
                 $(".btnUserRemove").click(function () {
-                    let userId = $(this).data("id");
 
-                    let param = {
-                        Id: userId
-                    }
+                    let appUserId = $(this).data("appuserid");
 
-                    App.ajaxPost(removeUserEndPoint,
-                        JSON.stringify(param),
-                        'text',
-                        function (data) {
-                            var json = JSON.parse(data);
-
-                            if (json.isSuccessful) {
-                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Users");
-
-                            }
-                            else {
-                                App.alert("error", json.message, "Error", undefined);
-
-                                setTimeout(function () {
-                                }, 500);
-                            }
-
-                        },
-                        function (response) {
-                            console.log(response);
-                        }
+                    App.confirmDialogueModal("Message",
+                        "Are you sure you want to delete this user?",
+                        "bg-warning",
+                        User.deleteUser(appUserId),
+                        undefined,
+                        undefined
                     );
+
+
                 });
             });
+        },
+        deletUser: function (appUserId) {
+
+            let param = {
+                AppUserId: appUserId
+            }
+
+            App.ajaxPost(removeUserEndPoint,
+                JSON.stringify(param),
+                'text',
+                function (data) {
+                    var json = JSON.parse(data);
+
+                    if (json.isSuccessful) {
+                        App.alert("success", json.message, "Success", window.location.origin + "/Home/Users");
+
+                    }
+                    else {
+                        App.alert("error", json.message, "Error", undefined);
+
+                        setTimeout(function () {
+                        }, 500);
+                    }
+
+                },
+                function (response) {
+                    console.log(response);
+                }
+            );
         }
     }
 }();

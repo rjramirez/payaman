@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
                 {
                     BuildVersion = e.BuildVersion,
                     DateCreated = e.DateCreated,
-                    ErrorId = e.ErrorId,
+                    ErrorLogId = e.ErrorLogId,
                     Message = e.Message,
                     Path = e.Path,
                     Source = e.Source,
@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
                     StackTraceId = e.StackTraceId,
                     UserIdentity = e.UserIdentity
                 },
-                predicate: e => e.ErrorId == id);
+                predicate: e => e.ErrorLogId == id);
 
             if (errorLogDetail == null)
             {
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
             PagedList<ErrorLogDetail> errorLogDetails = await _RITSDBUnitOfWork.ErrorLogRepository.GetPagedListAsync(
                 selector: e => new ErrorLogDetail()
                 {
-                    ErrorId = e.ErrorId,
+                    ErrorLogId = e.ErrorLogId,
                     BuildVersion = e.BuildVersion,
                     DateCreated = e.DateCreated,
                     Message = e.Message,

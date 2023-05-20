@@ -59,4 +59,8 @@
     <Folder Include="wwwroot\lib\datatables\css\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Views\Modal\_ConfirmDialogueModal.cshtml" />
+  </ItemGroup>
+
 </Project>

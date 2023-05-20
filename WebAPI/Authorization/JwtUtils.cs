@@ -33,10 +33,10 @@ public class JwtUtils : IJwtUtils
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[] { 
-                new Claim("id", user.Id.ToString()),
+                new Claim("id", user.AppUserId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimConstant.ClientId, user.Username),
-                new Claim(ClaimTypes.Role, ((Role)user.RoleId).ToString())
+                new Claim(ClaimTypes.Role, ((Role)user.AppUserRoleId).ToString())
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

@@ -2,7 +2,7 @@
 {
     public class ErrorLogDetail
     {
-        public int ErrorId { get; set; }
+        public int ErrorLogId { get; set; }
 
         public string Message { get; set; }
 

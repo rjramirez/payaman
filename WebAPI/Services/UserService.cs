@@ -45,25 +45,25 @@ public class UserService : IUserService
         AuthenticateResponse response = _mapper.Map<AuthenticateResponse>(user);
         response.Token = _jwtUtils.GenerateToken(user);
 
-        var role = await _RITSDBUnitOfWork.AppUserRoleRepository.SingleOrDefaultAsync(x => x.Id == user.RoleId);
+        var role = await _RITSDBUnitOfWork.AppUserRoleRepository.SingleOrDefaultAsync(x => x.AppUserRoleId == user.AppUserRoleId);
 
         // Create a new ClaimsIdentity with the desired claims
         var claims = new[]
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimConstant.ClientId, user.Id.ToString()),
+            new Claim(ClaimConstant.ClientId, user.AppUserId.ToString()),
             new Claim(ClaimTypes.Role, role.Name)
         };
         var identity = new ClaimsIdentity(claims, "User");
 
         // Create a new ClaimsPrincipal with the custom identity
         var principal = new ClaimsPrincipal(identity);
-        response.Role = (Role)role.Id;
+        response.Role = (Role)role.AppUserRoleId;
 
 
         // Set the HttpContext.User property to the custom principal
         _httpContextAccessor.HttpContext.User = principal;
-        _httpContextAccessor.HttpContext.Items["User"] = user.Id;
+        _httpContextAccessor.HttpContext.Items["User"] = user.AppUserId;
 
         return response;
     }
@@ -85,7 +85,7 @@ public class UserService : IUserService
         user.CreatedBy = model.Username;
         user.Active = true;
 
-        user.RoleId = 2; //Cashier by Default
+        user.AppUserRoleId = 2; //Cashier by Default
 
         // save user
         await _RITSDBUnitOfWork.AppUserRepository.AddAsync(user);
@@ -148,13 +148,13 @@ public class UserService : IUserService
     private async Task<ReferenceDataDetail> getUserRoleByName(string name)
     {
         var user = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(x => x.Username == name);
-        var userRole = await _RITSDBUnitOfWork.AppUserRoleRepository.SingleOrDefaultAsync(x => x.Id == user.RoleId);
+        var userRole = await _RITSDBUnitOfWork.AppUserRoleRepository.SingleOrDefaultAsync(x => x.AppUserRoleId == user.AppUserRoleId);
 
         if (user == null) throw new KeyNotFoundException("User not found");
 
         ReferenceDataDetail referenceData = new()
         {
-            Value = user.RoleId,
+            Value = user.AppUserRoleId,
             Name = userRole.Name,
             Active = true,
         };
@@ -164,7 +164,7 @@ public class UserService : IUserService
 
     private async Task<AppUser> getUser(int id)
     {
-        var user = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(x=> x.Id == id);
+        var user = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(x=> x.AppUserId == id);
         if (user == null) throw new KeyNotFoundException("User not found");
         return user;
     }

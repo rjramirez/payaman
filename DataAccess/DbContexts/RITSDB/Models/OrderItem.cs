@@ -10,7 +10,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
     public partial class OrderItem
     {
         [Key]
-        public int Id { get; set; }
+        public int OrderItemId { get; set; }
         public int OrderId { get; set; }
         public short ProductId { get; set; }
         public short Quantity { get; set; }

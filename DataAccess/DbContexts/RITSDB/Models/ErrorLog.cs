@@ -10,7 +10,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
     public partial class ErrorLog
     {
         [Key]
-        public int ErrorId { get; set; }
+        public int ErrorLogId { get; set; }
         [Required]
         [StringLength(4000)]
         public string Message { get; set; }

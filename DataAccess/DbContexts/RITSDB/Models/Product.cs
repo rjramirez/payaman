@@ -15,7 +15,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         }
 
         [Key]
-        public short Id { get; set; }
+        public short ProductId { get; set; }
         [Required]
         [StringLength(30)]
         public string Name { get; set; }

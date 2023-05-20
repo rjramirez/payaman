@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
             if (orderSearchFilter.StoreId == 0)
             {
                 int firstStoreId = Convert.ToInt32(await _RITSDBUnitOfWork.StoreRepository.FirstOrDefaultAsync(
-                        selector: x => x.Id,
+                        selector: x => x.StoreId,
                         predicate: x => x.Active == true));
 
                 orderSearchFilter.StoreId = firstStoreId;
@@ -43,8 +43,8 @@ namespace WebAPI.Controllers
                 .GetPagedListAsync(
                         selector: o => new OrderSearchResult()
                         {
-                            Id = o.Id,
-                            ProductId = o.Id,
+                            Id = o.ProductId,
+                            ProductId = o.ProductId,
                             ProductName = o.Name,
                             ProductPrice = o.Price,
                             Quantity = 0,
@@ -86,7 +86,7 @@ namespace WebAPI.Controllers
             IEnumerable<OrderDetail> orders = await _RITSDBUnitOfWork.OrderRepository.FindAsync(
                         selector: c => new OrderDetail()
                         {
-                            Id = c.Id,
+                            Id = c.OrderId,
                             CashierId = c.CashierId,
                             CashierName = c.Cashier.Username,
                             TotalAmount = c.TotalAmount,
@@ -95,7 +95,7 @@ namespace WebAPI.Controllers
                             Active = c.Active
                         },
                         predicate: a => a.Active == true,
-                        orderBy: o => o.OrderBy(a => a.Id));
+                        orderBy: o => o.OrderBy(a => a.OrderId));
 
             List<OrderDetail> ordersList = orders.ToList();
 
@@ -105,7 +105,7 @@ namespace WebAPI.Controllers
                 IEnumerable<OrderItemDetail> orderItemList = await _RITSDBUnitOfWork.OrderItemRepository.FindAsync(
                         selector: oi => new OrderItemDetail()
                         {
-                            Id = oi.Id,
+                            Id = oi.OrderId,
                             OrderId = oi.OrderId,
                             ProductId = oi.ProductId,
                             Quantity = oi.Quantity,
@@ -130,7 +130,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Update Order")]
         public async Task<ActionResult<ClientResponse>> UpdateOrder(OrderDetail orderDetail)
         {
-            var orderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.Id == orderDetail.Id);
+            var orderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.OrderId == orderDetail.Id);
 
             var order = _mapper.Map(orderDetail, orderFromDB);
 
@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Remove Order")]
         public async Task<ActionResult<ClientResponse>> Remove(OrderDetail orderDetail)
         {
-            var orderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.Id == orderDetail.Id);
+            var orderFromDB = await _RITSDBUnitOfWork.OrderRepository.SingleOrDefaultAsync(x => x.OrderId == orderDetail.Id);
             
             var today = DateTime.UtcNow;
             orderFromDB.ModifiedBy = orderDetail.TransactionBy;
@@ -198,7 +198,7 @@ namespace WebAPI.Controllers
             foreach (var orderItem in orderDetail.OrderItemList)
             {
                 var orderItemForInsert = _mapper.Map(orderItem, new OrderItem());
-                orderItemForInsert.OrderId = order.Id;
+                orderItemForInsert.OrderId = order.OrderId;
                 orderItemForInsert.CreatedBy = orderDetail.TransactionBy;
                 orderItemForInsert.CreatedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 orderItemForInsert.Active = true;
@@ -213,7 +213,7 @@ namespace WebAPI.Controllers
                 throw new Exception("Adding Order failed");
 
 
-            return Ok(order.Id);
+            return Ok(order.OrderId);
         }
 
     }

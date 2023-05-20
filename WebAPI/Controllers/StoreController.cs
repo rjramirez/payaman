@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
             IEnumerable<StoreDetail> Stores = await _RITSDBUnitOfWork.StoreRepository.FindAsync(
                         selector: c => new StoreDetail()
                         {
-                            Id = c.Id,
+                            Id = c.StoreId,
                             Name = c.Name,
                             Description = c.Description,
                             Image = c.Image,
@@ -78,7 +78,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Update Store")]
         public async Task<ActionResult<ClientResponse>> UpdateStore(StoreDetail storeDetail)
         {
-            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == storeDetail.Id);
+            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.StoreId == storeDetail.Id);
 
             _mapper.Map(storeDetail, storeFromDB);
 
@@ -107,7 +107,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Remove Store")]
         public async Task<ActionResult<ClientResponse>> Remove(StoreDetail StoreDetail)
         {
-            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.Id == StoreDetail.Id);
+            var storeFromDB = await _RITSDBUnitOfWork.StoreRepository.SingleOrDefaultAsync(x => x.StoreId == StoreDetail.Id);
 
             var today = DateTime.UtcNow;
             storeFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));

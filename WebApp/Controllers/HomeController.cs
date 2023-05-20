@@ -16,8 +16,6 @@ using WebApp.Models.Order;
 using Common.DataTransferObjects.Store;
 using WebApp.Models.Store;
 using Common.DataTransferObjects.AppSettings;
-using WebApp.Models.Cart;
-using Azure;
 using WebApp.Models.Receipt;
 
 namespace WebApp.Controllers

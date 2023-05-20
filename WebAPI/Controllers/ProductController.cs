@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
             IEnumerable<ProductDetail> products = await _RITSDBUnitOfWork.ProductRepository.FindAsync(
                         selector: c => new ProductDetail()
                         {
-                            Id = c.Id,
+                            Id = c.ProductId,
                             Name = c.Name,
                             Price = c.Price.ToString(),
                             Description = c.Description,
@@ -79,7 +79,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Update Product")]
         public async Task<ActionResult<ClientResponse>> UpdateProduct(ProductDetail productDetail)
         {
-            var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.Id == productDetail.Id);
+            var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.ProductId == productDetail.Id);
 
             var product = _mapper.Map(productDetail, productFromDB);
 
@@ -103,7 +103,7 @@ namespace WebAPI.Controllers
         [SwaggerOperation(Summary = "Remove Product")]
         public async Task<ActionResult<ClientResponse>> Remove(ProductDetail productDetail)
         {
-            var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.Id == productDetail.Id);
+            var productFromDB = await _RITSDBUnitOfWork.ProductRepository.SingleOrDefaultAsync(x => x.ProductId == productDetail.Id);
 
             productFromDB.ModifiedBy = productDetail.TransactionBy;
             productFromDB.ModifiedDate = Convert.ToDateTime(DateTime.UtcNow.ToString("MMMM dd, yyyy H:m"));

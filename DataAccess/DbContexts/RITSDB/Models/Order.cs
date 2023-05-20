@@ -15,7 +15,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         }
 
         [Key]
-        public int Id { get; set; }
+        public int OrderId { get; set; }
         public short CashierId { get; set; }
         [Column(TypeName = "decimal(10, 2)")]
         public decimal TotalAmount { get; set; }

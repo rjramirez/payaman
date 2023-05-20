@@ -259,6 +259,43 @@ var App = function () {
                 control.removeClass("is-invalid");
             }
             //return validationMessages;
-        }
+        },
+        confirmDialogueModal: function (_modalHeaderMessage, _modalBodyMessage, _bgClass, _onConfirmationFn, _onDenyFn, _onConfirmationParam) {
+            $("#modal-confirmDialogue").modal("show");
+
+            $("#modal-confirmDialogue-header").find("h4").text(_modalHeaderMessage);
+            $("#modal-confirmDialogue-header").addClass(_bgClass);
+            $("#modal-confirmDialogue-body").find("p").text(_modalBodyMessage);
+
+            $("#modal-confirmDialogue-btnConfirm").on("click", function (e) {
+                e.preventDefault();
+
+                if (_onConfirmationFn != undefined) {
+
+                    if (_onConfirmationParam != undefined) {
+                        _onConfirmationFn(_onConfirmationParam);
+                    }
+                    else {
+                        _onConfirmationFn();
+                    }
+
+                    $("#modal-confirmDialogue").modal("hide");
+                }
+                _onConfirmationFn = undefined;
+                _onDenyFn = undefined;
+                _onConfirmationParam = undefined;
+            });
+
+            $("#modal-confirmDialogue-btnCancel").on("click", function (e) {
+                e.preventDefault();
+
+                if (_onDenyFn != undefined) {
+                    _onDenyFn();
+                }
+                _onConfirmationFn = undefined;
+                _onDenyFn = undefined;
+                _onConfirmationParam = undefined;
+            });
+        },
     }
 }();

@@ -35,9 +35,9 @@ namespace DataAccess.DBContexts.RITSDB
         {
             modelBuilder.Entity<AppUser>(entity =>
             {
-                entity.HasOne(d => d.Role)
+                entity.HasOne(d => d.AppUserRole)
                     .WithMany(p => p.AppUsers)
-                    .HasForeignKey(d => d.RoleId)
+                    .HasForeignKey(d => d.AppUserRoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AppUser_Role");
             });

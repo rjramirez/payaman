@@ -15,14 +15,14 @@ namespace DataAccess.DBContexts.RITSDB.Models
         }
 
         [Key]
-        public short Id { get; set; }
+        public short AppUserRoleId { get; set; }
         [Required]
         [StringLength(10)]
         public string Name { get; set; }
         [StringLength(20)]
         public string Description { get; set; }
 
-        [InverseProperty("Role")]
+        [InverseProperty("AppUserRole")]
         public virtual ICollection<AppUser> AppUsers { get; set; }
     }
 }

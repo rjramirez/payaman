@@ -1,16 +1,14 @@
-﻿using Common.DataTransferObjects._Base;
-using System.Text.Json.Serialization;
+﻿using Common.DataTransferObjects.ReferenceData;
 
-namespace Common.DataTransferObjects.AppUserDetails
+namespace WebApp.Models.AppUser
 {
-    public class AppUserDetail : SaveDTOExtension
+    public class AppUserVM
     {
         public int AppUserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Username { get; set; }
+        public ReferenceDataDetail Role { get; set; }
         public string Password { get; set; }
-        public string TransactionBy { get; set; }
-
     }
 }

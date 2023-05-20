@@ -15,7 +15,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         }
 
         [Key]
-        public short Id { get; set; }
+        public short AppUserId { get; set; }
         [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
@@ -27,7 +27,7 @@ namespace DataAccess.DBContexts.RITSDB.Models
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }
-        public short RoleId { get; set; }
+        public short AppUserRoleId { get; set; }
         public bool Active { get; set; }
         [Precision(4)]
         public DateTime CreatedDate { get; set; }
@@ -39,9 +39,9 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [StringLength(128)]
         public string ModifiedBy { get; set; }
 
-        [ForeignKey("RoleId")]
+        [ForeignKey("AppUserRoleId")]
         [InverseProperty("AppUsers")]
-        public virtual AppUserRole Role { get; set; }
+        public virtual AppUserRole AppUserRole { get; set; }
         [InverseProperty("Cashier")]
         public virtual ICollection<Order> Orders { get; set; }
     }

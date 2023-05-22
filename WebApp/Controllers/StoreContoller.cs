@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using WebApp.Models.Store;
+using IdentityModel.Client;
+using WebApp.Services;
 
 namespace WebApp.Controllers
 {
@@ -24,6 +26,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> GetAllStores()
         {
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
             HttpResponseMessage response = await client.GetAsync($"api/Store/GetAllStores");
 
             if (response.IsSuccessStatusCode)
@@ -39,9 +42,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Update([FromBody] StoreDetail storeDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PutAsync($"api/Store/Update", storeDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
@@ -56,9 +63,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Remove([FromBody] StoreDetail storeDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PostAsync($"api/Store/Remove", storeDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
@@ -73,9 +84,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Add([FromBody] StoreDetail storeDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            storeDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PostAsync($"api/Store/Add", storeDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());

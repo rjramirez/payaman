@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System.Security.Claims;
 using Common.DataTransferObjects.AppUserDetails;
 using WebApp.Models.AppUser;
+using IdentityModel.Client;
+using WebApp.Services;
 
 namespace WebApp.Controllers
 {
@@ -24,6 +26,10 @@ namespace WebApp.Controllers
         public async Task<IActionResult> GetAllAppUsers()
         {
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.GetAsync($"api/AppUser/GetAllAppUsers");
 
             if (response.IsSuccessStatusCode)
@@ -45,9 +51,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Update([FromBody] AppUserDetail appUserDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            appUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            appUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PutAsync($"api/AppUser/Update", appUserDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
@@ -58,14 +68,18 @@ namespace WebApp.Controllers
                 return BadRequest(clientResponse);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Remove([FromBody] AppUserDetail AppUserDetail)
+        [HttpDelete]
+        public async Task<IActionResult> Remove([FromBody] AppUserDetail appUserDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            AppUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            appUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
-            HttpResponseMessage response = await client.PostAsync($"api/AppUser/Remove", AppUserDetail.GetStringContent());
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
+            HttpResponseMessage response = await client.PostAsync($"api/AppUser/Remove", appUserDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
 
@@ -79,9 +93,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Add([FromBody] AppUserDetail AppUserDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            AppUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            AppUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PostAsync($"api/AppUser/Add", AppUserDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());

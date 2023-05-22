@@ -17,6 +17,9 @@ using WebAPI.Services.Interfaces;
 using WebApi.Helpers;
 using DataAccess.UnitOfWorks.RITSDB;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 /*SERVICES CONTAINER*/
@@ -32,6 +35,14 @@ ClientSetting clientSetting = new();
 builder.Configuration.Bind("ClientSetting", clientSetting);
 builder.Services.AddSingleton(clientSetting);
 
+JwtSettings jwtSetting = new();
+builder.Configuration.Bind("JwtSettings", jwtSetting);
+builder.Services.AddSingleton(jwtSetting);
+
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection("JwtSettings")
+);
+
 ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 
 //Api Policy Authorization
@@ -45,11 +56,32 @@ ApiServices.ConfigureServices(builder.Services, identityServerApiDefinition);
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => {
+    .AddCookie(options =>
+    {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
         options.AccessDeniedPath = new PathString(clientSetting.AccessDeniedPath);
     });
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = jwtSetting.Issuer,
+        ValidAudience = jwtSetting.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey
+        (Encoding.UTF8.GetBytes(jwtSetting.Secret)),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = false,
+        ValidateIssuerSigningKey = true
+    };
+});
 
 //DBContext Registration
 builder.Services.AddDbContextPool<RITSDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("RITSDB")));
@@ -84,13 +116,11 @@ var app = builder.Build();
         .AllowAnyMethod()
         .AllowAnyHeader());
 
-    // global error handler
-    //app.UseMiddleware<ErrorHandlerMiddleware>();
+    //global error handler
+    app.UseMiddleware<ErrorHandlerMiddleware>();
 
-    // custom jwt auth middleware
-    //app.UseMiddleware<JwtMiddleware>();
-
-    //app.MapControllers();
+    //custom jwt auth middleware
+    app.UseMiddleware<JwtMiddleware>();
 }
 
 app.UseExceptionHandler(errorLogger =>

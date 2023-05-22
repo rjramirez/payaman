@@ -17,6 +17,8 @@ using Common.DataTransferObjects.Store;
 using WebApp.Models.Store;
 using Common.DataTransferObjects.AppSettings;
 using WebApp.Models.Receipt;
+using IdentityModel.Client;
+using WebApp.Services;
 
 namespace WebApp.Controllers
 {
@@ -82,7 +84,7 @@ namespace WebApp.Controllers
             {
 
                 var ident = User.Identity as ClaimsIdentity;
-                orderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+                orderDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
                 string storeName = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreNameCacheName).Value.ToString();
                 string storeAddress = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreAddressCacheName).Value.ToString();
@@ -91,9 +93,13 @@ namespace WebApp.Controllers
                 receiptVM.StoreAddress = storeAddress;
                 receiptVM.CashierName = User.Identity.Name;
                 receiptVM.TotalAmount = orderDetail.TotalAmount;
-                
+
                 //Save the order
                 HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+                
+                var token = ClaimService.GetClaimStringValue(User, "Token");
+                client.SetBearerToken(token);
+
                 HttpResponseMessage response = await client.PostAsync($"api/Order/Add", orderDetail.GetStringContent());
 
                 if (response.IsSuccessStatusCode)
@@ -148,17 +154,27 @@ namespace WebApp.Controllers
 
         public IActionResult Dashboard()
         {
+            string cartDetailsCacheName = string.Format(CacheConstant.CartDetailsCacheName, User.Identity.Name);
+            if (_memoryCache.TryGetValue(cartDetailsCacheName, out ReceiptVM receiptVMCached))
+            {
+                _memoryCache.Remove(cartDetailsCacheName);
+            }
+
             ViewBag.Title = "Dashboard";
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> MenuRightBarStores(StoreVM storeVM)
-         {
+        {
             MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(_clientSetting.CacheExpirationMinutes));
             
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.GetAsync($"api/Store/GetAllStores");
             
             if (response.IsSuccessStatusCode)
@@ -258,6 +274,10 @@ namespace WebApp.Controllers
 
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.GetAsync($"api/Order/Search?{orderSearchFilter.GetQueryString()}");
             if (response.IsSuccessStatusCode)
             {
@@ -289,17 +309,17 @@ namespace WebApp.Controllers
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
             var loginRequest = _mapper.Map<AuthenticateRequest>(appUserDetail);
-            var response = await client.PostAsync($"api/User/Authenticate", loginRequest.GetStringContent());
+            var response = await client.PostAsync($"api/AppUser/Authenticate", loginRequest.GetStringContent());
 
             AuthenticateResponse authResponse = JsonConvert.DeserializeObject<AuthenticateResponse>(await response.Content.ReadAsStringAsync());
             if (response.IsSuccessStatusCode)
             {
                 AuthenticateResponse authDetails = JsonConvert.DeserializeObject<AuthenticateResponse>(await response.Content.ReadAsStringAsync());
 
-                // Create a new ClaimsIdentity with the desired claims
+                //Create a new ClaimsIdentity with the desired claims
                 var claims = new[]
                 {
-                    new Claim(ClaimConstant.EmployeeId, authDetails.Id.ToString()),
+                    new Claim(ClaimConstant.AppUserId, authDetails.AppUserId.ToString()),
                     new Claim(ClaimTypes.Name, authDetails.Username),
                     new Claim("UserGivenName", authDetails.FirstName + " " + authDetails.LastName),
                     new Claim(ClaimConstant.ClientId, authDetails.Username),
@@ -342,7 +362,7 @@ namespace WebApp.Controllers
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
             var registerRequest = _mapper.Map<RegisterRequest>(appUserDetail);
-            var response = await client.PostAsync($"api/User/Register", registerRequest.GetStringContent());
+            var response = await client.PostAsync($"api/AppUser/Register", registerRequest.GetStringContent());
 
             if (response.IsSuccessStatusCode)
             {

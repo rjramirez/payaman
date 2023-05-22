@@ -3,6 +3,8 @@ namespace WebAPI.Authorization;
 using Common.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Security.Claims;
+using WebAPI.Services;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
@@ -22,9 +24,11 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
             return;
 
         // authorization
-        var userItem = (User)context.HttpContext.Items["User"];
         var user = context.HttpContext.User;
-        if (userItem == null || (_roles.Any() && !_roles.Contains(userItem.Role)))
+        var userRole = ClaimService.GetClaimStringValue(user, ClaimTypes.Role).ToString();
+        var isInRole = user.IsInRole(userRole);
+
+        if (!isInRole)
         {
             // not logged in or role not authorized
             context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };

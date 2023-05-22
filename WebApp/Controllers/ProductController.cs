@@ -4,6 +4,7 @@ using Common.DataTransferObjects.Order;
 using Common.DataTransferObjects.Product;
 using Common.DataTransferObjects.ReferenceData;
 using IdentityModel;
+using IdentityModel.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,6 +14,7 @@ using WebApp.Extensions;
 using WebApp.Models.Cart;
 using WebApp.Models.Order;
 using WebApp.Models.Product;
+using WebApp.Services;
 
 namespace WebApp.Controllers
 {
@@ -40,6 +42,9 @@ namespace WebApp.Controllers
                 string storeIdSelected = storeSelectedCached.SingleOrDefault(r => r.Name == CacheConstant.StoreIdCacheName).Value.ToString();
                 HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
+                var token = ClaimService.GetClaimStringValue(User, "Token");
+                client.SetBearerToken(token);
+
                 //Overwrite if storeId is defined
                 if (storeId != "undefined" && Convert.ToInt32(storeId) > 0)
                     storeIdSelected = storeId;
@@ -62,9 +67,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Update([FromBody] ProductDetail productDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PutAsync($"api/Product/Update", productDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
@@ -79,9 +88,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Remove([FromBody] ProductDetail productDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PostAsync($"api/Product/Remove", productDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
@@ -96,9 +109,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Add([FromBody] ProductDetail productDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.EmployeeId).Value;
+            productDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
+
+            var token = ClaimService.GetClaimStringValue(User, "Token");
+            client.SetBearerToken(token);
+
             HttpResponseMessage response = await client.PostAsync($"api/Product/Add", productDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());

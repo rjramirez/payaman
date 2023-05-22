@@ -14,11 +14,11 @@ using WebAPI.Services.Interfaces;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : ControllerBase
+public class AppUserController : ControllerBase
 {
     private IUserService _userService;
 
-    public UserController(
+    public AppUserController(
         IUserService userService)
     {
         _userService = userService;
@@ -32,23 +32,23 @@ public class UserController : ControllerBase
         AuthenticateResponse authDetails = await _userService.Authenticate(model);
 
         // Create a new ClaimsIdentity with the desired claims
-        var claims = new[]
-        {
-                    new Claim(ClaimConstant.EmployeeId, authDetails.Id.ToString()),
-                    new Claim(ClaimTypes.Name, authDetails.Username),
-                    new Claim("UserGivenName", authDetails.FirstName + " " + authDetails.LastName),
-                    new Claim(ClaimConstant.ClientId, authDetails.Username),
-                    new Claim("Token", authDetails.Token),
-                    new Claim(ClaimTypes.Role, authDetails.Role.ToString())
-                };
-        var claimsIdentity = new ClaimsIdentity(
-            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //var claims = new[]
+        //{
+        //    new Claim(ClaimConstant.AppUserId, authDetails.Id.ToString()),
+        //    new Claim(ClaimTypes.Name, authDetails.Username),
+        //    new Claim("UserGivenName", authDetails.FirstName + " " + authDetails.LastName),
+        //    new Claim(ClaimConstant.ClientId, authDetails.Username),
+        //    new Claim("Token", authDetails.Token),
+        //    new Claim(ClaimTypes.Role, authDetails.Role.ToString())
+        //};
+        //var claimsIdentity = new ClaimsIdentity(
+        //    claims, CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
 
-        var authProperties = new AuthenticationProperties { IsPersistent = true };
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity),
-            authProperties);
+        //var authProperties = new AuthenticationProperties { IsPersistent = true };
+        //await HttpContext.SignInAsync(
+        //    CookieAuthenticationDefaults.AuthenticationScheme,
+        //    new ClaimsPrincipal(claimsIdentity),
+        //    authProperties);
 
 
         return Ok(authDetails);
@@ -75,7 +75,8 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [Authorize(Role.Admin)]
-    public IActionResult GetAll()
+    [Route("AppUser/GetAllAppUsers")]
+    public IActionResult GetAllAppUsers()
     {
         var users = _userService.GetAll();
         return Ok(users);

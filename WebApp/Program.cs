@@ -37,7 +37,7 @@ builder.Services.AddHttpClient("RITSApiClient", opt =>
     //TODO: Rename base URL
     opt.BaseAddress = new Uri(apiResourceUrl.RITSApiBaseUrl);
 });
-    //.AddHttpMessageHandler<IdentityServerTokenHandler>();
+//.AddHttpMessageHandler<LocalTokenHandler>();
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

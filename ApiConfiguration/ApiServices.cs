@@ -1,7 +1,5 @@
 ﻿using Common.Constants;
 using Common.DataTransferObjects.AppSettings;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -18,13 +16,12 @@ namespace ApiConfiguration
     {
         public static void ConfigureServices(IServiceCollection services, IdentityServerApiDefinition identityServerApiDefinition)
         {
-
             services.AddCors();
             services.AddControllers().AddJsonOptions(x =>
             {
                 // serialize enums as strings in api responses (e.g. Role)
                 x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            }); ;
+            });
 
             //Identity Server Authorization
             //services.AddAuthentication("Bearer")

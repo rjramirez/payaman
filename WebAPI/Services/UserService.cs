@@ -50,9 +50,10 @@ public class UserService : IUserService
         // Create a new ClaimsIdentity with the desired claims
         var claims = new[]
         {
+            new Claim(ClaimConstant.AppUserId, user.AppUserId.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimConstant.ClientId, user.AppUserId.ToString()),
-            new Claim(ClaimTypes.Role, role.Name)
+            new Claim(ClaimTypes.Role, user.AppUserRole.Name)
         };
         var identity = new ClaimsIdentity(claims, "User");
 
@@ -60,10 +61,11 @@ public class UserService : IUserService
         var principal = new ClaimsPrincipal(identity);
         response.Role = (Role)role.AppUserRoleId;
 
-
         // Set the HttpContext.User property to the custom principal
         _httpContextAccessor.HttpContext.User = principal;
         _httpContextAccessor.HttpContext.Items["User"] = user.AppUserId;
+        _httpContextAccessor.HttpContext.Request.Headers["Authorization"] = String.Format("Bearer {0}", response.Token);
+
 
         return response;
     }

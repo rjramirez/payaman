@@ -98,7 +98,7 @@ namespace WebApp.Services
             string userRolesCacheName = string.Format(CacheConstant.UserRoleCacheName, principal.Identity.Name);
             if (!_memoryCache.TryGetValue(userRolesCacheName, out ReferenceDataDetail userRole))
             {
-                var response = await ritsHttpClient.GetAsync($"api/User/UserRole/{principal.Identity.Name}");
+                var response = await ritsHttpClient.GetAsync($"api/AppUser/UserRole/{principal.Identity.Name}");
                 if (response.IsSuccessStatusCode)
                 {
                     userRole = JsonConvert.DeserializeObject<ReferenceDataDetail>(await response.Content.ReadAsStringAsync());

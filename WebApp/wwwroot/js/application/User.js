@@ -21,10 +21,10 @@ function format(d) {
 }
 
 let User = function () {
-    let usersEndPoint = "/User/GetAllUsers";
-    let updateUserEndPoint = "/User/Update";
-    let removeUserEndPoint = "/User/Remove";
-    let addUserEndPoint = "/User/Add";
+    let usersEndPoint = "/AppUser/GetAllAppUsers";
+    let updateUserEndPoint = "/AppUser/Update";
+    let removeUserEndPoint = "/AppUser/Remove";
+    let addUserEndPoint = "/AppUser/Add";
 
     return {
         initializeUsersTable: function () {
@@ -125,7 +125,9 @@ let User = function () {
                         data: null,
                         defaultContent: '',
                     },
-                    { data: 'name' },
+                    { data: 'firstname' },
+                    { data: 'lastname' },
+                    { data: 'username' },
                     {
                         data: 'id',
                         render: function (data, type, row) {

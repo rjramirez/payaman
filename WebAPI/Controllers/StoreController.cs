@@ -54,6 +54,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         [Route("GetAllStores")]
         [SwaggerOperation(Summary = "Get Store List")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<StoreDetail>>> GetAll()
         {
 

@@ -89,5 +89,22 @@ public class AutoMapperProfileApi : Profile
                     return true;
                 }
             ));
+
+
+        // UPDATE AppUserDetail -> AppUser
+        CreateMap<AppUserDetail, AppUser>()
+            .ForAllMembers(x => x.Condition(
+                (src, dest, prop) =>
+                {
+                    // ignore null & empty string properties
+                    if (prop == null) return false;
+                    if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
+
+                    dest.ModifiedDate = DateTime.UtcNow;
+                    dest.ModifiedBy = src.TransactionBy;
+                    
+                    return true;
+                }
+            ));
     }
 }

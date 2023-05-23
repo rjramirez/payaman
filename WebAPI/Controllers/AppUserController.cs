@@ -1,15 +1,15 @@
 ﻿namespace WebAPI.Controllers;
 
-using Common.Constants;
 using Common.DataTransferObjects.AppUserDetails;
 using Common.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Security.Claims;
-using WebAPI.Authorization;
 using WebAPI.Services.Interfaces;
+using Common.DataTransferObjects.ReferenceData;
+using WebAPI.Authorization;
+using AutoMapper;
+using DataAccess.UnitOfWorks.RITSDB;
+using BCrypt.Net;
 
 [Authorize]
 [ApiController]
@@ -17,11 +17,14 @@ using WebAPI.Services.Interfaces;
 public class AppUserController : ControllerBase
 {
     private IUserService _userService;
+    private readonly IMapper _mapper;
+    private readonly IRITSDBUnitOfWork _RITSDBUnitOfWork;
 
-    public AppUserController(
-        IUserService userService)
+    public AppUserController(IUserService userService, IMapper mapper, IRITSDBUnitOfWork RITSDBUnitOfWork)
     {
         _userService = userService;
+        _mapper = mapper;
+        _RITSDBUnitOfWork = RITSDBUnitOfWork;
     }
 
     [AllowAnonymous]
@@ -75,11 +78,25 @@ public class AppUserController : ControllerBase
 
     [HttpGet]
     [Authorize(Role.Admin)]
-    [Route("AppUser/GetAllAppUsers")]
-    public IActionResult GetAllAppUsers()
+    [Route("GetAllAppUsers")]
+    public async Task<IActionResult> GetAllAppUsers()
     {
-        var users = _userService.GetAll();
-        return Ok(users);
+        var users = await _userService.GetAll();
+
+        IEnumerable<AppUserDetail> appUserDetail = users.Select(u => new AppUserDetail()
+        {
+            AppUserId = u.AppUserId,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Username = u.Username,
+            AppUserRole = new ReferenceDataDetail() { Active = true, Name = u.AppUserRole.Name, Value = u.AppUserRole.AppUserRoleId },
+            CreatedBy = u.CreatedBy,
+            CreatedDate = u.CreatedDate,
+            ModifiedBy = u.ModifiedBy,
+            ModifiedDate = u.ModifiedDate == null ? DateTime.MinValue : u.ModifiedDate.Value,
+        });
+
+        return Ok(appUserDetail);
     }
 
     [HttpGet("{id}")]
@@ -89,12 +106,35 @@ public class AppUserController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize(Role.Admin)]
-    public IActionResult Update(int id, UpdateRequest model)
+    [Route("Update")]
+    [SwaggerOperation(Summary = "Update App User")]
+    public async Task<IActionResult> Update(AppUserDetail appUserDetail)
     {
-        _userService.Update(id, model);
-        return Ok(new { message = "User updated successfully" });
+        var user = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(predicate: a => a.AppUserId == appUserDetail.AppUserId && a.Active);
+
+        // copy model to user and save
+        _mapper.Map(appUserDetail, user);
+
+        // validate
+        if (appUserDetail.Username != user.Username && await _RITSDBUnitOfWork.AppUserRepository.IsExistAsync(x => x.Username == appUserDetail.Username))
+            throw new Exception("Username '" + appUserDetail.Username + "' is already taken");
+
+        // hash password if it was entered
+        if (!string.IsNullOrEmpty(appUserDetail.Password))
+            user.Password = BCrypt.HashPassword(appUserDetail.Password);
+
+        await _RITSDBUnitOfWork.SaveChangesAsync(appUserDetail.TransactionBy);
+
+        ClientResponse clientResponse = new()
+        {
+            Message = "User updated successfully",
+            IsSuccessful = true,
+        };
+
+
+        return Ok(clientResponse);
     }
 
     [HttpDelete("{id}")]

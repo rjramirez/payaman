@@ -7,7 +7,7 @@ function format(d) {
         '<tr>' +
         '<td>ID:</td>' +
         '<td>' +
-        d.id +
+        d.AppUserId +
         '</td>' +
         '</tr>' +
         '<tr>' +
@@ -29,8 +29,8 @@ let User = function () {
     return {
         initializeUsersTable: function () {
 
-            App.singleSelect2("#selectUserAddRole");
-            App.singleSelect2("#selectEditUserRole");
+            App.singleSelect2("#ddlAddUserRole");
+            App.singleSelect2("#ddlEditUserRole");
 
 
             var tableUsers = $('#users_table').DataTable({
@@ -63,14 +63,14 @@ let User = function () {
                                 let userLastnameAdd = $("#inputAddUserLastname").val();
                                 let userUsernameAdd = $("#inputAddUserUsername").val();
                                 let userPasswordAdd = $("#inputAddUserPassword").val();
-                                let userRoleAdd = $("#selectUserAddRole").val();
+                                let userRoleAdd = $("#ddlAddUserRole").val();
 
                                 
                                 App.requiredTextValidator(userFirstnameAdd, $('#inputAddUserFirstname'));
                                 App.requiredTextValidator(userLastnameAdd, $('#inputAddUserLastname'));
                                 App.requiredTextValidator(userUsernameAdd, $('#inputAddUserUsername'));
                                 App.requiredTextValidator(userPasswordAdd, $('#inputAddUserPassword'));
-                                App.requiredSingleSelectValidator(userRoleAdd, $("#selectUserAddRole"));
+                                App.requiredSingleSelectValidator(userRoleAdd, $("#ddlAddUserRole"));
 
 
                                 if (userFirstnameAdd == "" || userLastnameAdd == "" || userUsernameAdd == "" ||
@@ -125,22 +125,29 @@ let User = function () {
                         data: null,
                         defaultContent: '',
                     },
-                    { data: 'firstname' },
-                    { data: 'lastname' },
-                    { data: 'username' },
+                    { data: 'FirstName' },
+                    { data: 'LastName' },
+                    { data: 'Username' },
                     {
-                        data: 'id',
+                        data: 'AppUserRole',
+                        render: function (data) {
+                            return data.Name
+                        }
+                    },
+                    {
+                        data: 'AppUserId',
                         render: function (data, type, row) {
-                            return '<button type="button" class="btn btn-success btn-xs btnUserEdit" data-userid="' + data + '"'
-                                + 'data-roleid="' + row.roleId + '"'
-                                + 'data-firstname="' + row.firstName + '"'
-                                + 'data-lastname="' + row.lastName + '"'
-                                + 'data-username="' + row.userName + '"'
+                            return '<button type="button" class="btn btn-success btn-xs btnUserEdit" data-appuserid="' + data + '"'
+                                + 'data-appuserrolename="' + row.AppUserRole.Name + '"'
+                                + 'data-appuserroleid="' + row.AppUserRole.Value + '"'
+                                + 'data-firstname="' + row.FirstName + '"'
+                                + 'data-lastname="' + row.LastName + '"'
+                                + 'data-username="' + row.Username + '"'
                                 + '><i class="fa-solid fa-pencil"></i></button> | <button type="button" class="btn btn-danger btn-xs btnUserRemove" data-appuserid=' + data + '><i class="fa-solid fa-trash"></i></button>'
                         }
                     }
                 ],
-                order: [[1, 'asc']]
+                order: [[1, 'desc']]
             });
 
             // Add event listener for opening and closing details
@@ -164,11 +171,11 @@ let User = function () {
 
                 $(".btnUserEdit").prop("onclick", null).off("click");
                 $(".btnUserEdit").click(function () {
-                    let userId = $(this).data("userid");
+                    let userId = $(this).data("appuserid");
                     let firstName = $(this).data("firstname");
                     let lastName = $(this).data("lastname");
                     let userName = $(this).data("username");
-                    let roleId = $(this).data("roleid");
+                    let roleId = $(this).data("appuserroleid");
 
 
                     $("#inputEditUserId").val(userId);
@@ -176,6 +183,8 @@ let User = function () {
                     $("#inputEditUserFirstname").val(firstName);
                     $("#inputEditUserLastname").val(lastName);
                     $("#inputEditUsername").val(userName);
+
+                    $("#ddlEditUserRole").val(roleId).trigger("change");
 
                     $("#editUserModal").modal("show");
                 });
@@ -190,14 +199,14 @@ let User = function () {
                     let userLastnameUpdate = $("#inputEditUserLastname").val();
                     let userUsernameUpdate = $("#inputEditUsername").val();
                     let userPasswordUpdate = $("#inputEditUserPassword").val();
-                    let userRoleUpdate = $("#selectEditUserRole").val();
+                    let userRoleUpdate = $("#ddlEditUserRole").val();
 
 
                     App.requiredTextValidator(userFirstnameUpdate, $('#inputEditUserFirstname'));
                     App.requiredTextValidator(userLastnameUpdate, $('#inputEditUserLastname'));
                     App.requiredTextValidator(userUsernameUpdate, $('#inputEditUsername'));
                     App.requiredTextValidator(userPasswordUpdate, $('#inputEditUserPassword'));
-                    App.requiredSingleSelectValidator(userRoleUpdate, $("#selectEditUserRole"));
+                    App.requiredSingleSelectValidator(userRoleUpdate, $("#ddlEditUserRole"));
 
                     if (userFirstnameUpdate == "" || userLastnameUpdate == "" || userUsernameUpdate == "" ||
                         userPasswordUpdate == "" || userRoleUpdate == "") {
@@ -206,13 +215,14 @@ let User = function () {
                         return;
                     }
 
+
                     let model = {
                         AppUserId: userId,
                         FirstName: userFirstnameUpdate,
                         LastName: userLastnameUpdate,
-                        Username: userFirstnameUpdate,
+                        Username: userUsernameUpdate,
                         Password: userPasswordUpdate,
-                        Role: userRoleUpdate
+                        AppUserRoleId: userRoleUpdate
                     }
 
                     App.ajaxPut(updateUserEndPoint,

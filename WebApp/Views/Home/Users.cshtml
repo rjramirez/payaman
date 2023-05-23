@@ -1,4 +1,5 @@
-﻿@section Styles
+﻿@using Common.Constants;
+@section Styles
     {
     <link href="~/lib/datatables/css/datatables.min.css" rel="stylesheet" />
 }
@@ -12,6 +13,7 @@
                     <th>FirstName</th>
                     <th>LastName</th>
                     <th>Username</th>
+                    <th>Role</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -21,6 +23,7 @@
                     <th>FirstName</th>
                     <th>LastName</th>
                     <th>Username</th>
+                    <th>Role</th>
                     <th>Actions</th>
                 </tr>
             </tfoot>
@@ -58,9 +61,15 @@
                         <input type="password" class="form-control" id="inputAddUserPassword">
                     </div>
                     <div class="form-group form-group-xs">
-                        <label for="selectUserAddRole">Role</label>
-                        <select class="form-control form-control-sm" id="selectUserAddRole">
-                        </select>
+                        <label for="ddlAddUserRole">Role</label>
+                        @{
+                            @await Component.InvokeAsync("SelectList",
+                        new {   controlId = "ddlAddUserRole",
+                        optionlabel = "--Select--",
+                        apiRoute = ReferenceDataConstant.AppUserRoleRoute,
+                        additionalClasses = "form-control-sm text-black",
+                        selectedValue = ""})
+                        }
                     </div>
                 </form>
 
@@ -98,10 +107,17 @@
                         <input type="password" class="form-control" id="inputEditUserPassword">
                     </div>
                     <div class="form-group form-group-xs">
-                        <label for="selectEditUserRole">Role</label>
-                        <select class="form-control form-control-sm" id="selectEditUserRole">
-                        </select>
+                        <label for="ddlEditUserRole">Role</label>
+                        @{
+                            @await Component.InvokeAsync("SelectList",
+                            new {   controlId = "ddlEditUserRole",
+                                    optionlabel = "--Select--",
+                                    apiRoute = ReferenceDataConstant.AppUserRoleRoute,
+                                    additionalClasses = "form-control-sm text-black",
+                                    selectedValue = ""})
+                        }
                     </div>
+
                 </form>
 
             </div>

@@ -161,8 +161,6 @@ namespace WebAPI.Controllers
             orderFromDB.ModifiedDate = Convert.ToDateTime(today.ToString("yyyy-MM-dd HH:mm:ss.fff"));
             orderFromDB.Active = false;
 
-            _RITSDBUnitOfWork.OrderRepository.Remove(orderFromDB);
-
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(orderDetail.TransactionBy);
 
             if (result == 0 || result == -1)

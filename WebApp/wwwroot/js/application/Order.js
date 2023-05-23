@@ -67,7 +67,7 @@ let Order = function () {
                         }
                     }
                 ],
-                order: [[1, 'asc']]
+                order: [[1, 'desc']]
             });
 
             // Add event listener for opening and closing details

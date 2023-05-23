@@ -30,7 +30,7 @@ namespace WebApp.Controllers
             var token = ClaimService.GetClaimStringValue(User, "Token");
             client.SetBearerToken(token);
 
-            HttpResponseMessage response = await client.GetAsync($"api/AppUser/GetAllAppUsers");
+            var response = await client.GetAsync($"api/AppUser/GetAllAppUsers");
 
             if (response.IsSuccessStatusCode)
             {
@@ -39,6 +39,14 @@ namespace WebApp.Controllers
                 List<AppUserVM> appUserVM = appUsers.Select(au => new AppUserVM()
                 {
                     AppUserId = au.AppUserId,
+                    FirstName = au.FirstName,
+                    LastName = au.LastName,
+                    Username = au.Username,
+                    AppUserRole = au.AppUserRole,
+                    CreatedBy = au.CreatedBy,
+                    CreatedDate = au.CreatedDate,
+                    ModifiedBy = au.ModifiedBy,
+                    ModifiedDate = au.ModifiedDate,
                 }).ToList();
 
                 return Ok(JsonConvert.SerializeObject(appUsers));

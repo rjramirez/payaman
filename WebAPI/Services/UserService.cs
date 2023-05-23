@@ -103,6 +103,13 @@ public class UserService : IUserService
     {
 
         return await _RITSDBUnitOfWork.AppUserRepository.FindAsync(
+            selector: au => new AppUser() { 
+                AppUserId = au.AppUserId,
+                FirstName = au.FirstName,
+                LastName = au.LastName,
+                Username = au.Username,
+                AppUserRole = au.AppUserRole,
+            }, 
             predicate: a => a.Active == true);
     }
 
@@ -132,7 +139,7 @@ public class UserService : IUserService
         // copy model to user and save
         _mapper.Map(model, user);
 
-        await _RITSDBUnitOfWork.SaveChangesAsync(model.Username);
+        await _RITSDBUnitOfWork.SaveChangesAsync(model.TransactionBy);
     }
 
     public async void Delete(int id)

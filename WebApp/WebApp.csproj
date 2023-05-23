@@ -60,6 +60,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\SelectList\_MultiSelectList.cshtml" />
+    <None Include="Views\SelectList\_SelectList.cshtml" />
     <None Include="Views\Modal\_ConfirmDialogueModal.cshtml" />
   </ItemGroup>
 

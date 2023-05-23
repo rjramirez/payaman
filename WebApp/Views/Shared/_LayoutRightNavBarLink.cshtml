@@ -16,7 +16,7 @@
             </li>
         }
 
-        @if (action.ToString() != "Cart" && action.ToString() != "Receipt")
+        @if (action.ToString() == "Index" || action.ToString() == "Products")
         {
             <li class="nav-item d-none d-sm-block">
                 <a class="nav-link" data-toggle="dropdown" href="#">

@@ -109,8 +109,6 @@ namespace WebAPI.Controllers
             productFromDB.ModifiedDate = Convert.ToDateTime(DateTime.UtcNow.ToString("MMMM dd, yyyy H:m"));
             productFromDB.Active = false;
 
-            //_RITSDBUnitOfWork.ProductRepository.Remove(productFromDB);
-
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
 
             if (result == 0 || result == -1)

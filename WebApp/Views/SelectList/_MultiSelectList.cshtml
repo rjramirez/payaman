@@ -1,0 +1,10 @@
+﻿@model WebApp.Models.SelectList.SelectListViewModel
+
+@if (Model.ReadOnly)
+{
+    @Html.DropDownList(Model.ControlID, Model.ListItems, Model.OptionLabel, new { @class = "form-control multiSelect selectDisabled" + Model.AdditionalClasses, multiple = "multiple", @disabled = "disabled" })
+}
+else
+{
+    @Html.DropDownList(Model.ControlID, Model.ListItems, Model.OptionLabel, new { @class = "form-control multiSelect" + Model.AdditionalClasses, multiple = "multiple" })
+}

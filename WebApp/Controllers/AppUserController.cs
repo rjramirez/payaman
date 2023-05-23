@@ -98,21 +98,21 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] AppUserDetail AppUserDetail)
+        public async Task<IActionResult> Add([FromBody] AppUserDetail appUserDetail)
         {
             var ident = User.Identity as ClaimsIdentity;
-            AppUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
+            appUserDetail.TransactionBy = ident.Claims.FirstOrDefault(i => i.Type == ClaimConstant.AppUserId).Value;
 
             HttpClient client = _httpClientFactory.CreateClient("RITSApiClient");
 
             var token = ClaimService.GetClaimStringValue(User, "Token");
             client.SetBearerToken(token);
 
-            HttpResponseMessage response = await client.PostAsync($"api/AppUser/Add", AppUserDetail.GetStringContent());
+            HttpResponseMessage response = await client.PostAsync($"api/AppUser/Register", appUserDetail.GetStringContent());
 
             ClientResponse clientResponse = JsonConvert.DeserializeObject<ClientResponse>(await response.Content.ReadAsStringAsync());
 
-            if (response.IsSuccessStatusCode)
+            if (clientResponse.IsSuccessful)
                 return Ok(clientResponse);
             else
                 return BadRequest(clientResponse);

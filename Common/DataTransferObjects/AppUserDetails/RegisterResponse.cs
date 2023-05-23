@@ -4,7 +4,8 @@ namespace Common.DataTransferObjects.AppUserDetails
 {
     public class RegisterResponse
     {
-        public int Id { get; set; }
+        public int AppUserId { get; set; }
+        public int AppUserRoleId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Username { get; set; }

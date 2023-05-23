@@ -85,7 +85,7 @@ let User = function () {
                                     LastName: userLastnameAdd,
                                     Username: userFirstnameAdd,
                                     Password: userPasswordAdd,
-                                    Role: userRoleAdd
+                                    AppUserRoleId: userRoleAdd
                                 }
 
                                 App.ajaxPost(addUserEndPoint,

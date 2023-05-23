@@ -57,6 +57,40 @@ public class AppUserController : ControllerBase
         return Ok(authDetails);
     }
 
+    [HttpPost("Add")]
+    [SwaggerOperation(Summary = "Add User")]
+    public async Task<IActionResult> Add(AppUserDetail appUserDetail)
+    {
+        var user = await _RITSDBUnitOfWork.AppUserRepository.SingleOrDefaultAsync(predicate: a => a.AppUserId == appUserDetail.AppUserId && a.Active);
+
+        // copy model to user and save
+        _mapper.Map(appUserDetail, user);
+
+        user.CreatedBy = appUserDetail.TransactionBy;
+        user.CreatedDate = DateTime.UtcNow;
+        user.Active = true;
+
+
+        // validate
+        if (appUserDetail.Username != user.Username && await _RITSDBUnitOfWork.AppUserRepository.IsExistAsync(x => x.Username == appUserDetail.Username))
+            throw new Exception("Username '" + appUserDetail.Username + "' is already taken");
+
+        // hash password if it was entered
+        if (!string.IsNullOrEmpty(appUserDetail.Password))
+            user.Password = BCrypt.HashPassword(appUserDetail.Password);
+
+        await _RITSDBUnitOfWork.SaveChangesAsync(appUserDetail.TransactionBy);
+
+        ClientResponse clientResponse = new()
+        {
+            Message = "User added successfully",
+            IsSuccessful = true,
+        };
+
+
+        return Ok(clientResponse);
+    }
+
     [AllowAnonymous]
     [HttpPost("Register")]
     [SwaggerOperation(Summary = "Register User")]
@@ -64,7 +98,14 @@ public class AppUserController : ControllerBase
     {
         RegisterResponse response = await _userService.Register(model);
 
-        return Ok(response);
+        ClientResponse clientResponse = new()
+        {
+            IsSuccessful = true,
+            Data = response,
+            Message = "User successfully added"
+        };
+
+        return Ok(clientResponse);
     }
 
     [AllowAnonymous]
@@ -116,6 +157,9 @@ public class AppUserController : ControllerBase
 
         // copy model to user and save
         _mapper.Map(appUserDetail, user);
+
+        user.CreatedBy = appUserDetail.TransactionBy;
+        user.CreatedDate = DateTime.UtcNow;
 
         // validate
         if (appUserDetail.Username != user.Username && await _RITSDBUnitOfWork.AppUserRepository.IsExistAsync(x => x.Username == appUserDetail.Username))

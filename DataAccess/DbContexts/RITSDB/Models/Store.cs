@@ -26,12 +26,12 @@ namespace DataAccess.DBContexts.RITSDB.Models
         [StringLength(100)]
         public string Address { get; set; }
         public bool Active { get; set; }
-        [Precision(4)]
+        [Column(TypeName = "datetime")]
         public DateTime CreatedDate { get; set; }
         [Required]
         [StringLength(128)]
         public string CreatedBy { get; set; }
-        [Precision(4)]
+        [Column(TypeName = "datetime")]
         public DateTime? ModifiedDate { get; set; }
         [StringLength(128)]
         public string ModifiedBy { get; set; }

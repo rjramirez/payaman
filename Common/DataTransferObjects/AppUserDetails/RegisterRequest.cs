@@ -16,5 +16,7 @@ namespace Common.DataTransferObjects.AppUserDetails
 
         [Required]
         public string Password { get; set; }
+
+        public string TransactionBy { get; set; }
     }
 }

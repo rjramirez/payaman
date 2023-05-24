@@ -84,7 +84,7 @@ public class UserService : IUserService
         user.Password = BCrypt.HashPassword(model.Password);
 
         user.CreatedDate = DateTime.UtcNow;
-        user.CreatedBy = model.Username;
+        user.CreatedBy = model.TransactionBy;
         user.Active = true;
 
         user.AppUserRoleId = 2; //Cashier by Default

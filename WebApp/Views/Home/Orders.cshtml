@@ -81,6 +81,10 @@
     </div>
 </div>
 
+@{
+    await Html.RenderPartialAsync("~/Views/Modal/_ConfirmDialogueModal.cshtml");
+}
+
 @section Scripts
 {
     <script src="~/lib/datatables/js/datatables.min.js"></script>

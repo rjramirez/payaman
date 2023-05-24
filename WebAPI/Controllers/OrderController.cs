@@ -91,7 +91,7 @@ namespace WebAPI.Controllers
                             CashierName = c.Cashier.Username,
                             TotalAmount = c.TotalAmount,
                             CreatedDate = c.CreatedDate,
-                            ModifiedDate = c.ModifiedDate.Value,
+                            ModifiedDate = c.ModifiedDate,
                             Active = c.Active
                         },
                         predicate: a => a.Active == true,

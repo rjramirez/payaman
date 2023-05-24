@@ -9,7 +9,7 @@ namespace WebApp.Models.Order
         public string CashierName { get; set; }
         public decimal TotalAmount { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         public string TransactionBy { get; set; }
         public bool Active { get; set; }
         public IEnumerable<OrderItemDetail> OrderItemList { get; set; }

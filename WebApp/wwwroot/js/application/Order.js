@@ -153,39 +153,49 @@ let Order = function () {
 
                 //});
 
-
                 $(".btnOrderRemove").prop("onclick", null).off("click");
                 $(".btnOrderRemove").on("click", function () {
                     let orderId = $(this).data("id");
 
-                    let param = {
-                        Id: orderId
-                    }
-
-                    App.ajaxPost(removeOrderEndPoint,
-                        JSON.stringify(param),
-                        'text',
-                        function (data) {
-                            var json = JSON.parse(data);
-
-                            if (json.isSuccessful) {
-                                App.alert("success", json.message, "Success", window.location.origin + "/Home/Orders");
-
-                            }
-                            else {
-                                App.alert("error", json.message, "Error", undefined);
-
-                                setTimeout(function () {
-                                }, 500);
-                            }
-
-                        },
-                        function (response) {
-                            console.log(response);
-                        }
+                    App.confirmDialogueModal("Message",
+                        "Are you sure you want to delete this order?",
+                        "bg-warning",
+                        Order.deleteOrder(orderId),
+                        undefined,
+                        undefined
                     );
+
+                   
                 });
             });
+        },
+        deleteOrder: function (orderId) {
+            let param = {
+                Id: orderId
+            }
+
+            App.ajaxPost(removeOrderEndPoint,
+                JSON.stringify(param),
+                'text',
+                function (data) {
+                    var json = JSON.parse(data);
+
+                    if (json.isSuccessful) {
+                        App.alert("success", json.message, "Success", window.location.origin + "/Home/Orders");
+
+                    }
+                    else {
+                        App.alert("error", json.message, "Error", undefined);
+
+                        setTimeout(function () {
+                        }, 500);
+                    }
+
+                },
+                function (response) {
+                    console.log(response);
+                }
+            );
         }
     }
 }();

@@ -24,6 +24,16 @@ namespace WebApp.Services
             _clientSetting = clientSetting;
         }
 
+        public static DateTime GetPHTime(DateTime dateTime)
+        {
+            DateTime phDateTime = new DateTime();
+            if (DateTime.Compare(dateTime, DateTime.MinValue) == 0)
+            {
+                phDateTime = dateTime.AddHours(8);
+            }
+            return phDateTime;
+        }
+
         public string ConvertBoleanToYesOrNo(bool bolean)
         {
             if (bolean)

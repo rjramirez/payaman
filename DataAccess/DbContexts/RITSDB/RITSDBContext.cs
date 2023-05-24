@@ -39,7 +39,7 @@ namespace DataAccess.DBContexts.RITSDB
                     .WithMany(p => p.AppUsers)
                     .HasForeignKey(d => d.AppUserRoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AppUser_Role");
+                    .HasConstraintName("FK_AppUser_AppUserRole");
             });
 
             modelBuilder.Entity<AuditTrailDetail>(entity =>

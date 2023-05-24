@@ -44,9 +44,9 @@ namespace WebApp.Controllers
                     Username = au.Username,
                     AppUserRole = au.AppUserRole,
                     CreatedBy = au.CreatedBy,
-                    CreatedDate = au.CreatedDate,
+                    CreatedDate = CommonService.GetPHTime(au.CreatedDate),
                     ModifiedBy = au.ModifiedBy,
-                    ModifiedDate = au.ModifiedDate,
+                    ModifiedDate = CommonService.GetPHTime(au.ModifiedDate),
                 }).ToList();
 
                 return Ok(JsonConvert.SerializeObject(appUsers));
@@ -117,6 +117,5 @@ namespace WebApp.Controllers
             else
                 return BadRequest(clientResponse);
         }
-
     }
 }

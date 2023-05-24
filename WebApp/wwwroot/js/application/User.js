@@ -13,7 +13,7 @@ function format(d) {
         '<tr>' +
         '<td>Date Created:</td>' +
         '<td>' +
-        moment(d.createdDate).format('MMMM Do YYYY, h:mm:ss a') +
+        moment(d.CreatedDate).format('MMMM Do YYYY, h:mm:ss a') +
         '</td>' +
         '</tr>' +
         '</table>'

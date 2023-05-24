@@ -65,7 +65,7 @@ namespace DataAccess.Services
             AuditTrail auditTrail = new()
             {
                 TransactionBy = transactionBy,
-                TransactionDate = DateTime.Now
+                TransactionDate = DateTime.UtcNow
             };
 
             foreach (var changeTrackingTuple in contextChangeTrackingDetail)

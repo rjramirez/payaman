@@ -83,6 +83,9 @@ namespace WebAPI.Controllers
 
             var product = _mapper.Map(productDetail, productFromDB);
 
+            productFromDB.ModifiedBy = productDetail.TransactionBy;
+            productFromDB.ModifiedDate = Convert.ToDateTime(DateTime.UtcNow.ToString("MMMM dd, yyyy H:m"));
+
             var result = await _RITSDBUnitOfWork.SaveChangesAsync(productDetail.TransactionBy);
 
             if (result == 0 || result == -1)
@@ -131,10 +134,9 @@ namespace WebAPI.Controllers
         {
             var product = _mapper.Map(productDetail, new Product());
 
-            product.ModifiedBy = productDetail.TransactionBy;
+            product.CreatedBy = productDetail.TransactionBy;
+            product.CreatedDate = Convert.ToDateTime(DateTime.UtcNow.ToString("MMMM dd, yyyy H:m"));
             product.Active = true;
-
-
 
             await _RITSDBUnitOfWork.ProductRepository.AddAsync(product);
 

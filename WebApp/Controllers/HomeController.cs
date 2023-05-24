@@ -53,6 +53,7 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [Authorize(Policy="Admin")]
         public IActionResult Stores()
         {
             ViewBag.Title = "Stores";
@@ -65,6 +66,7 @@ namespace WebApp.Controllers
             return View();
         }
 
+        [Authorize(Policy = "Admin")]
         public IActionResult Users()
         {
             ViewBag.Title = "Users";

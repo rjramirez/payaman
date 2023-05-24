@@ -83,7 +83,7 @@ let User = function () {
                                 let model = {
                                     FirstName: userFirstnameAdd,
                                     LastName: userLastnameAdd,
-                                    Username: userFirstnameAdd,
+                                    Username: userUsernameAdd,
                                     Password: userPasswordAdd,
                                     AppUserRoleId: userRoleAdd
                                 }

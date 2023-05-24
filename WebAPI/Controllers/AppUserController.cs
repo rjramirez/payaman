@@ -67,7 +67,7 @@ public class AppUserController : ControllerBase
         _mapper.Map(appUserDetail, user);
 
         user.CreatedBy = appUserDetail.TransactionBy;
-        user.CreatedDate = DateTime.UtcNow;
+        user.CreatedDate = Convert.ToDateTime(DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"));
         user.Active = true;
 
 
